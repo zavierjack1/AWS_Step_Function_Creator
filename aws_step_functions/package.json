@@ -1,0 +1,14 @@
+{
+  "name": "aws_step_functions",
+  "version": "1.0.0",
+  "description": "project for OwnUp interview",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Zavier Jack",
+  "license": "ISC",
+  "dependencies": {
+    "mocha": "^8.0.1"
+  }
+}
