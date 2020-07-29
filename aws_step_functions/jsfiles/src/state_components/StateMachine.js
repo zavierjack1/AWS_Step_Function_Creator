@@ -20,9 +20,34 @@ var StateMachine = /** @class */ (function () {
     StateMachine.prototype.getStates = function () {
         return this.states;
     };
+    StateMachine.prototype.addState = function (state) {
+        this.getStates().push(state);
+    };
+    /*ADD ME TO STATE MACHINE COMPILATION
+    public addState(state: State) {
+        //check that the addState's nextState matches the name of a current state in the Machine
+        //or that the state is terminal
+        if (
+            this.getStates().some(
+                function containsNextState(element, index, array) {
+                    return (element.getName() == state.getNextState());
+                }
+            )
+            ||
+            state.isTerminal()
+        ) {
+            this.getStates().push(state);
+        }
+        else{
+            throw new Error("non-terminal states added to a StateMachine must have a nextState that already exists in the machine");
+        }
+    }
+    */
     StateMachine.prototype.setStates = function (states) {
+        var _this = this;
         if (states.length > 0) {
-            this.states = states;
+            this.states = [];
+            states.forEach(function (s) { return _this.addState(s); });
         }
         else {
             throw new Error("can not set states to empty");

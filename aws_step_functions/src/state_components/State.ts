@@ -1,80 +1,80 @@
+import { StateMachine } from "./StateMachine";
+
 export class State {
-    private name: string;
-    private type: string;
-    private comment: string;
-    private nextState: string;
-    private endState: Boolean = false;
-    constructor (name: string, type: string, comment: string = "", nextState: string = "", endState: Boolean = false){
-        if (!name) throw new Error("all params required");
-        if (!type) throw new Error("type required")
-        if (this.validateName(name)){
-            this.name = name;
-        }
-        else{
-            this.name = "" //unreachable
-        }
-        this.type = type;
-        this.comment = comment;
-        this.nextState = nextState;
-        this.setEndState(endState); 
-    }
+  private name: string;
+  private type: string;
+  private comment?: string;
+  private nextState?: string;
+  private endState: Boolean = false;
+  
+  constructor (name: string, type: string, comment?: string, nextState?: string, endState?: Boolean, parentMachine?: StateMachine){
+    if (this.validateName(name)) this.name = name; else this.name = "";
+    this.type = type; //mandatory
+    if (comment) this.setComment(comment);
+    if (nextState) this.setNextState(nextState); 
+    if (endState) this.setEndState(endState); else this.setEndState(false);
+  }
 
-    public validateName(name: string): Boolean{
-        if (name.length > 128) throw new Error("name must be <= 128 char");
-        return true;
-    }
+  public validateName(name: string): Boolean{
+      if (name.length > 128) throw new Error("name must be <= 128 char");
+      return true;
+  }
 
-    public getName(): string {
-        return this.name;
-    }
- 
-    public setName(name: string): void {
-        if (this.validateName(name)) this.name = name;
-    }
+  public validateNextState() : Boolean {
+      if (!this.isTerminal || this.getNextState() != "") return true;
+      return false;
+  }
 
-    public getType(): string {
-        return this.type;
-    }
+  public getName(): string {
+      return this.name;
+  }
 
-    //public setType(type: string): void {
-    //    this.type = type;
-    //}
+  public setName(name: string): void {
+      if (this.validateName(name)) this.name = name;
+  }
 
-    public getComment(): string {
-        return this.comment;
-    }
+  public getType(): string {
+      return this.type;
+  }
 
-    public setComment(comment: string): void {
-        this.comment = comment;
-    }
+  //public setType(type: string): void {
+  //    this.type = type;
+  //}
 
-    public getNextState(): string {
-        return this.nextState;
-    }
+  public getComment(): string | undefined {
+      return this.comment;
+  }
 
-    public setNextState(nextState: string): void {
-        this.nextState = nextState;
-    }
+  public setComment(comment: string): void {
+      this.comment = comment;
+  }
 
-    public isEndState(): Boolean{
-        return this.endState;
-    }
+  public getNextState(): string | undefined{
+      return this.nextState;
+  }
 
-    public setEndState(endState: Boolean): void{
-        //Todo: if not type = choice, succeed, or fail. you may set EndState
-        if (endState && !(this.getType() == "Choice" || this.getType() == "Succeed" || this.getType() == "Fail")){
-            this.endState = endState;
-        }
-        else if (endState) {
-            throw new Error("you can only set EndState if type == Choice, type == Succeed, or type == Fail");
-        }
-        else{
-            this.endState = endState;
-        }
-    }
+  public setNextState(nextState: string): void {
+      this.nextState = nextState;
+  }
 
-    public isTerminal(): Boolean{
-        if (this.isEndState() || this.getType() == "Succeed" || this.getType() == "Fail") return true;
-        return false; 
-    }
+  public isEndState(): Boolean{
+      return this.endState;
+  }
+
+  public setEndState(endState: Boolean): void{
+      if (endState && !(this.getType() == "Choice" || this.getType() == "Succeed" || this.getType() == "Fail")){
+          this.endState = endState;
+      }
+      else if (endState) {
+          throw new Error("you can only set EndState if type == Choice, type == Succeed, or type == Fail");
+      }
+      else{
+          this.endState = endState;
+      }
+  }
+
+  public isTerminal(): Boolean{
+      if (this.isEndState() || this.getType() == "Succeed" || this.getType() == "Fail") return true;
+      return false; 
+  }
 }
