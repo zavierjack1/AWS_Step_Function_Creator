@@ -4,11 +4,22 @@
   "description": "project for OwnUp interview",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "testOld": "mocha test/**/*.js",
+    "test": "mocha -r ts-node/register test/**/*.ts"
   },
   "author": "Zavier Jack",
   "license": "ISC",
   "dependencies": {
-    "mocha": "^8.0.1"
+    "@types/node": "^14.0.26",
+    "jsonpath": "^1.0.2",
+    "typescript": "^3.9.7"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.12",
+    "@types/mocha": "^8.0.0",
+    "chai": "^4.2.0",
+    "mocha": "^8.0.1",
+    "ts-node": "^8.10.2",
+    "typings": "^2.1.1"
   }
 }
