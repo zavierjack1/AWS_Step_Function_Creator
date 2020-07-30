@@ -3,15 +3,14 @@ import { runInThisContext } from 'vm';
 
 export class StateMachine {
     private states: State[] = [];
-    private startIdx: number; 
+    private startState: string; 
     private comment: string;
     private version: string;
     private timeoutSeconds?: number;
-    constructor(states: State[] = [], startIdx: number, comment: string = "", version: string="1.0", timeoutSeconds?: number){
+    constructor(states: State[] = [], startState: string, comment: string = "", version: string="1.0", timeoutSeconds?: number) {
         if (states.length == 0) throw new Error("states must not be empty");
-        if (startIdx < 0 || startIdx > states.length -1) throw new Error("startIdx must be within array");
         this.states = states;
-        this.startIdx = startIdx;
+        this.startState = startState;
         this.comment = comment;
         this.version = version;
         this.timeoutSeconds = timeoutSeconds;
@@ -21,44 +20,56 @@ export class StateMachine {
         return this.states;
     }
 
-    public addState(state: State){
+    public addState(state: State) : Boolean{
         this.getStates().push(state);
+        return this.validateNextStates();
+    }
+    
+    public validate(): Boolean{
+        return this.validateNextStates();
     }
 
-    /*ADD ME TO STATE MACHINE COMPILATION
-    public addState(state: State) {
-        //check that the addState's nextState matches the name of a current state in the Machine
-        //or that the state is terminal
-        if (
-            this.getStates().some(
-                function containsNextState(element, index, array) { 
-                    return (element.getName() == state.getNextState());           
-                } 
-            )
-            ||
-            state.isTerminal()
-        ) {
-            this.getStates().push(state);
+    public validateNextStates(): Boolean {
+        //check that each non-terminal state in the machine points to another state in the machine
+        let states: State[] = this.getStates();
+        let returnVal = true;
+        for (let idx in states){
+            if (
+                //current state is not terminal
+                !states[idx].isTerminal()
+                &&
+                //the nextstate of the current state does not match any of the statenames in the machine
+                !(this.getStates().some(
+                    function matchesNextState(element){
+                        return (states[idx].getNextState() == element.getName());
+                    }
+                ))
+            ){
+                returnVal = false;
+            }
         }
-        else{
-            throw new Error("non-terminal states added to a StateMachine must have a nextState that already exists in the machine");
-        }
+        return returnVal;
     }
-    */
-    public setStates(states: State[]){
+
+    public setStates(states: State[]) : Boolean{
         if (states.length > 0) {
             this.states = [];
             states.forEach( (s) => this.addState(s));
+            return this.validateNextStates();
         }
         else{
             throw new Error("can not set states to empty");
         }
     }
 
-    public getStartIdx(){
-        return this.startIdx;
+    public getStartState(){
+        return this.startState;
     }
 
+    public setStartState(startState: string){
+        this.startState = startState;
+    }
+/*
     public setStartIdx(startIdx: number){
         if (startIdx < 0 || startIdx > this.getStates().length -1) {
             throw new Error("startIdx must be within array of states");
@@ -67,7 +78,7 @@ export class StateMachine {
             this.startIdx = startIdx;
         }
     }
-
+*/
     public getComment(): string {
         return this.comment;
     }

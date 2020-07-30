@@ -2,17 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StateMachine = void 0;
 var StateMachine = /** @class */ (function () {
-    function StateMachine(states, startIdx, comment, version, timeoutSeconds) {
+    function StateMachine(states, startState, comment, version, timeoutSeconds) {
         if (states === void 0) { states = []; }
         if (comment === void 0) { comment = ""; }
         if (version === void 0) { version = "1.0"; }
         this.states = [];
         if (states.length == 0)
             throw new Error("states must not be empty");
-        if (startIdx < 0 || startIdx > states.length - 1)
-            throw new Error("startIdx must be within array");
         this.states = states;
-        this.startIdx = startIdx;
+        this.startState = startState;
         this.comment = comment;
         this.version = version;
         this.timeoutSeconds = timeoutSeconds;
@@ -22,48 +20,60 @@ var StateMachine = /** @class */ (function () {
     };
     StateMachine.prototype.addState = function (state) {
         this.getStates().push(state);
+        return this.validateNextStates();
     };
-    /*ADD ME TO STATE MACHINE COMPILATION
-    public addState(state: State) {
-        //check that the addState's nextState matches the name of a current state in the Machine
-        //or that the state is terminal
-        if (
-            this.getStates().some(
-                function containsNextState(element, index, array) {
-                    return (element.getName() == state.getNextState());
-                }
-            )
-            ||
-            state.isTerminal()
-        ) {
-            this.getStates().push(state);
+    StateMachine.prototype.validate = function () {
+        return this.validateNextStates();
+    };
+    StateMachine.prototype.validateNextStates = function () {
+        //check that each non-terminal state in the machine points to another state in the machine
+        var states = this.getStates();
+        var returnVal = true;
+        var _loop_1 = function (idx) {
+            if (
+            //current state is not terminal
+            !states[idx].isTerminal()
+                &&
+                    //the nextstate of the current state does not match any of the statenames in the machine
+                    !(this_1.getStates().some(function matchesNextState(element) {
+                        return (states[idx].getNextState() == element.getName());
+                    }))) {
+                returnVal = false;
+            }
+        };
+        var this_1 = this;
+        for (var idx in states) {
+            _loop_1(idx);
         }
-        else{
-            throw new Error("non-terminal states added to a StateMachine must have a nextState that already exists in the machine");
-        }
-    }
-    */
+        return returnVal;
+    };
     StateMachine.prototype.setStates = function (states) {
         var _this = this;
         if (states.length > 0) {
             this.states = [];
             states.forEach(function (s) { return _this.addState(s); });
+            return this.validateNextStates();
         }
         else {
             throw new Error("can not set states to empty");
         }
     };
-    StateMachine.prototype.getStartIdx = function () {
-        return this.startIdx;
+    StateMachine.prototype.getStartState = function () {
+        return this.startState;
     };
-    StateMachine.prototype.setStartIdx = function (startIdx) {
-        if (startIdx < 0 || startIdx > this.getStates().length - 1) {
-            throw new Error("startIdx must be within array of states");
-        }
-        else {
-            this.startIdx = startIdx;
-        }
+    StateMachine.prototype.setStartState = function (startState) {
+        this.startState = startState;
     };
+    /*
+        public setStartIdx(startIdx: number){
+            if (startIdx < 0 || startIdx > this.getStates().length -1) {
+                throw new Error("startIdx must be within array of states");
+            }
+            else{
+                this.startIdx = startIdx;
+            }
+        }
+    */
     StateMachine.prototype.getComment = function () {
         return this.comment;
     };
