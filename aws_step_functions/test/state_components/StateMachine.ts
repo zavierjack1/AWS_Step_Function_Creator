@@ -1,4 +1,5 @@
 import { State }  from '../../src/state_components/State';
+import { PassState }  from '../../src/state_components/PassState';
 import { StateMachine }  from '../../src/state_components/StateMachine';
 import { expect, assert } from 'chai';
 import 'mocha';
@@ -25,16 +26,31 @@ describe('StateMachine Tests', function () {
       stateMachine.setStates(states);
       expect(JSON.stringify(stateMachine.getStates())).to.equal(JSON.stringify(states));
     });
-    /*make test better!!!*/
+
+    it('should add state to machine', function () {
+      let states = [new State("myState", "myType")];
+      let stateMachine = new StateMachine(states, "myState");
+      stateMachine.addState(new State("myState2", "myType"));
+      expect(JSON.stringify(stateMachine.getStates())).to.equal(JSON.stringify(states));
+    });
+
+    it('should fail to add non-unique stateName to machine', function () {
+      let states = [new State("myState", "myType")];
+      let stateMachine = new StateMachine(states, "myState");
+      stateMachine.addState(new State("myState2", "myType"));
+      expect(function () {stateMachine.addState(new State("myState2", "myType"))}).to.Throw(Error, "State names must be unique");
+    });
+  })
+
+  context('startState tests', function () {
    it('should return start state', function () {
-      let stateMachine = new StateMachine([new State("myState", "myType")], "myState");
-      expect(stateMachine.getStartState()).to.equal("myState");
+      let stateMachine = new StateMachine([new State("myState", "myType"), new State("myState2", "myType")], "myState");
+      expect(stateMachine.getStartStateName()).to.equal("myState");
     })
-    /*make test better!!!*/
     it('should set start state', function () {
-      let stateMachine = new StateMachine([new State("myState", "myType"), new State("myState", "myType")], "myState");
-      stateMachine.setStartState("myState");
-      expect(stateMachine.getStartState()).to.equal("myState");
+      let stateMachine = new StateMachine([new State("myState", "myType"), new State("myState2", "myType")], "myState");
+      stateMachine.setStartStateName("myState2");
+      expect(stateMachine.getStartStateName()).to.equal("myState2");
     })
   })
 
@@ -101,4 +117,13 @@ describe('StateMachine Tests', function () {
       expect(validity).to.equal(true);
     });
   });
+
+  context('simulate statemachine', function () {
+    it('should simulate statemachine', function () {
+      let stateMachine = new StateMachine([new PassState("myState", "result", "xyz", "EndState")], "myState", "myComment", "2.0", 10);
+      let state = new State("EndState", "Succeed");
+      stateMachine.addState(state);
+      expect(stateMachine.validate()).to.equal(true);
+    });
+  })
 });

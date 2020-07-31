@@ -19,11 +19,28 @@ var StateMachine = /** @class */ (function () {
         return this.states;
     };
     StateMachine.prototype.addState = function (state) {
+        if (!this.validateState(state)) {
+            console.log("here!!!");
+            throw new Error("State names must be unique");
+        }
         this.getStates().push(state);
         return this.validateNextStates();
     };
     StateMachine.prototype.validate = function () {
         return this.validateNextStates();
+    };
+    StateMachine.prototype.stateNameIsUnique = function (stateName) {
+        if (this.getStates().some(function (element) {
+            console.log(element.getName() + " : " + stateName);
+            return element.getName() == stateName;
+        })) {
+            console.log("statename not unique");
+            return false;
+        }
+        return true;
+    };
+    StateMachine.prototype.validateState = function (state) {
+        return this.stateNameIsUnique(state.getName());
     };
     StateMachine.prototype.validateNextStates = function () {
         //check that each non-terminal state in the machine points to another state in the machine
@@ -58,22 +75,12 @@ var StateMachine = /** @class */ (function () {
             throw new Error("can not set states to empty");
         }
     };
-    StateMachine.prototype.getStartState = function () {
+    StateMachine.prototype.getStartStateName = function () {
         return this.startState;
     };
-    StateMachine.prototype.setStartState = function (startState) {
+    StateMachine.prototype.setStartStateName = function (startState) {
         this.startState = startState;
     };
-    /*
-        public setStartIdx(startIdx: number){
-            if (startIdx < 0 || startIdx > this.getStates().length -1) {
-                throw new Error("startIdx must be within array of states");
-            }
-            else{
-                this.startIdx = startIdx;
-            }
-        }
-    */
     StateMachine.prototype.getComment = function () {
         return this.comment;
     };
@@ -91,6 +98,13 @@ var StateMachine = /** @class */ (function () {
     };
     StateMachine.prototype.setTimeoutSeconds = function (timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
+    };
+    StateMachine.prototype.simulate = function () {
+        var _this = this;
+        var startState;
+        this.getStates().find(function (element) {
+            element.getName() == _this.getStartStateName();
+        });
     };
     return StateMachine;
 }());

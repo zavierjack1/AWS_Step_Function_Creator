@@ -18,9 +18,6 @@ var State_1 = require("./State");
 var TaskState = /** @class */ (function (_super) {
     __extends(TaskState, _super);
     function TaskState(name, resource, comment, nextState, endState) {
-        if (comment === void 0) { comment = ""; }
-        if (nextState === void 0) { nextState = ""; }
-        if (endState === void 0) { endState = false; }
         var _this = this;
         if (!resource)
             throw new Error("Task State must have a resource");

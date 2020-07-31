@@ -1,12 +1,13 @@
 import { State } from './State';
-import { runInThisContext } from 'vm';
+import { Simulate } from './Simulate';
 
-export class StateMachine {
+export class StateMachine implements Simulate{
     private states: State[] = [];
     private startState: string; 
     private comment: string;
     private version: string;
     private timeoutSeconds?: number;
+
     constructor(states: State[] = [], startState: string, comment: string = "", version: string="1.0", timeoutSeconds?: number) {
         if (states.length == 0) throw new Error("states must not be empty");
         this.states = states;
@@ -21,12 +22,32 @@ export class StateMachine {
     }
 
     public addState(state: State) : Boolean{
+        if (!this.validateState(state)) {
+            console.log("here!!!")
+            throw new Error("State names must be unique");
+        }
         this.getStates().push(state);
         return this.validateNextStates();
     }
     
     public validate(): Boolean{
         return this.validateNextStates();
+    }
+
+    public stateNameIsUnique(stateName : string) : Boolean {
+        if (this.getStates().some(element => { 
+            console.log(element.getName()+" : "+stateName);
+            return element.getName() == stateName;
+        })) {
+            console.log("statename not unique");
+            return false;
+        }
+        
+        return true;
+    }
+
+    public validateState(state: State): Boolean{
+        return this.stateNameIsUnique(state.getName());
     }
 
     public validateNextStates(): Boolean {
@@ -62,23 +83,14 @@ export class StateMachine {
         }
     }
 
-    public getStartState(){
+    public getStartStateName(){
         return this.startState;
     }
 
-    public setStartState(startState: string){
+    public setStartStateName(startState: string){
         this.startState = startState;
     }
-/*
-    public setStartIdx(startIdx: number){
-        if (startIdx < 0 || startIdx > this.getStates().length -1) {
-            throw new Error("startIdx must be within array of states");
-        }
-        else{
-            this.startIdx = startIdx;
-        }
-    }
-*/
+
     public getComment(): string {
         return this.comment;
     }
@@ -101,5 +113,13 @@ export class StateMachine {
 
     public setTimeoutSeconds(timeoutSeconds: number): void {
         this.timeoutSeconds = timeoutSeconds;
+    }
+
+    public simulate(){
+        let startState: State;
+        this.getStates().find(element => {
+            element.getName() == this.getStartStateName();
+        })
+
     }
 } 

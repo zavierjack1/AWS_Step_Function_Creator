@@ -1,9 +1,9 @@
 import { State } from "./State";
+import { Simulate } from "./Simulate";
 
-export class TaskState extends State{
-    //private resource: string;
+export class TaskState extends State implements Simulate{
     public resource: Function;
-    constructor (name: string, resource: Function, comment: string = "", nextState: string = "", endState: Boolean = false){
+    constructor (name: string, resource: Function, comment?: string, nextState?: string, endState?: Boolean){
         if (!resource) throw new Error("Task State must have a resource");
         super(name, "Task", comment, nextState, endState);
         this.resource = resource;

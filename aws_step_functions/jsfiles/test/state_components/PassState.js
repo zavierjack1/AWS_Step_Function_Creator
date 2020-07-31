@@ -30,35 +30,50 @@ describe('PassState class tests', function () {
     });
     context('Comment Tests', function () {
         it('should return state comment', function () {
-            chai_1.expect(new PassState_1.PassState("myName", "myComment").getComment()).to.equal("myComment");
+            chai_1.expect(new PassState_1.PassState("myName", "result", "myComment").getComment()).to.equal("myComment");
         });
         it('should return new state comment', function () {
-            var state = new PassState_1.PassState("myName", "myType", "myComment");
+            var state = new PassState_1.PassState("myName", "result", "myComment");
             state.setComment("newComment");
             chai_1.expect(state.getComment(), "newComment");
         });
     });
     context('NextState Tests', function () {
         it('should return the next state', function () {
-            chai_1.expect(new PassState_1.PassState("myName", "myComment", "myNextState").getNextState()).to.equal("myNextState");
+            chai_1.expect(new PassState_1.PassState("myName", "result", "myComment", "myNextState").getNextState()).to.equal("myNextState");
         });
         it('should return new next state', function () {
-            var state = new PassState_1.PassState("myName", "myComment", "myNextState");
+            var state = new PassState_1.PassState("myName", "result", "myComment", "myNextState");
             state.setNextState("newNextState");
             chai_1.expect(state.getNextState(), "newNextState");
         });
     });
     context('End Tests', function () {
         it('should return end state = false', function () {
-            chai_1.expect(new PassState_1.PassState("myName", "myComment").isEndState()).to.equal(false);
+            chai_1.expect(new PassState_1.PassState("myName", "result", "myComment").isEndState()).to.equal(false);
         });
         it('should set end state to true with constructor', function () {
-            chai_1.expect(new PassState_1.PassState("myName", "comment", "", true).isEndState()).to.equal(true);
+            chai_1.expect(new PassState_1.PassState("myName", "result", "comment", "", true).isEndState()).to.equal(true);
         });
         it('should set end state true with setState()', function () {
-            var state = new PassState_1.PassState("myName", "comment");
+            var state = new PassState_1.PassState("myName", "result", "comment");
             state.setEndState(true);
             chai_1.expect(state.isEndState()).equal(true);
+        });
+    });
+    context('Result Tests', function () {
+        it('should return result', function () {
+            chai_1.expect(new PassState_1.PassState("myName", "result", "myComment").getResult()).to.equal("result");
+        });
+        it('should set new result', function () {
+            var state = new PassState_1.PassState("myName", "result", "comment");
+            state.setResult("result2");
+            chai_1.expect(state.getResult()).equal("result2");
+        });
+    });
+    context('Simulate() Tests', function () {
+        it('should return result', function () {
+            chai_1.expect(new PassState_1.PassState("myName", "result", "myComment").simulate()).to.equal("result");
         });
     });
 });

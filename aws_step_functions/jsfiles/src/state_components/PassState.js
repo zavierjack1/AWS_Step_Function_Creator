@@ -17,12 +17,20 @@ exports.PassState = void 0;
 var State_1 = require("./State");
 var PassState = /** @class */ (function (_super) {
     __extends(PassState, _super);
-    function PassState(name, comment, nextState, endState) {
-        if (comment === void 0) { comment = ""; }
-        if (nextState === void 0) { nextState = ""; }
-        if (endState === void 0) { endState = false; }
-        return _super.call(this, name, "Pass", comment, nextState, endState) || this;
+    function PassState(name, result, comment, nextState, endState) {
+        var _this = _super.call(this, name, "Pass", comment, nextState, endState) || this;
+        _this.result = result;
+        return _this;
     }
+    PassState.prototype.getResult = function () {
+        return this.result;
+    };
+    PassState.prototype.setResult = function (result) {
+        this.result = result;
+    };
+    PassState.prototype.simulate = function () {
+        return this.getResult();
+    };
     return PassState;
 }(State_1.State));
 exports.PassState = PassState;

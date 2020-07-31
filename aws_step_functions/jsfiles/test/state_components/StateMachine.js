@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var State_1 = require("../../src/state_components/State");
+var PassState_1 = require("../../src/state_components/PassState");
 var StateMachine_1 = require("../../src/state_components/StateMachine");
 var chai_1 = require("chai");
 require("mocha");
@@ -24,16 +25,28 @@ describe('StateMachine Tests', function () {
             stateMachine.setStates(states);
             chai_1.expect(JSON.stringify(stateMachine.getStates())).to.equal(JSON.stringify(states));
         });
-        /*make test better!!!*/
-        it('should return start state', function () {
-            var stateMachine = new StateMachine_1.StateMachine([new State_1.State("myState", "myType")], "myState");
-            chai_1.expect(stateMachine.getStartState()).to.equal("myState");
+        it('should add state to machine', function () {
+            var states = [new State_1.State("myState", "myType")];
+            var stateMachine = new StateMachine_1.StateMachine(states, "myState");
+            stateMachine.addState(new State_1.State("myState2", "myType"));
+            chai_1.expect(JSON.stringify(stateMachine.getStates())).to.equal(JSON.stringify(states));
         });
-        /*make test better!!!*/
+        it('should fail to add non-unique stateName to machine', function () {
+            var states = [new State_1.State("myState", "myType")];
+            var stateMachine = new StateMachine_1.StateMachine(states, "myState");
+            stateMachine.addState(new State_1.State("myState2", "myType"));
+            chai_1.expect(function () { stateMachine.addState(new State_1.State("myState2", "myType")); }).to.Throw(Error, "State names must be unique");
+        });
+    });
+    context('startState tests', function () {
+        it('should return start state', function () {
+            var stateMachine = new StateMachine_1.StateMachine([new State_1.State("myState", "myType"), new State_1.State("myState2", "myType")], "myState");
+            chai_1.expect(stateMachine.getStartStateName()).to.equal("myState");
+        });
         it('should set start state', function () {
-            var stateMachine = new StateMachine_1.StateMachine([new State_1.State("myState", "myType"), new State_1.State("myState", "myType")], "myState");
-            stateMachine.setStartState("myState");
-            chai_1.expect(stateMachine.getStartState()).to.equal("myState");
+            var stateMachine = new StateMachine_1.StateMachine([new State_1.State("myState", "myType"), new State_1.State("myState2", "myType")], "myState");
+            stateMachine.setStartStateName("myState2");
+            chai_1.expect(stateMachine.getStartStateName()).to.equal("myState2");
         });
     });
     context('Comment Tests', function () {
@@ -88,6 +101,14 @@ describe('StateMachine Tests', function () {
             var validity = stateMachine.addState(new State_1.State("myState3", "myType", "", "myState2"));
             chai_1.expect(stateMachine.getStates().length).to.equal(3);
             chai_1.expect(validity).to.equal(true);
+        });
+    });
+    context('simulate statemachine', function () {
+        it('should simulate statemachine', function () {
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState")], "myState", "myComment", "2.0", 10);
+            var state = new State_1.State("EndState", "Succeed");
+            stateMachine.addState(state);
+            chai_1.expect(stateMachine.validate()).to.equal(true);
         });
     });
 });

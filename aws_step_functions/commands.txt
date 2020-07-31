@@ -1,1 +1,1 @@
-mocha -r ts-node/register TaskState.ts
+mocha -r ts-node/register StateMachine.ts

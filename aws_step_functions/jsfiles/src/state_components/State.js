@@ -2,13 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.State = void 0;
 var State = /** @class */ (function () {
-    function State(name, type, comment, nextState, endState, parentMachine) {
+    function State(name, type, comment, nextState, endState) {
         this.endState = false;
         if (this.validateName(name))
             this.name = name;
         else
             this.name = "";
-        this.type = type; //mandatory
+        this.type = type;
         if (comment)
             this.setComment(comment);
         if (nextState)
@@ -19,7 +19,7 @@ var State = /** @class */ (function () {
             this.setEndState(false);
     }
     State.prototype.validateName = function (name) {
-        if (name.length > 128)
+        if (name.trim().length == 0 || name.length > 128)
             throw new Error("name must be <= 128 char");
         return true;
     };
@@ -38,9 +38,9 @@ var State = /** @class */ (function () {
     State.prototype.getType = function () {
         return this.type;
     };
-    //public setType(type: string): void {
-    //    this.type = type;
-    //}
+    State.prototype.setType = function (type) {
+        this.type = type;
+    };
     State.prototype.getComment = function () {
         return this.comment;
     };

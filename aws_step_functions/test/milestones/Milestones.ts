@@ -9,18 +9,20 @@ describe('Milestones', function () {
   function () {
     it('should create a State Machine w/ a Pass state using State class', 
     function () {
-        let stateMachine = new StateMachine([new State("myState", "myType")], 0);
+        let stateMachine = new StateMachine([new State("myState", "Succeed")], "myState");
         expect(stateMachine.getStates()[0].getName()).to.equal("myState");
-        expect(stateMachine.getStates()[0].getType()).to.equal("myType");
-        expect(stateMachine.getStartIdx()).to.equal(0);
+        expect(stateMachine.getStates()[0].getType()).to.equal("Succeed");
+        expect(stateMachine.getStartStateName()).to.equal("myState");
+        expect(stateMachine.validate()).to.equal(true);
       });
 
     it('should create a State Machine w/ a Pass state using the PassState class', 
     function () {
-        let stateMachine = new StateMachine([new PassState("myState")], 0);
+        let stateMachine = new StateMachine([new PassState("myState", "result", "comment", "myState2"), new State("myState2", "Succeed")], "myState");
         expect(stateMachine.getStates()[0].getName()).to.equal("myState");
         expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
-        expect(stateMachine.getStartIdx()).to.equal(0);
+        expect(stateMachine.getStartStateName()).to.equal("myState");
+        expect(stateMachine.validate()).to.equal(true);
     });
   })
 });

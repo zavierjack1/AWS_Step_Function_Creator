@@ -7,16 +7,16 @@ export class State {
   private nextState?: string;
   private endState: Boolean = false;
   
-  constructor (name: string, type: string, comment?: string, nextState?: string, endState?: Boolean, parentMachine?: StateMachine){
+  constructor (name: string, type: string, comment?: string, nextState?: string, endState?: Boolean){
     if (this.validateName(name)) this.name = name; else this.name = "";
-    this.type = type; //mandatory
+    this.type = type;
     if (comment) this.setComment(comment);
     if (nextState) this.setNextState(nextState); 
     if (endState) this.setEndState(endState); else this.setEndState(false);
   }
 
   public validateName(name: string): Boolean{
-      if (name.length > 128) throw new Error("name must be <= 128 char");
+      if (name.trim().length == 0 || name.length > 128) throw new Error("name must be <= 128 char");
       return true;
   }
 
@@ -37,9 +37,9 @@ export class State {
       return this.type;
   }
 
-  //public setType(type: string): void {
-  //    this.type = type;
-  //}
+  private setType(type: string): void {
+      this.type = type;
+  }
 
   public getComment(): string | undefined {
       return this.comment;

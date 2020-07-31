@@ -33,11 +33,11 @@ describe('PassState class tests', function () {
 
   context('Comment Tests', function () {
     it('should return state comment', function () {
-        expect(new PassState("myName", "myComment").getComment()).to.equal("myComment");
+        expect(new PassState("myName", "result", "myComment").getComment()).to.equal("myComment");
     });
 
     it('should return new state comment', function () {
-        let state = new PassState("myName", "myType", "myComment");
+        let state = new PassState("myName", "result", "myComment");
         state.setComment("newComment"); 
         expect(state.getComment(), "newComment");
     });
@@ -45,11 +45,11 @@ describe('PassState class tests', function () {
 
   context('NextState Tests', function () {
     it('should return the next state', function () {
-        expect(new PassState("myName", "myComment", "myNextState").getNextState()).to.equal("myNextState");
+        expect(new PassState("myName", "result", "myComment", "myNextState").getNextState()).to.equal("myNextState");
     });
 
     it('should return new next state', function () {
-        let state = new PassState("myName", "myComment", "myNextState");
+        let state = new PassState("myName", "result", "myComment", "myNextState");
         state.setNextState("newNextState"); 
         expect(state.getNextState(), "newNextState");
     });
@@ -57,17 +57,35 @@ describe('PassState class tests', function () {
 
   context('End Tests', function () {
     it('should return end state = false', function () {
-        expect(new PassState("myName", "myComment").isEndState()).to.equal(false);
+        expect(new PassState("myName", "result", "myComment").isEndState()).to.equal(false);
     });
 
     it('should set end state to true with constructor', function () {
-        expect(new PassState("myName", "comment", "", true).isEndState()).to.equal(true);
+        expect(new PassState("myName", "result", "comment", "", true).isEndState()).to.equal(true);
     });
 
     it('should set end state true with setState()', function () {
-      let state = new PassState("myName", "comment");
+      let state = new PassState("myName", "result", "comment");
       state.setEndState(true);
       expect(state.isEndState()).equal(true);
+    });
+  })
+
+  context('Result Tests', function () {
+    it('should return result', function () {
+        expect(new PassState("myName", "result", "myComment").getResult()).to.equal("result");
+    });
+
+    it('should set new result', function () {
+      let state = new PassState("myName", "result", "comment");
+      state.setResult("result2");
+      expect(state.getResult()).equal("result2");
+    });
+  })
+
+  context('Simulate() Tests', function () {
+    it('should return result', function () {
+        expect(new PassState("myName", "result", "myComment").simulate()).to.equal("result");
     });
   })
 });
