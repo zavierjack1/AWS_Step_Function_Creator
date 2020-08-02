@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StateMachine = void 0;
+var PassState_1 = require("./PassState");
+var TaskState_1 = require("./TaskState");
 var StateMachine = /** @class */ (function () {
     function StateMachine(states, startState, comment, version, timeoutSeconds) {
         if (states === void 0) { states = []; }
@@ -20,7 +22,6 @@ var StateMachine = /** @class */ (function () {
     };
     StateMachine.prototype.addState = function (state) {
         if (!this.validateState(state)) {
-            console.log("here!!!");
             throw new Error("State names must be unique");
         }
         this.getStates().push(state);
@@ -31,10 +32,8 @@ var StateMachine = /** @class */ (function () {
     };
     StateMachine.prototype.stateNameIsUnique = function (stateName) {
         if (this.getStates().some(function (element) {
-            console.log(element.getName() + " : " + stateName);
             return element.getName() == stateName;
         })) {
-            console.log("statename not unique");
             return false;
         }
         return true;
@@ -53,7 +52,7 @@ var StateMachine = /** @class */ (function () {
                 &&
                     //the nextstate of the current state does not match any of the statenames in the machine
                     !(this_1.getStates().some(function matchesNextState(element) {
-                        return (states[idx].getNextState() == element.getName());
+                        return (states[idx].getNextStateName() == element.getName());
                     }))) {
                 returnVal = false;
             }
@@ -99,12 +98,38 @@ var StateMachine = /** @class */ (function () {
     StateMachine.prototype.setTimeoutSeconds = function (timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
     };
-    StateMachine.prototype.simulate = function () {
+    StateMachine.prototype.execute = function () {
         var _this = this;
-        var startState;
-        this.getStates().find(function (element) {
-            element.getName() == _this.getStartStateName();
+        var currentState;
+        var results = [];
+        currentState = this.getStates().find(function (element) {
+            return element.getName() == _this.getStartStateName();
         });
+        while (true) {
+            if (currentState instanceof PassState_1.PassState || currentState instanceof TaskState_1.TaskState)
+                results.push(currentState.execute());
+            currentState = this.getStates().find(function (element) {
+                return (currentState) ? element.getName() == currentState.getNextStateName() : false;
+            });
+            if (currentState == undefined || currentState.isTerminal())
+                break;
+        }
+        return results;
+    };
+    StateMachine.prototype.toString = function () {
+        var json = '{'
+            + '"StartAt":"' + this.getStartStateName() + '"'
+            + ', "Version":"' + this.getVersion() + '"'
+            + ((this.getComment().trim()) ? ', "Comment":"' + this.getComment() + '"' : '')
+            + ((this.getTimeoutSeconds()) ? ', "TimeoutSeconds":' + this.getTimeoutSeconds() : '');
+        //+"}";
+        for (var _i = 0, _a = this.getStates(); _i < _a.length; _i++) {
+            var state = _a[_i];
+            json = json + ", " + state.toString();
+            //console.log(state.toJSON());
+        }
+        json = json + "}";
+        return json;
     };
     return StateMachine;
 }());

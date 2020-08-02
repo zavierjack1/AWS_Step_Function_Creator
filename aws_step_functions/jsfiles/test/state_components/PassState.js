@@ -40,12 +40,12 @@ describe('PassState class tests', function () {
     });
     context('NextState Tests', function () {
         it('should return the next state', function () {
-            chai_1.expect(new PassState_1.PassState("myName", "result", "myComment", "myNextState").getNextState()).to.equal("myNextState");
+            chai_1.expect(new PassState_1.PassState("myName", "result", "myComment", "myNextState").getNextStateName()).to.equal("myNextState");
         });
         it('should return new next state', function () {
             var state = new PassState_1.PassState("myName", "result", "myComment", "myNextState");
-            state.setNextState("newNextState");
-            chai_1.expect(state.getNextState(), "newNextState");
+            state.setNextStateName("newNextState");
+            chai_1.expect(state.getNextStateName(), "newNextState");
         });
     });
     context('End Tests', function () {
@@ -73,7 +73,20 @@ describe('PassState class tests', function () {
     });
     context('Simulate() Tests', function () {
         it('should return result', function () {
-            chai_1.expect(new PassState_1.PassState("myName", "result", "myComment").simulate()).to.equal("result");
+            var state = new PassState_1.PassState("myName", "result", "myComment");
+            var result = state.execute();
+            if (result)
+                chai_1.expect(result).to.equal("result");
+            else
+                chai_1.expect(1).to.equal(2);
+        });
+    });
+    context('toString test', function () {
+        it('should return json version of state', function () {
+            chai_1.expect(new PassState_1.PassState("myName", "myResult", "myComment").toString()).to.equal('"myName":{"Type":"Pass","Comment":"myComment","Result":"myResult"}');
+        });
+        it('should return json version of state', function () {
+            chai_1.expect(new PassState_1.PassState("myName", "myResult").toString()).to.equal('"myName":{"Type":"Pass","Result":"myResult"}');
         });
     });
 });

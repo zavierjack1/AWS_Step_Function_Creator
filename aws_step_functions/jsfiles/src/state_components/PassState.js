@@ -28,8 +28,18 @@ var PassState = /** @class */ (function (_super) {
     PassState.prototype.setResult = function (result) {
         this.result = result;
     };
-    PassState.prototype.simulate = function () {
+    PassState.prototype.execute = function () {
         return this.getResult();
+    };
+    PassState.prototype.toString = function () {
+        return '"' + this.getName() + '":'
+            + '{'
+            + '"Type":"' + this.getType() + '"'
+            + ((this.getComment()) ? ',"Comment":"' + this.getComment() + '"' : '')
+            + ((this.getNextStateName()) ? ',"Next":"' + this.getNextStateName() + '"' : '')
+            + ((this.isEndState()) ? ',"End":' + this.isEndState() : '')
+            + ((this.getResult()) ? ',"Result":"' + this.getResult() + '"' : '')
+            + '}';
     };
     return PassState;
 }(State_1.State));

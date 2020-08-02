@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.State = void 0;
 var State = /** @class */ (function () {
-    function State(name, type, comment, nextState, endState) {
+    function State(name, type, comment, nextStateName, endState) {
         this.endState = false;
         if (this.validateName(name))
             this.name = name;
@@ -11,8 +11,8 @@ var State = /** @class */ (function () {
         this.type = type;
         if (comment)
             this.setComment(comment);
-        if (nextState)
-            this.setNextState(nextState);
+        if (nextStateName)
+            this.setNextStateName(nextStateName);
         if (endState)
             this.setEndState(endState);
         else
@@ -23,8 +23,8 @@ var State = /** @class */ (function () {
             throw new Error("name must be <= 128 char");
         return true;
     };
-    State.prototype.validateNextState = function () {
-        if (!this.isTerminal || this.getNextState() != "")
+    State.prototype.validatenextStateName = function () {
+        if (!this.isTerminal || this.getNextStateName() != "")
             return true;
         return false;
     };
@@ -47,11 +47,11 @@ var State = /** @class */ (function () {
     State.prototype.setComment = function (comment) {
         this.comment = comment;
     };
-    State.prototype.getNextState = function () {
-        return this.nextState;
+    State.prototype.getNextStateName = function () {
+        return this.nextStateName;
     };
-    State.prototype.setNextState = function (nextState) {
-        this.nextState = nextState;
+    State.prototype.setNextStateName = function (nextStateName) {
+        this.nextStateName = nextStateName;
     };
     State.prototype.isEndState = function () {
         return this.endState;
@@ -71,6 +71,15 @@ var State = /** @class */ (function () {
         if (this.isEndState() || this.getType() == "Succeed" || this.getType() == "Fail")
             return true;
         return false;
+    };
+    State.prototype.toString = function () {
+        return '"' + this.getName() + '":'
+            + '{'
+            + '"Type":"' + this.getType() + '"'
+            + ((this.getComment()) ? ',"Comment":"' + this.getComment() + '"' : '')
+            + ((this.getNextStateName()) ? ',"Next":' + this.getNextStateName() : '')
+            + ((this.isEndState()) ? ', "End":"' + this.isEndState() + '"' : '')
+            + '}';
     };
     return State;
 }());

@@ -1,5 +1,6 @@
 import { State }  from '../../src/state_components/State';
 import { PassState }  from '../../src/state_components/PassState';
+import { TaskState }  from '../../src/state_components/TaskState';
 import { StateMachine }  from '../../src/state_components/StateMachine';
 import { expect, assert } from 'chai';
 import 'mocha';
@@ -118,12 +119,43 @@ describe('StateMachine Tests', function () {
     });
   });
 
-  context('simulate statemachine', function () {
-    it('should simulate statemachine', function () {
+  context('execute statemachine', function () {
+    it('should simulate statemachine with single pass state', function () {
+      let stateMachine = new StateMachine([new PassState("myState", "result", "xyz", "", true)], "myState", "myComment", "2.0", 10);
+      expect(stateMachine.validate()).to.equal(true);
+      expect(stateMachine.execute()[0]).to.equal("result");
+    });
+
+    it('should simulate statemachine with single pass state and succeed state', function () {
       let stateMachine = new StateMachine([new PassState("myState", "result", "xyz", "EndState")], "myState", "myComment", "2.0", 10);
       let state = new State("EndState", "Succeed");
       stateMachine.addState(state);
       expect(stateMachine.validate()).to.equal(true);
+      expect(stateMachine.execute()[0]).to.equal("result");
+    });
+
+    it('should simulate statemachine with a single task state', function () {
+      let resource = function (){
+        return 1+1;
+      }
+      let stateMachine = new StateMachine([new TaskState("myState", resource, "xyz", "EndState")], "myState", "myComment", "2.0", 10);
+      let state = new State("EndState", "Succeed");
+      stateMachine.addState(state);
+      expect(stateMachine.validate()).to.equal(true);
+      expect(stateMachine.execute()[0]).to.equal(2);
+    });
+  })
+
+
+  context('toString statemachine', function () {
+    it('should print statemachine', function () {
+      let stateMachine = new StateMachine([new PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);
+      let state = new State("EndState", "Succeed");
+      stateMachine.addState(state);
+      expect(JSON.parse(stateMachine.toString())['myState']['Type']).to.equal("Pass");
+      expect(JSON.parse(stateMachine.toString())['myState']['Result']).to.equal("result");
+      expect(JSON.parse(stateMachine.toString())['myState']['Comment']).to.equal("xyz");
+      expect(JSON.parse(stateMachine.toString())['myState']['End']).to.equal(true);
     });
   })
 });

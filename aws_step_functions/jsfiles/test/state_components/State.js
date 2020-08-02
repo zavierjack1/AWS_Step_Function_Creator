@@ -38,12 +38,12 @@ describe('State class tests', function () {
     });
     context('NextState Tests', function () {
         it('should return the next state', function () {
-            chai_1.expect(new State_1.State("myName", "myType", "myComment", "myNextState").getNextState()).to.equal("myNextState");
+            chai_1.expect(new State_1.State("myName", "myType", "myComment", "myNextState").getNextStateName()).to.equal("myNextState");
         });
         it('should return new next state', function () {
             var state = new State_1.State("myName", "myType", "myComment", "myNextState");
-            state.setNextState("newNextState");
-            chai_1.expect(state.getNextState()).to.equal("newNextState");
+            state.setNextStateName("newNextState");
+            chai_1.expect(state.getNextStateName()).to.equal("newNextState");
         });
     });
     context('End Tests', function () {
@@ -60,6 +60,14 @@ describe('State class tests', function () {
             var state = new State_1.State("myName", "Pass");
             state.setEndState(true);
             chai_1.expect(state.isEndState()).to.equal(true);
+        });
+    });
+    context('toString test', function () {
+        it('should return json version of state', function () {
+            chai_1.expect(new State_1.State("myName", "myType", "myComment").toString()).to.equal('"myName":{"Type":"myType","Comment":"myComment"}');
+        });
+        it('should return json version of state', function () {
+            chai_1.expect(new State_1.State("myName", "myType").toString()).to.equal('"myName":{"Type":"myType"}');
         });
     });
 });

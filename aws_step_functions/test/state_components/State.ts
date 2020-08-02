@@ -43,13 +43,13 @@ describe('State class tests', function () {
 
   context('NextState Tests', function () {
     it('should return the next state', function () {
-      expect(new State("myName", "myType", "myComment", "myNextState").getNextState()).to.equal("myNextState");
+      expect(new State("myName", "myType", "myComment", "myNextState").getNextStateName()).to.equal("myNextState");
     });
 
     it('should return new next state', function () {
       let state = new State("myName", "myType", "myComment", "myNextState");
-      state.setNextState("newNextState"); 
-      expect(state.getNextState()).to.equal("newNextState");
+      state.setNextStateName("newNextState"); 
+      expect(state.getNextStateName()).to.equal("newNextState");
     });
   });
 
@@ -70,6 +70,16 @@ describe('State class tests', function () {
       let state = new State("myName", "Pass");
       state.setEndState(true);
       expect(state.isEndState()).to.equal(true);
+    });
+  })
+
+  context('toString test', function () {
+    it('should return json version of state', function () {
+      expect(new State("myName", "myType", "myComment").toString()).to.equal('"myName":{"Type":"myType","Comment":"myComment"}');
+    });
+
+    it('should return json version of state', function () {
+      expect(new State("myName", "myType").toString()).to.equal('"myName":{"Type":"myType"}');
     });
   })
 });

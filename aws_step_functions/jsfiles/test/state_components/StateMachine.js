@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var State_1 = require("../../src/state_components/State");
 var PassState_1 = require("../../src/state_components/PassState");
+var TaskState_1 = require("../../src/state_components/TaskState");
 var StateMachine_1 = require("../../src/state_components/StateMachine");
 var chai_1 = require("chai");
 require("mocha");
@@ -103,12 +104,39 @@ describe('StateMachine Tests', function () {
             chai_1.expect(validity).to.equal(true);
         });
     });
-    context('simulate statemachine', function () {
-        it('should simulate statemachine', function () {
+    context('execute statemachine', function () {
+        it('should simulate statemachine with single pass state', function () {
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "", true)], "myState", "myComment", "2.0", 10);
+            chai_1.expect(stateMachine.validate()).to.equal(true);
+            chai_1.expect(stateMachine.execute()[0]).to.equal("result");
+        });
+        it('should simulate statemachine with single pass state and succeed state', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState")], "myState", "myComment", "2.0", 10);
             var state = new State_1.State("EndState", "Succeed");
             stateMachine.addState(state);
             chai_1.expect(stateMachine.validate()).to.equal(true);
+            chai_1.expect(stateMachine.execute()[0]).to.equal("result");
+        });
+        it('should simulate statemachine with a single task state', function () {
+            var resource = function () {
+                return 1 + 1;
+            };
+            var stateMachine = new StateMachine_1.StateMachine([new TaskState_1.TaskState("myState", resource, "xyz", "EndState")], "myState", "myComment", "2.0", 10);
+            var state = new State_1.State("EndState", "Succeed");
+            stateMachine.addState(state);
+            chai_1.expect(stateMachine.validate()).to.equal(true);
+            chai_1.expect(stateMachine.execute()[0]).to.equal(2);
+        });
+    });
+    context('toString statemachine', function () {
+        it('should print statemachine', function () {
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);
+            var state = new State_1.State("EndState", "Succeed");
+            stateMachine.addState(state);
+            chai_1.expect(JSON.parse(stateMachine.toString())['myState']['Type']).to.equal("Pass");
+            chai_1.expect(JSON.parse(stateMachine.toString())['myState']['Result']).to.equal("result");
+            chai_1.expect(JSON.parse(stateMachine.toString())['myState']['Comment']).to.equal("xyz");
+            chai_1.expect(JSON.parse(stateMachine.toString())['myState']['End']).to.equal(true);
         });
     });
 });

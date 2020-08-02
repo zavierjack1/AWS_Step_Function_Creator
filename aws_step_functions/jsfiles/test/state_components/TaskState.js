@@ -67,15 +67,15 @@ describe('TaskState class tests', function () {
             var resource = function () {
                 console.log("helloworld");
             };
-            chai_1.expect(new TaskState_1.TaskState("myName", resource, "myComment", "myNextState").getNextState()).equal("myNextState");
+            chai_1.expect(new TaskState_1.TaskState("myName", resource, "myComment", "myNextState").getNextStateName()).equal("myNextState");
         });
         it('should return new next state', function () {
             var resource = function () {
                 console.log("helloworld");
             };
             var state = new TaskState_1.TaskState("myName", resource, "myComment", "myNextState");
-            state.setNextState("newNextState");
-            chai_1.expect(state.getNextState()).to.equal("newNextState");
+            state.setNextStateName("newNextState");
+            chai_1.expect(state.getNextStateName()).to.equal("newNextState");
         });
     });
     context('EndStates Tests', function () {
@@ -115,7 +115,7 @@ describe('TaskState class tests', function () {
             };
             var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
             taskState.setResource(resource);
-            chai_1.expect(taskState.simulate()).to.equal("test");
+            chai_1.expect(taskState.execute()).to.equal("test");
         });
         it('should return undefined', function () {
             var resource = function () {
@@ -123,7 +123,14 @@ describe('TaskState class tests', function () {
             };
             var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
             taskState.setResource(resource);
-            chai_1.expect(taskState.simulate()).to.equal(undefined);
+            chai_1.expect(taskState.execute()).to.equal(undefined);
+        });
+    });
+    context('toString test', function () {
+        it('should return json of task state', function () {
+            var resource = function () { return 1 + 1; };
+            var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
+            chai_1.expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment"}');
         });
     });
 });

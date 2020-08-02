@@ -4,14 +4,14 @@ export class State {
   private name: string;
   private type: string;
   private comment?: string;
-  private nextState?: string;
+  private nextStateName?: string;
   private endState: Boolean = false;
   
-  constructor (name: string, type: string, comment?: string, nextState?: string, endState?: Boolean){
+  constructor (name: string, type: string, comment?: string, nextStateName?: string, endState?: Boolean){
     if (this.validateName(name)) this.name = name; else this.name = "";
     this.type = type;
     if (comment) this.setComment(comment);
-    if (nextState) this.setNextState(nextState); 
+    if (nextStateName) this.setNextStateName(nextStateName); 
     if (endState) this.setEndState(endState); else this.setEndState(false);
   }
 
@@ -20,8 +20,8 @@ export class State {
       return true;
   }
 
-  public validateNextState() : Boolean {
-      if (!this.isTerminal || this.getNextState() != "") return true;
+  public validatenextStateName() : Boolean {
+      if (!this.isTerminal || this.getNextStateName() != "") return true;
       return false;
   }
 
@@ -49,12 +49,12 @@ export class State {
       this.comment = comment;
   }
 
-  public getNextState(): string | undefined{
-      return this.nextState;
+  public getNextStateName(): string | undefined{
+      return this.nextStateName;
   }
 
-  public setNextState(nextState: string): void {
-      this.nextState = nextState;
+  public setNextStateName(nextStateName: string): void {
+      this.nextStateName = nextStateName;
   }
 
   public isEndState(): Boolean{
@@ -76,5 +76,15 @@ export class State {
   public isTerminal(): Boolean{
       if (this.isEndState() || this.getType() == "Succeed" || this.getType() == "Fail") return true;
       return false; 
+  }
+
+  public toString() : string {
+    return '"'+this.getName()+'":'
+      +'{'
+        +'"Type":"'+this.getType()+'"'
+        + ( (this.getComment()) ? ',"Comment":"'+this.getComment()+'"': '') 
+        + ( (this.getNextStateName()) ? ',"Next":'+this.getNextStateName() : '') 
+        + ( (this.isEndState()) ? ', "End":"'+this.isEndState()+'"' : '') 
+      + '}';
   }
 }

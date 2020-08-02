@@ -31,8 +31,18 @@ var TaskState = /** @class */ (function (_super) {
     TaskState.prototype.getResource = function () {
         return this.resource;
     };
-    TaskState.prototype.simulate = function () {
+    TaskState.prototype.execute = function () {
         return this.getResource()();
+    };
+    TaskState.prototype.toString = function () {
+        return '"' + this.getName() + '":'
+            + '{'
+            + '"Type":"' + this.getType() + '"'
+            + ',"Resource":"' + this.getResource() + '"'
+            + ((this.getComment()) ? ',"Comment":"' + this.getComment() + '"' : '')
+            + ((this.getNextStateName()) ? ',"Next":"' + this.getNextStateName() + '"' : '')
+            + ((this.isEndState()) ? ',"End":' + this.isEndState() : '')
+            + '}';
     };
     return TaskState;
 }(State_1.State));

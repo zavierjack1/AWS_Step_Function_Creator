@@ -45,13 +45,13 @@ describe('PassState class tests', function () {
 
   context('NextState Tests', function () {
     it('should return the next state', function () {
-        expect(new PassState("myName", "result", "myComment", "myNextState").getNextState()).to.equal("myNextState");
+        expect(new PassState("myName", "result", "myComment", "myNextState").getNextStateName()).to.equal("myNextState");
     });
 
     it('should return new next state', function () {
         let state = new PassState("myName", "result", "myComment", "myNextState");
-        state.setNextState("newNextState"); 
-        expect(state.getNextState(), "newNextState");
+        state.setNextStateName("newNextState"); 
+        expect(state.getNextStateName(), "newNextState");
     });
   });
 
@@ -85,7 +85,20 @@ describe('PassState class tests', function () {
 
   context('Simulate() Tests', function () {
     it('should return result', function () {
-        expect(new PassState("myName", "result", "myComment").simulate()).to.equal("result");
+        let state = new PassState("myName", "result", "myComment");
+        let result = state.execute();
+        if (result) expect(result).to.equal("result");
+        else expect(1).to.equal(2);
+    });
+  })
+
+  context('toString test', function () {
+    it('should return json version of state', function () {
+      expect(new PassState("myName", "myResult", "myComment").toString()).to.equal('"myName":{"Type":"Pass","Comment":"myComment","Result":"myResult"}');
+    });
+
+    it('should return json version of state', function () {
+      expect(new PassState("myName", "myResult").toString()).to.equal('"myName":{"Type":"Pass","Result":"myResult"}');
     });
   })
 });

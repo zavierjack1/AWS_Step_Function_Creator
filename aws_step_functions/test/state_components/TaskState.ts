@@ -72,7 +72,7 @@ describe('TaskState class tests', function () {
       let resource = function () {
         console.log("helloworld");
       }
-      expect(new TaskState("myName", resource, "myComment", "myNextState").getNextState()).equal("myNextState");
+      expect(new TaskState("myName", resource, "myComment", "myNextState").getNextStateName()).equal("myNextState");
     });
 
     it('should return new next state', function () {
@@ -80,8 +80,8 @@ describe('TaskState class tests', function () {
         console.log("helloworld");
       }
       let state = new TaskState("myName", resource, "myComment", "myNextState");
-      state.setNextState("newNextState"); 
-      expect(state.getNextState()).to.equal("newNextState");
+      state.setNextStateName("newNextState"); 
+      expect(state.getNextStateName()).to.equal("newNextState");
     });
   });
  
@@ -126,7 +126,7 @@ describe('TaskState class tests', function () {
       }
       let taskState = new TaskState("myName", resource, "myComment");
       taskState.setResource(resource);
-      expect(taskState.simulate()).to.equal("test");
+      expect(taskState.execute()).to.equal("test");
     });
 
     it('should return undefined', function () {
@@ -135,7 +135,15 @@ describe('TaskState class tests', function () {
       }
       let taskState = new TaskState("myName", resource, "myComment");
       taskState.setResource(resource);
-      expect(taskState.simulate()).to.equal(undefined);
+      expect(taskState.execute()).to.equal(undefined);
+    });
+  })
+
+  context('toString test', function () {
+    it('should return json of task state', function () {
+      let resource = function (){ return 1 + 1; }
+      let taskState = new TaskState("myName", resource, "myComment");
+      expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment"}');
     });
   })
 });
