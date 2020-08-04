@@ -83,12 +83,11 @@ describe('PassState class tests', function () {
     });
   })
 
-  context('Simulate() Tests', function () {
+  context('Result and Execution Tests', function () {
     it('should return result', function () {
         let state = new PassState("myName", "result", "myComment");
         let result = state.execute();
-        if (result) expect(result).to.equal("result");
-        else expect(1).to.equal(2);
+        expect(result).to.equal("result");
     });
   })
 
@@ -99,6 +98,14 @@ describe('PassState class tests', function () {
 
     it('should return json version of state', function () {
       expect(new PassState("myName", "myResult").toString()).to.equal('"myName":{"Type":"Pass","Result":"myResult"}');
+    });
+  })
+
+  context('InputPath Test', function () {
+    it('should set and get inputPath', function () {
+      let state = new PassState("myName", "myResult", "myComment");
+      state.setInputPath("$.store.book[*].author");
+      expect(state.getInputPath()).to.equal("$.store.book[*].author");
     });
   })
 });

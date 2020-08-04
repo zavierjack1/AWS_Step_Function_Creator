@@ -6,17 +6,19 @@ import { TaskState } from './TaskState';
 export class StateMachine implements Executable{
   private states: State[] = [];
   private startState: string; 
-  private comment: string;
+  private comment?: string;
   private version: string;
   private timeoutSeconds?: number;
+  private input?: string;
 
-  constructor(states: State[] = [], startState: string, comment: string = "", version: string="1.0", timeoutSeconds?: number) {
+  constructor(states: State[] = [], startState: string, comment?: string, version: string="1.0", timeoutSeconds?: number, input?: string) {
     if (states.length == 0) throw new Error("states must not be empty");
     this.states = states;
     this.startState = startState;
-    this.comment = comment;
+    this.setComment(comment);
     this.version = version;
-    this.timeoutSeconds = timeoutSeconds;
+    this.setTimeoutSeconds(timeoutSeconds);
+    this.setInput(input);
   }
 
   public getStates(): State[]{
@@ -91,10 +93,10 @@ export class StateMachine implements Executable{
   }
 
   public getComment(): string {
-      return this.comment;
+      return this.comment ? this.comment : "";
   }
 
-  public setComment(comment: string): void {
+  public setComment(comment: string | undefined): void {
       this.comment = comment;
   }
 
@@ -106,12 +108,21 @@ export class StateMachine implements Executable{
       this.version = version;
   }
 
-  public getTimeoutSeconds(): number|undefined {
+  public getTimeoutSeconds(): number | undefined {
       return this.timeoutSeconds;
   }
 
-  public setTimeoutSeconds(timeoutSeconds: number): void {
+  public setTimeoutSeconds(timeoutSeconds: number | undefined): void {
       this.timeoutSeconds = timeoutSeconds;
+  }
+
+  public getInput(): string | undefined{
+    return this.input;
+  }
+
+  public setInput(input: string | undefined): void {
+    //if json invalid parse will throw SyntaxError
+    if (input && JSON.parse(input)) this.input = input;
   }
 
   public execute() : any[]{
@@ -122,7 +133,7 @@ export class StateMachine implements Executable{
     })
 
     while (true){
-      if (currentState instanceof PassState || currentState instanceof TaskState) results.push(currentState.execute());
+      if (currentState instanceof PassState || currentState instanceof TaskState) results.push(currentState.execute(this.getInput()));
 
       currentState = this.getStates().find(element => {
         return (currentState) ? element.getName() == currentState.getNextStateName() : false;
@@ -143,7 +154,6 @@ export class StateMachine implements Executable{
     
     for (let state of this.getStates()){
         json = json+", "+state.toString();
-        //console.log(state.toJSON());
     }
     json = json+"}";
     return json;

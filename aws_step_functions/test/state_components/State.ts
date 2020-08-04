@@ -82,4 +82,22 @@ describe('State class tests', function () {
       expect(new State("myName", "myType").toString()).to.equal('"myName":{"Type":"myType"}');
     });
   })
+
+  context('InputPath Test', function () {
+    it('should set and get inputPath', function () {
+      let state = new State("myState", "myType", "comment", "", true);
+      state.setInputPath("$.store.book[*].author");
+      expect(state.getInputPath()).to.equal("$.store.book[*].author");
+    });
+  })
+  
+  context('toString test', function () {
+    it('should return json version of state', function () {
+      expect(new State("myName", "myType", "myComment").toString()).to.equal('"myName":{"Type":"myType","Comment":"myComment"}');
+    });
+
+    it('should return json version of state', function () {
+      expect(new State("myName", "myType").toString()).to.equal('"myName":{"Type":"myType"}');
+    });
+  })
 });

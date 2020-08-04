@@ -1,9 +1,16 @@
 import { State } from "./State";
 import { Executable } from "./Executable";
+var JsonPath = require('jsonpath');
 
 export class TaskState extends State implements Executable{
     public resource: Function;
-    constructor (name: string, resource: Function, comment?: string, nextState?: string, endState?: Boolean){
+    constructor (
+      name: string, 
+      resource: Function, 
+      comment?: string, 
+      nextState?: string, 
+      endState?: Boolean
+    ){
       if (!resource) throw new Error("Task State must have a resource");
       super(name, "Task", comment, nextState, endState);
       this.resource = resource;
@@ -17,7 +24,12 @@ export class TaskState extends State implements Executable{
       return this.resource;
     }
 
-    public execute() {
+    public execute(rawInput?: string) {
+      if (rawInput){
+        let output = this.getResource()(JsonPath.query(JSON.parse(rawInput), this.getInputPath()));
+
+        //if (this.getOutputPath()) 
+      } 
       return this.getResource()();
     }
 

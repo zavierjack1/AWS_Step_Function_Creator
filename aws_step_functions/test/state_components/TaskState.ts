@@ -119,7 +119,7 @@ describe('TaskState class tests', function () {
     });
   })
 
-  context('Resource Tests', function () {
+  context('Resource & Execution Tests', function () {
     it('should return "test"', function () {
       let resource = function (){
         return "test";
@@ -137,6 +137,66 @@ describe('TaskState class tests', function () {
       taskState.setResource(resource);
       expect(taskState.execute()).to.equal(undefined);
     });
+
+    it('should fail to validate json', function () {
+      let resource = function (x: string){
+        return x;
+      }
+      let taskState = new TaskState("myName", resource, "myComment");
+      let json = 
+        `invalidJson`;
+      taskState.setResource(resource);
+      taskState.setInputPath("$.store.book[*].author");
+      expect(function() {taskState.execute(json)}).to.Throw(SyntaxError);
+    });
+
+    it('should return list of authors from json', function () {
+      let resource = function (x: string){
+        return x;
+      }
+      let taskState = new TaskState("myName", resource, "myComment");
+      let json = 
+        `{
+          "store": {
+              "book": [
+                  {
+                      "category": "reference",
+                      "author": "Nigel Rees",
+                      "title": "Sayings of the Century",
+                      "price": 8.95
+                  },
+                  {
+                      "category": "fiction",
+                      "author": "Evelyn Waugh",
+                      "title": "Sword of Honour",
+                      "price": 12.99
+                  },
+                  {
+                      "category": "fiction",
+                      "author": "Herman Melville",
+                      "title": "Moby Dick",
+                      "isbn": "0-553-21311-3",
+                      "price": 8.99
+                  },
+                  {
+                      "category": "fiction",
+                      "author": "J. R. R. Tolkien",
+                      "title": "The Lord of the Rings",
+                      "isbn": "0-395-19395-8",
+                      "price": 22.99
+                  }
+              ],
+              "bicycle": {
+                  "color": "red",
+                  "price": 19.95
+              }
+          },
+          "expensive": 10
+        }`;
+      taskState.setResource(resource);
+      taskState.setInputPath("$.store.book[*].author");
+      expect(taskState.execute(json)).to.eql([ 'Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien' ]);
+    });
   })
 
   context('toString test', function () {
@@ -144,6 +204,15 @@ describe('TaskState class tests', function () {
       let resource = function (){ return 1 + 1; }
       let taskState = new TaskState("myName", resource, "myComment");
       expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment"}');
+    });
+  })
+
+  context('InputPath Test', function () {
+    it('should set and get inputPath', function () {
+      let resource = function (){ return 1 + 1; }
+      let state = new TaskState("myName", resource, "myComment");
+      state.setInputPath("$.store.book[*].author");
+      expect(state.getInputPath()).to.equal("$.store.book[*].author");
     });
   })
 });

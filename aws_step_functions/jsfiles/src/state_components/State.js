@@ -2,21 +2,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.State = void 0;
 var State = /** @class */ (function () {
-    function State(name, type, comment, nextStateName, endState) {
+    function State(name, type, comment, nextStateName, endState, inputPath, outputPath) {
         this.endState = false;
         if (this.validateName(name))
             this.name = name;
         else
             this.name = "";
         this.type = type;
-        if (comment)
-            this.setComment(comment);
-        if (nextStateName)
-            this.setNextStateName(nextStateName);
+        this.setComment(comment);
+        this.setNextStateName(nextStateName);
         if (endState)
             this.setEndState(endState);
         else
-            this.setEndState(false);
+            endState = false;
+        this.setInputPath(inputPath);
+        this.setOutputPath(outputPath);
     }
     State.prototype.validateName = function (name) {
         if (name.trim().length == 0 || name.length > 128)
@@ -71,6 +71,21 @@ var State = /** @class */ (function () {
         if (this.isEndState() || this.getType() == "Succeed" || this.getType() == "Fail")
             return true;
         return false;
+    };
+    State.prototype.getInputPath = function () {
+        return this.inputPath;
+    };
+    State.prototype.setInputPath = function (inputPath) {
+        //if json invalid parse will throw SyntaxError
+        this.inputPath = inputPath;
+    };
+    State.prototype.getOutputPath = function () {
+        return this.outputPath;
+    };
+    State.prototype.setOutputPath = function (outputPath) {
+        //if json invalid parse will throw SyntaxError
+        if (outputPath && JSON.parse(outputPath))
+            this.outputPath = outputPath;
     };
     State.prototype.toString = function () {
         return '"' + this.getName() + '":'

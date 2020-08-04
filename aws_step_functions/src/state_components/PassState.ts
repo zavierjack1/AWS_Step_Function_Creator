@@ -3,8 +3,15 @@ import { Executable } from "./Executable";
 
 export class PassState extends State implements Executable{
   private result?: string;
-  constructor (name: string, result?: string, comment?: string, nextState?: string, endState?: Boolean){
-    super(name, "Pass", comment, nextState, endState);
+  constructor (
+    name: string, 
+    result?: string, 
+    comment?: string, 
+    nextState?: string, 
+    endState?: Boolean, 
+    input?: string
+  ){
+    super(name, "Pass", comment, nextState, endState, input);
     this.result = result;
   }
 

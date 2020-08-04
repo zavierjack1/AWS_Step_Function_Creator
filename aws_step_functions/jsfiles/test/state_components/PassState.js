@@ -71,14 +71,11 @@ describe('PassState class tests', function () {
             chai_1.expect(state.getResult()).equal("result2");
         });
     });
-    context('Simulate() Tests', function () {
+    context('Result and Execution Tests', function () {
         it('should return result', function () {
             var state = new PassState_1.PassState("myName", "result", "myComment");
             var result = state.execute();
-            if (result)
-                chai_1.expect(result).to.equal("result");
-            else
-                chai_1.expect(1).to.equal(2);
+            chai_1.expect(result).to.equal("result");
         });
     });
     context('toString test', function () {
@@ -87,6 +84,13 @@ describe('PassState class tests', function () {
         });
         it('should return json version of state', function () {
             chai_1.expect(new PassState_1.PassState("myName", "myResult").toString()).to.equal('"myName":{"Type":"Pass","Result":"myResult"}');
+        });
+    });
+    context('InputPath Test', function () {
+        it('should set and get inputPath', function () {
+            var state = new PassState_1.PassState("myName", "myResult", "myComment");
+            state.setInputPath("$.store.book[*].author");
+            chai_1.expect(state.getInputPath()).to.equal("$.store.book[*].author");
         });
     });
 });

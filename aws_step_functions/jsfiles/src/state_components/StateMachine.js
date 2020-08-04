@@ -4,18 +4,18 @@ exports.StateMachine = void 0;
 var PassState_1 = require("./PassState");
 var TaskState_1 = require("./TaskState");
 var StateMachine = /** @class */ (function () {
-    function StateMachine(states, startState, comment, version, timeoutSeconds) {
+    function StateMachine(states, startState, comment, version, timeoutSeconds, input) {
         if (states === void 0) { states = []; }
-        if (comment === void 0) { comment = ""; }
         if (version === void 0) { version = "1.0"; }
         this.states = [];
         if (states.length == 0)
             throw new Error("states must not be empty");
         this.states = states;
         this.startState = startState;
-        this.comment = comment;
+        this.setComment(comment);
         this.version = version;
-        this.timeoutSeconds = timeoutSeconds;
+        this.setTimeoutSeconds(timeoutSeconds);
+        this.setInput(input);
     }
     StateMachine.prototype.getStates = function () {
         return this.states;
@@ -81,7 +81,7 @@ var StateMachine = /** @class */ (function () {
         this.startState = startState;
     };
     StateMachine.prototype.getComment = function () {
-        return this.comment;
+        return this.comment ? this.comment : "";
     };
     StateMachine.prototype.setComment = function (comment) {
         this.comment = comment;
@@ -98,6 +98,14 @@ var StateMachine = /** @class */ (function () {
     StateMachine.prototype.setTimeoutSeconds = function (timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
     };
+    StateMachine.prototype.getInput = function () {
+        return this.input;
+    };
+    StateMachine.prototype.setInput = function (input) {
+        //if json invalid parse will throw SyntaxError
+        if (input && JSON.parse(input))
+            this.input = input;
+    };
     StateMachine.prototype.execute = function () {
         var _this = this;
         var currentState;
@@ -107,7 +115,7 @@ var StateMachine = /** @class */ (function () {
         });
         while (true) {
             if (currentState instanceof PassState_1.PassState || currentState instanceof TaskState_1.TaskState)
-                results.push(currentState.execute());
+                results.push(currentState.execute(this.getInput()));
             currentState = this.getStates().find(function (element) {
                 return (currentState) ? element.getName() == currentState.getNextStateName() : false;
             });
@@ -126,7 +134,6 @@ var StateMachine = /** @class */ (function () {
         for (var _i = 0, _a = this.getStates(); _i < _a.length; _i++) {
             var state = _a[_i];
             json = json + ", " + state.toString();
-            //console.log(state.toJSON());
         }
         json = json + "}";
         return json;

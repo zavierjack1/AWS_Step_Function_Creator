@@ -70,4 +70,19 @@ describe('State class tests', function () {
             chai_1.expect(new State_1.State("myName", "myType").toString()).to.equal('"myName":{"Type":"myType"}');
         });
     });
+    context('InputPath Test', function () {
+        it('should set and get inputPath', function () {
+            var state = new State_1.State("myState", "myType", "comment", "", true);
+            state.setInputPath("$.store.book[*].author");
+            chai_1.expect(state.getInputPath()).to.equal("$.store.book[*].author");
+        });
+    });
+    context('toString test', function () {
+        it('should return json version of state', function () {
+            chai_1.expect(new State_1.State("myName", "myType", "myComment").toString()).to.equal('"myName":{"Type":"myType","Comment":"myComment"}');
+        });
+        it('should return json version of state', function () {
+            chai_1.expect(new State_1.State("myName", "myType").toString()).to.equal('"myName":{"Type":"myType"}');
+        });
+    });
 });

@@ -108,7 +108,7 @@ describe('TaskState class tests', function () {
             chai_1.expect(new TaskState_1.TaskState("myName", resource, "myComment").isEndState()).to.equal(false);
         });
     });
-    context('Resource Tests', function () {
+    context('Resource & Execution Tests', function () {
         it('should return "test"', function () {
             var resource = function () {
                 return "test";
@@ -125,12 +125,40 @@ describe('TaskState class tests', function () {
             taskState.setResource(resource);
             chai_1.expect(taskState.execute()).to.equal(undefined);
         });
+        it('should fail to validate json', function () {
+            var resource = function (x) {
+                return x;
+            };
+            var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
+            var json = "invalidJson";
+            taskState.setResource(resource);
+            taskState.setInputPath("$.store.book[*].author");
+            chai_1.expect(function () { taskState.execute(json); }).to.Throw(SyntaxError);
+        });
+        it('should return list of authors from json', function () {
+            var resource = function (x) {
+                return x;
+            };
+            var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
+            var json = "{\n          \"store\": {\n              \"book\": [\n                  {\n                      \"category\": \"reference\",\n                      \"author\": \"Nigel Rees\",\n                      \"title\": \"Sayings of the Century\",\n                      \"price\": 8.95\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Evelyn Waugh\",\n                      \"title\": \"Sword of Honour\",\n                      \"price\": 12.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Herman Melville\",\n                      \"title\": \"Moby Dick\",\n                      \"isbn\": \"0-553-21311-3\",\n                      \"price\": 8.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"J. R. R. Tolkien\",\n                      \"title\": \"The Lord of the Rings\",\n                      \"isbn\": \"0-395-19395-8\",\n                      \"price\": 22.99\n                  }\n              ],\n              \"bicycle\": {\n                  \"color\": \"red\",\n                  \"price\": 19.95\n              }\n          },\n          \"expensive\": 10\n        }";
+            taskState.setResource(resource);
+            taskState.setInputPath("$.store.book[*].author");
+            chai_1.expect(taskState.execute(json)).to.eql(['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien']);
+        });
     });
     context('toString test', function () {
         it('should return json of task state', function () {
             var resource = function () { return 1 + 1; };
             var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
             chai_1.expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment"}');
+        });
+    });
+    context('InputPath Test', function () {
+        it('should set and get inputPath', function () {
+            var resource = function () { return 1 + 1; };
+            var state = new TaskState_1.TaskState("myName", resource, "myComment");
+            state.setInputPath("$.store.book[*].author");
+            chai_1.expect(state.getInputPath()).to.equal("$.store.book[*].author");
         });
     });
 });

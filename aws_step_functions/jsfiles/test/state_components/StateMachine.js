@@ -139,4 +139,15 @@ describe('StateMachine Tests', function () {
             chai_1.expect(JSON.parse(stateMachine.toString())['myState']['End']).to.equal(true);
         });
     });
+    context('Input Test', function () {
+        it('should fail to validate input JSON', function () {
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);
+            chai_1.expect(function () { stateMachine.setInput("abcd"); }).to.throw(SyntaxError);
+        });
+        it('should validate & add input JSON', function () {
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);
+            stateMachine.setInput('{"test" : "abcd"}');
+            chai_1.expect(stateMachine.getInput()).to.equal('{"test" : "abcd"}');
+        });
+    });
 });

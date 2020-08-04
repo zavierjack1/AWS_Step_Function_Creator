@@ -146,7 +146,6 @@ describe('StateMachine Tests', function () {
     });
   })
 
-
   context('toString statemachine', function () {
     it('should print statemachine', function () {
       let stateMachine = new StateMachine([new PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);
@@ -156,6 +155,19 @@ describe('StateMachine Tests', function () {
       expect(JSON.parse(stateMachine.toString())['myState']['Result']).to.equal("result");
       expect(JSON.parse(stateMachine.toString())['myState']['Comment']).to.equal("xyz");
       expect(JSON.parse(stateMachine.toString())['myState']['End']).to.equal(true);
+    });
+  })
+
+  context('Input Test', function () {
+    it('should fail to validate input JSON', function () {
+      let stateMachine = new StateMachine([new PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);
+      expect(function () {stateMachine.setInput("abcd")}).to.throw(SyntaxError);
+    });
+
+    it('should validate & add input JSON', function () {
+      let stateMachine = new StateMachine([new PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);
+      stateMachine.setInput('{"test" : "abcd"}');
+      expect(stateMachine.getInput()).to.equal('{"test" : "abcd"}');
     });
   })
 });
