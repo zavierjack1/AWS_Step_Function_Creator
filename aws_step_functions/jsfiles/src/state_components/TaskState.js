@@ -71,15 +71,20 @@ var TaskState = /** @class */ (function (_super) {
     };
     TaskState.prototype.setOutputPath = function (outputPath) {
         //if json invalid parse will throw SyntaxError
-        if (outputPath && JSON.parse(outputPath))
-            this.outputPath = outputPath;
+        this.outputPath = outputPath;
     };
     TaskState.prototype.isTerminal = function () {
         return this.isEndState();
     };
     TaskState.prototype.execute = function (rawInput) {
         if (rawInput) {
-            return this.getResource()(JsonPath.query(JSON.parse(rawInput), this.getInputPath()));
+            rawInput = JSON.parse(rawInput); //convert string to jsonObject
+            var resoureResult = this.getResource()(JsonPath.query(rawInput, this.getInputPath()));
+            if (this.getOutputPath()) {
+                JsonPath.value(rawInput, this.getOutputPath(), resoureResult);
+                return rawInput;
+            }
+            return resoureResult;
         }
         return this.getResource()();
     };

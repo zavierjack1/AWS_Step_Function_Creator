@@ -77,7 +77,7 @@ export class TaskState extends State implements Executable, InputOutputPath, Nex
 
   public setOutputPath(outputPath: string | undefined): void {
     //if json invalid parse will throw SyntaxError
-    if (outputPath && JSON.parse(outputPath)) this.outputPath = outputPath;
+    this.outputPath = outputPath;
   }
 
   public isTerminal(): Boolean{
@@ -86,7 +86,13 @@ export class TaskState extends State implements Executable, InputOutputPath, Nex
 
   public execute(rawInput?: string) {
     if (rawInput){
-      return this.getResource()(JsonPath.query(JSON.parse(rawInput), this.getInputPath()));
+      rawInput = JSON.parse(rawInput); //convert string to jsonObject
+      let resoureResult = this.getResource()(JsonPath.query(rawInput, this.getInputPath()));
+      if (this.getOutputPath()) {
+        JsonPath.value(rawInput, this.getOutputPath(), resoureResult);
+        return rawInput;
+      }
+      return resoureResult;
     } 
     return this.getResource()();
   }
