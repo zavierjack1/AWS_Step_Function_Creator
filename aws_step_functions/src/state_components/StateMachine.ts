@@ -2,6 +2,7 @@ import { State } from './State';
 import { Executable } from './Executable';
 import { PassState } from './PassState';
 import { TaskState } from './TaskState';
+import { NextOrEnd } from './NextOrEnd';
 
 export class StateMachine implements Executable{
   private states: State[] = [];
@@ -54,16 +55,19 @@ export class StateMachine implements Executable{
   public validateNextStates(): Boolean {
     //check that each non-terminal state in the machine points to another state in the machine
     let states: State[] = this.getStates();
+    
     let returnVal = true;
     for (let idx in states){
       if (
         //current state is not terminal
         !states[idx].isTerminal()
         &&
-        //the nextstate of the current state does not match any of the statenames in the machine
+        //the nextstate of the current state match a statename in the machine
         !(this.getStates().some(
             function matchesNextState(element){
-                return (states[idx].getNextStateName() == element.getName());
+              if (states[idx] instanceof PassState) return (<PassState> states[idx]).getNextStateName() == element.getName();
+              if (states[idx] instanceof TaskState) return (<TaskState> states[idx]).getNextStateName() == element.getName();
+              return false;
             }
         ))
       ){
@@ -136,7 +140,8 @@ export class StateMachine implements Executable{
       if (currentState instanceof PassState || currentState instanceof TaskState) results.push(currentState.execute(this.getInput()));
 
       currentState = this.getStates().find(element => {
-        return (currentState) ? element.getName() == currentState.getNextStateName() : false;
+        if (currentState instanceof PassState) return (<PassState> currentState) ? element.getName() == currentState.getNextStateName() : false;
+        if (currentState instanceof TaskState) return (<TaskState> currentState) ? element.getName() == currentState.getNextStateName() : false;
       })
 
       if (currentState == undefined || currentState.isTerminal()) break;

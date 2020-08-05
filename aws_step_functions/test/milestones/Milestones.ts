@@ -4,13 +4,14 @@ import { TaskState }  from '../../src/state_components/TaskState';
 import { StateMachine }  from '../../src/state_components/StateMachine';
 import { expect, assert } from 'chai';
 import 'mocha';
+import { SucceedState } from '../../src/state_components/SucceedState';
 describe('Milestones', function () {
   context('1. Create/toString/simulate a state machine consisting of a single Pass state. No'||
   'input/output processing, parameters, result/result path, or error handling support', 
   function () {
     it('should create a State Machine w/ a Pass state using State class', 
     function () {
-      let stateMachine = new StateMachine([new State("myState", "Succeed")], "myState");
+      let stateMachine = new StateMachine([new SucceedState("myState")], "myState");
       expect(stateMachine.getStates()[0].getName()).to.equal("myState");
       expect(stateMachine.getStates()[0].getType()).to.equal("Succeed");
       expect(stateMachine.getStartStateName()).to.equal("myState");
@@ -19,7 +20,7 @@ describe('Milestones', function () {
 
     it('should create a State Machine w/ a Pass state using the PassState class', 
     function () {
-      let stateMachine = new StateMachine([new PassState("myState", "result", "comment", "myState2"), new State("myState2", "Succeed")], "myState");
+      let stateMachine = new StateMachine([new PassState("myState", "result", "comment", "myState2"), new SucceedState("myState2", "Succeed")], "myState");
       expect(stateMachine.getStates()[0].getName()).to.equal("myState");
       expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
       expect(stateMachine.getStartStateName()).to.equal("myState");
@@ -28,7 +29,7 @@ describe('Milestones', function () {
 
     it('should create a State Machine w/ a Pass state using the PassState class', 
     function () {
-      let stateMachine = new StateMachine([new PassState("myState", "result", "comment", "myState2"), new State("myState2", "Succeed")], "myState");
+      let stateMachine = new StateMachine([new PassState("myState", "result", "comment", "myState2"), new SucceedState("myState2", "Succeed")], "myState");
       expect(stateMachine.getStates()[0].getName()).to.equal("myState");
       expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
       expect(stateMachine.getStartStateName()).to.equal("myState");

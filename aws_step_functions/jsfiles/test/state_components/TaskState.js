@@ -62,14 +62,14 @@ describe('TaskState class tests', function () {
             chai_1.expect(state.getComment()).to.equal("newComment");
         });
     });
-    context('NextState Tests', function () {
-        it('should return the next state', function () {
+    context('nextStateName Tests', function () {
+        it('should return the nextStateName', function () {
             var resource = function () {
                 console.log("helloworld");
             };
             chai_1.expect(new TaskState_1.TaskState("myName", resource, "myComment", "myNextState").getNextStateName()).equal("myNextState");
         });
-        it('should return new next state', function () {
+        it('should return new nextStateName', function () {
             var resource = function () {
                 console.log("helloworld");
             };
@@ -125,6 +125,14 @@ describe('TaskState class tests', function () {
             taskState.setResource(resource);
             chai_1.expect(taskState.execute()).to.equal(undefined);
         });
+    });
+    context('InputPath Tests', function () {
+        it('should set and get inputPath', function () {
+            var resource = function () { return 1 + 1; };
+            var state = new TaskState_1.TaskState("myName", resource, "myComment");
+            state.setInputPath("$.store.book[*].author");
+            chai_1.expect(state.getInputPath()).to.equal("$.store.book[*].author");
+        });
         it('should fail to validate json', function () {
             var resource = function (x) {
                 return x;
@@ -151,14 +159,6 @@ describe('TaskState class tests', function () {
             var resource = function () { return 1 + 1; };
             var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
             chai_1.expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment"}');
-        });
-    });
-    context('InputPath Test', function () {
-        it('should set and get inputPath', function () {
-            var resource = function () { return 1 + 1; };
-            var state = new TaskState_1.TaskState("myName", resource, "myComment");
-            state.setInputPath("$.store.book[*].author");
-            chai_1.expect(state.getInputPath()).to.equal("$.store.book[*].author");
         });
     });
 });

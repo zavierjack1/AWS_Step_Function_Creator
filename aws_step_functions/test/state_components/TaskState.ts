@@ -67,15 +67,15 @@ describe('TaskState class tests', function () {
     });
   });
 
-  context('NextState Tests', function () {
-    it('should return the next state', function () {
+  context('nextStateName Tests', function () {
+    it('should return the nextStateName', function () {
       let resource = function () {
         console.log("helloworld");
       }
       expect(new TaskState("myName", resource, "myComment", "myNextState").getNextStateName()).equal("myNextState");
     });
 
-    it('should return new next state', function () {
+    it('should return new nextStateName', function () {
       let resource = function () {
         console.log("helloworld");
       }
@@ -136,6 +136,15 @@ describe('TaskState class tests', function () {
       let taskState = new TaskState("myName", resource, "myComment");
       taskState.setResource(resource);
       expect(taskState.execute()).to.equal(undefined);
+    });
+  });
+
+  context('InputPath Tests', function () {
+    it('should set and get inputPath', function () {
+      let resource = function (){ return 1 + 1; }
+      let state = new TaskState("myName", resource, "myComment");
+      state.setInputPath("$.store.book[*].author");
+      expect(state.getInputPath()).to.equal("$.store.book[*].author");
     });
 
     it('should fail to validate json', function () {
@@ -204,15 +213,6 @@ describe('TaskState class tests', function () {
       let resource = function (){ return 1 + 1; }
       let taskState = new TaskState("myName", resource, "myComment");
       expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment"}');
-    });
-  })
-
-  context('InputPath Test', function () {
-    it('should set and get inputPath', function () {
-      let resource = function (){ return 1 + 1; }
-      let state = new TaskState("myName", resource, "myComment");
-      state.setInputPath("$.store.book[*].author");
-      expect(state.getInputPath()).to.equal("$.store.book[*].author");
     });
   })
 });

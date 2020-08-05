@@ -1,30 +1,30 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var State_1 = require("../../src/state_components/State");
 var PassState_1 = require("../../src/state_components/PassState");
 var TaskState_1 = require("../../src/state_components/TaskState");
 var StateMachine_1 = require("../../src/state_components/StateMachine");
 var chai_1 = require("chai");
 require("mocha");
+var SucceedState_1 = require("../../src/state_components/SucceedState");
 describe('Milestones', function () {
     context('1. Create/toString/simulate a state machine consisting of a single Pass state. No' ||
         'input/output processing, parameters, result/result path, or error handling support', function () {
         it('should create a State Machine w/ a Pass state using State class', function () {
-            var stateMachine = new StateMachine_1.StateMachine([new State_1.State("myState", "Succeed")], "myState");
+            var stateMachine = new StateMachine_1.StateMachine([new SucceedState_1.SucceedState("myState")], "myState");
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("myState");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Succeed");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("myState");
             chai_1.expect(stateMachine.validate()).to.equal(true);
         });
         it('should create a State Machine w/ a Pass state using the PassState class', function () {
-            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "comment", "myState2"), new State_1.State("myState2", "Succeed")], "myState");
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "comment", "myState2"), new SucceedState_1.SucceedState("myState2", "Succeed")], "myState");
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("myState");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("myState");
             chai_1.expect(stateMachine.validate()).to.equal(true);
         });
         it('should create a State Machine w/ a Pass state using the PassState class', function () {
-            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "comment", "myState2"), new State_1.State("myState2", "Succeed")], "myState");
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "comment", "myState2"), new SucceedState_1.SucceedState("myState2", "Succeed")], "myState");
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("myState");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("myState");
