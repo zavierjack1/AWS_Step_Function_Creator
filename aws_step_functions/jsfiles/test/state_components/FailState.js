@@ -36,4 +36,10 @@ describe('SucceedState class tests', function () {
             chai_1.expect(state.getComment()).to.equal("newComment");
         });
     });
+    context('toString test', function () {
+        it('should return json of task state', function () {
+            var taskState = new FailState_1.FailState("myName", "myComment");
+            chai_1.expect(taskState.toString()).to.equal('"myName":{"Type":"Fail","Comment":"myComment","End":true}');
+        });
+    });
 });

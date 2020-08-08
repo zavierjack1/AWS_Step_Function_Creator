@@ -26,6 +26,20 @@ describe('Milestones', function () {
       expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
       expect(stateMachine.getStartStateName()).to.equal("myState");
       expect(stateMachine.validate()).to.equal(true);
+      console.log(stateMachine.toString());
+      expect(JSON.parse(stateMachine.toString())["myState"]["Result"]).to.equal("result");
+      expect(JSON.parse(stateMachine.toString())["myState"]["Comment"]).to.equal("comment");
+      expect(JSON.parse(stateMachine.toString())["myState"]["Next"]).to.equal("myState2");
+      expect(JSON.parse(stateMachine.toString())["myState"]["Type"]).to.equal("Pass");
+      expect(JSON.parse(stateMachine.toString())["myState2"]["Type"]).to.equal("Succeed");
+      expect(JSON.parse(stateMachine.toString())["myState2"]["End"]).to.equal(true);
+
+      expect(stateMachine.toJSON()["myState"]["Result"]).to.equal("result");
+      expect(stateMachine.toJSON()["myState"]["Comment"]).to.equal("comment");
+      expect(stateMachine.toJSON()["myState"]["Next"]).to.equal("myState2");
+      expect(stateMachine.toJSON()["myState"]["Type"]).to.equal("Pass");
+      expect(stateMachine.toJSON()["myState2"]["Type"]).to.equal("Succeed");
+      expect(stateMachine.toJSON()["myState2"]["End"]).to.equal(true);
     });
 
     it('should create a State Machine w/ a Pass state using the PassState class', 
@@ -52,7 +66,13 @@ describe('Milestones', function () {
       expect(JSON.parse(stateMachine.toString())["Hello World"]["Type"]).to.equal("Pass");
       expect(JSON.parse(stateMachine.toString())["Hello World"]["End"]).to.equal(true);
       expect(JSON.parse(stateMachine.toString())["Hello World"]["Result"]).to.equal("Hello World Result");
-      //expect(results[0]).to.equal("Hello World Result");
+      
+      expect(stateMachine.toJSON()["StartAt"]).to.equal("Hello World");
+      expect(stateMachine.toJSON()["Version"]).to.equal("1.0");
+      expect(stateMachine.toJSON()["Comment"]).to.equal("A simple minimal example of the States language");
+      expect(stateMachine.toJSON()["Hello World"]["Type"]).to.equal("Pass");
+      expect(stateMachine.toJSON()["Hello World"]["End"]).to.equal(true);
+      expect(stateMachine.toJSON()["Hello World"]["Result"]).to.equal("Hello World Result");
     });
   })
 
@@ -79,7 +99,12 @@ describe('Milestones', function () {
       expect(JSON.parse(stateMachine.toString())["Hello World Task"]["Type"]).to.equal("Task");
       expect(JSON.parse(stateMachine.toString())["Hello World Task"]["End"]).to.equal(true);
       expect(JSON.parse(stateMachine.toString())["Hello World Task"]["Resource"]).to.equal("function () { return 1 + 1; }");
-      //expect(results[0]).to.equal(2);
+      expect(stateMachine.toJSON()["StartAt"]).to.equal("Hello World Task");
+      expect(stateMachine.toJSON()["Version"]).to.equal("1.0");
+      expect(stateMachine.toJSON()["Comment"]).to.equal("A simple minimal example of the States language");
+      expect(stateMachine.toJSON()["Hello World Task"]["Type"]).to.equal("Task");
+      expect(stateMachine.toJSON()["Hello World Task"]["End"]).to.equal(true);
+      expect(stateMachine.toJSON()["Hello World Task"]["Resource"]).to.equal("function () { return 1 + 1; }");
     });
   });
 

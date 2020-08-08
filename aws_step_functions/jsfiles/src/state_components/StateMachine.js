@@ -144,13 +144,15 @@ var StateMachine = /** @class */ (function () {
             + ', "Version":"' + this.getVersion() + '"'
             + ((this.getComment().trim()) ? ', "Comment":"' + this.getComment() + '"' : '')
             + ((this.getTimeoutSeconds()) ? ', "TimeoutSeconds":' + this.getTimeoutSeconds() : '');
-        //+"}";
         for (var _i = 0, _a = this.getStates(); _i < _a.length; _i++) {
             var state = _a[_i];
             json = json + ", " + state.toString();
         }
         json = json + "}";
         return json;
+    };
+    StateMachine.prototype.toJSON = function () {
+        return JSON.parse(this.toString());
     };
     return StateMachine;
 }());

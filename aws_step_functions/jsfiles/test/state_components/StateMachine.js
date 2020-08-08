@@ -139,6 +139,17 @@ describe('StateMachine Tests', function () {
             chai_1.expect(JSON.parse(stateMachine.toString())['myState']['End']).to.equal(true);
         });
     });
+    context('toJSON statemachine', function () {
+        it('should return statemachine JSON', function () {
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);
+            var state = new SucceedState_1.SucceedState("EndState");
+            stateMachine.addState(state);
+            chai_1.expect(stateMachine.toJSON()['myState']['Type']).to.equal("Pass");
+            chai_1.expect(stateMachine.toJSON()['myState']['Result']).to.equal("result");
+            chai_1.expect(stateMachine.toJSON()['myState']['Comment']).to.equal("xyz");
+            chai_1.expect(stateMachine.toJSON()['myState']['End']).to.equal(true);
+        });
+    });
     context('Input Test', function () {
         it('should fail to validate input JSON', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);

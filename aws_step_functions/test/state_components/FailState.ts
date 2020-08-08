@@ -39,4 +39,11 @@ describe('SucceedState class tests', function () {
       expect(state.getComment()).to.equal("newComment");
     });
   });
+
+  context('toString test', function () {
+    it('should return json of task state', function () {
+      let taskState = new FailState("myName", "myComment");
+      expect(taskState.toString()).to.equal('"myName":{"Type":"Fail","Comment":"myComment","End":true}');
+    });
+  })
 });

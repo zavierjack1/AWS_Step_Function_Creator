@@ -44,4 +44,10 @@ describe('SucceedState class tests', function () {
             chai_1.expect(state.getInputPath()).to.equal("$.store.book[*].author");
         });
     });
+    context('toString test', function () {
+        it('should return json of task state', function () {
+            var taskState = new SucceedState_1.SucceedState("myName", "myComment");
+            chai_1.expect(taskState.toString()).to.equal('"myName":{"Type":"Succeed","Comment":"myComment","End":true}');
+        });
+    });
 });

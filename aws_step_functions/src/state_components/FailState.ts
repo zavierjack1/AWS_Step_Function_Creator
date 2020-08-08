@@ -16,6 +16,7 @@ export class FailState extends State{
       +'{'
         +'"Type":"'+this.getType()+'"'
         + ( (this.getComment()) ? ',"Comment":"'+this.getComment()+'"': '') 
+        + ( (this.isTerminal()) ? ',"End":'+this.isTerminal() : '') 
       + '}';
   }
 } 

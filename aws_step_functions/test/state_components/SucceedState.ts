@@ -48,4 +48,11 @@ describe('SucceedState class tests', function () {
       expect(state.getInputPath()).to.equal("$.store.book[*].author");
     });
   });
+
+  context('toString test', function () {
+    it('should return json of task state', function () {
+      let taskState = new SucceedState("myName", "myComment");
+      expect(taskState.toString()).to.equal('"myName":{"Type":"Succeed","Comment":"myComment","End":true}');
+    });
+  })
 });

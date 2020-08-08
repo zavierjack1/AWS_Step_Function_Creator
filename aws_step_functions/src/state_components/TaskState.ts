@@ -108,7 +108,7 @@ export class TaskState extends State implements Executable, InputOutputPath, Nex
         +',"Resource":"'+this.getResource()+'"' 
         + ( (this.getComment()) ? ',"Comment":"'+this.getComment()+'"': '') 
         + ( (this.getNextStateName()) ? ',"Next":"'+this.getNextStateName()+'"' : '') 
-        + ( (this.isEndState()) ? ',"End":'+this.isEndState() : '') 
+        + ( (this.isTerminal()) ? ',"End":'+this.isTerminal() : '') 
         + ( (this.getInputPath()) ? ',"InputPath":"'+this.getInputPath()+'"' : '')
         + ( (this.getOutputPath()) ? ',"OutputPath":"'+this.getOutputPath()+'"' : '')
     + '}';

@@ -46,6 +46,7 @@ var SucceedState = /** @class */ (function (_super) {
             + '{'
             + '"Type":"' + this.getType() + '"'
             + ((this.getComment()) ? ',"Comment":"' + this.getComment() + '"' : '')
+            + ((this.isTerminal()) ? ',"End":' + this.isTerminal() : '')
             + ((this.getInputPath()) ? ',"InputPath":"' + this.getInputPath() + '"' : '')
             + ((this.getOutputPath()) ? ',"OutputPath":"' + this.getInputPath() + '"' : '')
             + '}';

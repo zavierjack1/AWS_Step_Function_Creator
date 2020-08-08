@@ -21,6 +21,19 @@ describe('Milestones', function () {
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("myState");
             chai_1.expect(stateMachine.validate()).to.equal(true);
+            console.log(stateMachine.toString());
+            chai_1.expect(JSON.parse(stateMachine.toString())["myState"]["Result"]).to.equal("result");
+            chai_1.expect(JSON.parse(stateMachine.toString())["myState"]["Comment"]).to.equal("comment");
+            chai_1.expect(JSON.parse(stateMachine.toString())["myState"]["Next"]).to.equal("myState2");
+            chai_1.expect(JSON.parse(stateMachine.toString())["myState"]["Type"]).to.equal("Pass");
+            chai_1.expect(JSON.parse(stateMachine.toString())["myState2"]["Type"]).to.equal("Succeed");
+            chai_1.expect(JSON.parse(stateMachine.toString())["myState2"]["End"]).to.equal(true);
+            chai_1.expect(stateMachine.toJSON()["myState"]["Result"]).to.equal("result");
+            chai_1.expect(stateMachine.toJSON()["myState"]["Comment"]).to.equal("comment");
+            chai_1.expect(stateMachine.toJSON()["myState"]["Next"]).to.equal("myState2");
+            chai_1.expect(stateMachine.toJSON()["myState"]["Type"]).to.equal("Pass");
+            chai_1.expect(stateMachine.toJSON()["myState2"]["Type"]).to.equal("Succeed");
+            chai_1.expect(stateMachine.toJSON()["myState2"]["End"]).to.equal(true);
         });
         it('should create a State Machine w/ a Pass state using the PassState class', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "comment", "myState2"), new SucceedState_1.SucceedState("myState2", "Succeed")], "myState");
@@ -43,7 +56,12 @@ describe('Milestones', function () {
             chai_1.expect(JSON.parse(stateMachine.toString())["Hello World"]["Type"]).to.equal("Pass");
             chai_1.expect(JSON.parse(stateMachine.toString())["Hello World"]["End"]).to.equal(true);
             chai_1.expect(JSON.parse(stateMachine.toString())["Hello World"]["Result"]).to.equal("Hello World Result");
-            //expect(results[0]).to.equal("Hello World Result");
+            chai_1.expect(stateMachine.toJSON()["StartAt"]).to.equal("Hello World");
+            chai_1.expect(stateMachine.toJSON()["Version"]).to.equal("1.0");
+            chai_1.expect(stateMachine.toJSON()["Comment"]).to.equal("A simple minimal example of the States language");
+            chai_1.expect(stateMachine.toJSON()["Hello World"]["Type"]).to.equal("Pass");
+            chai_1.expect(stateMachine.toJSON()["Hello World"]["End"]).to.equal(true);
+            chai_1.expect(stateMachine.toJSON()["Hello World"]["Result"]).to.equal("Hello World Result");
         });
     });
     context("2. Add support for a Task state. The state machine representation can now be created either\n    with a single Pass state or a single Task state. The interpreter must support a way\n    for the client to provide mock implementations for function resources used in task states.\n    When simulated, the output of the Task state should be the result of an invocation to the\n    corresponding mock function.", function () {
@@ -62,7 +80,12 @@ describe('Milestones', function () {
             chai_1.expect(JSON.parse(stateMachine.toString())["Hello World Task"]["Type"]).to.equal("Task");
             chai_1.expect(JSON.parse(stateMachine.toString())["Hello World Task"]["End"]).to.equal(true);
             chai_1.expect(JSON.parse(stateMachine.toString())["Hello World Task"]["Resource"]).to.equal("function () { return 1 + 1; }");
-            //expect(results[0]).to.equal(2);
+            chai_1.expect(stateMachine.toJSON()["StartAt"]).to.equal("Hello World Task");
+            chai_1.expect(stateMachine.toJSON()["Version"]).to.equal("1.0");
+            chai_1.expect(stateMachine.toJSON()["Comment"]).to.equal("A simple minimal example of the States language");
+            chai_1.expect(stateMachine.toJSON()["Hello World Task"]["Type"]).to.equal("Task");
+            chai_1.expect(stateMachine.toJSON()["Hello World Task"]["End"]).to.equal(true);
+            chai_1.expect(stateMachine.toJSON()["Hello World Task"]["Resource"]).to.equal("function () { return 1 + 1; }");
         });
     });
     context("3. Add support for state transitions. The state machine representation can now be created\n    with a sequence of states (Pass or Task) with outputs of previous states passing on to\n    the inputs of next states.", function () {

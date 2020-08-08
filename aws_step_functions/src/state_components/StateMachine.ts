@@ -2,7 +2,6 @@ import { State } from './State';
 import { Executable } from './Executable';
 import { PassState } from './PassState';
 import { TaskState } from './TaskState';
-import { NextOrEnd } from './NextOrEnd';
 
 export class StateMachine implements Executable{
   private states: State[] = [];
@@ -155,18 +154,21 @@ export class StateMachine implements Executable{
     return this.getInput();
   }
 
-  public toString(){
+  public toString() : string{
     let json = '{'
         + '"StartAt":"'+this.getStartStateName()+'"'
         + ', "Version":"'+this.getVersion()+'"' 
         + ( (this.getComment().trim()) ? ', "Comment":"'+this.getComment()+'"' : '') 
         + ( (this.getTimeoutSeconds()) ? ', "TimeoutSeconds":'+this.getTimeoutSeconds() : ''); 
-      //+"}";
     
     for (let state of this.getStates()){
         json = json+", "+state.toString();
     }
     json = json+"}";
     return json;
+  }
+
+  public toJSON() : any {
+    return JSON.parse(this.toString());
   }
 } 
