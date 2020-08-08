@@ -97,12 +97,10 @@ describe('Milestones', function () {
         return x+", GoodBye single state machines.";
       }
       stateMachine.addState(new TaskState("myTaskState", resource, "", "", true, "$.result", "$.result"));
-      let json = 
-        JSON.parse(`{
+      let json = `{
           "first": 100,
           "second": 200
-        }`);
-      console.log(json);
+        }`;
       stateMachine.setInput(json);
       console.log(stateMachine.execute());
     });

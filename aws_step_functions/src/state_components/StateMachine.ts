@@ -9,9 +9,9 @@ export class StateMachine implements Executable{
   private comment?: string;
   private version: string;
   private timeoutSeconds?: number;
-  private input?: Object;
+  private input?: string;
 
-  constructor(states: State[] = [], startState: string, comment?: string, version: string="1.0", timeoutSeconds?: number, input?: Object) {
+  constructor(states: State[] = [], startState: string, comment?: string, version: string="1.0", timeoutSeconds?: number, input?: string) {
     if (states.length == 0) throw new Error("states must not be empty");
     this.states = states;
     this.startState = startState;
@@ -119,16 +119,16 @@ export class StateMachine implements Executable{
       this.timeoutSeconds = timeoutSeconds;
   }
 
-  public getInput(): Object | undefined{
+  public getInput(): string | undefined{
     return this.input;
   }
 
-  public setInput(input: Object | undefined): void {
+  public setInput(input: string | undefined): void {
     //if json invalid parse will throw SyntaxError
-    if (input) this.input = input;
+    if (input && JSON.parse(input)) this.input = input;
   }
 
-  public execute() : Object | undefined{
+  public execute() : string | undefined{
     let currentState: State | undefined;
     let results: any[] = [];
     currentState = this.getStates().find(element => {

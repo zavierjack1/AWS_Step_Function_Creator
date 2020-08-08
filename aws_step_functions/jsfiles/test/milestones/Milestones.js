@@ -73,8 +73,7 @@ describe('Milestones', function () {
                 return x + ", GoodBye single state machines.";
             };
             stateMachine.addState(new TaskState_1.TaskState("myTaskState", resource, "", "", true, "$.result", "$.result"));
-            var json = JSON.parse("{\n          \"first\": 100,\n          \"second\": 200\n        }");
-            console.log(json);
+            var json = "{\n          \"first\": 100,\n          \"second\": 200\n        }";
             stateMachine.setInput(json);
             console.log(stateMachine.execute());
         });

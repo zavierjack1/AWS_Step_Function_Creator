@@ -107,7 +107,7 @@ var StateMachine = /** @class */ (function () {
     };
     StateMachine.prototype.setInput = function (input) {
         //if json invalid parse will throw SyntaxError
-        if (input)
+        if (input && JSON.parse(input))
             this.input = input;
     };
     StateMachine.prototype.execute = function () {
