@@ -325,5 +325,11 @@ describe('TaskState class tests', function () {
       let taskState = new TaskState("myName", resource, "myComment");
       expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment"}');
     });
+
+    it('should return json of task state', function () {
+      let resource = function (){ return 1 + 1; }
+      let taskState = new TaskState("myName", resource, "myComment", "nextState", false, "$.test", "$.test2");
+      expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment","Next":"nextState","InputPath":"$.test","OutputPath":"$.test2"}');
+    });
   })
 });

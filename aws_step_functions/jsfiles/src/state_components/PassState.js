@@ -61,24 +61,21 @@ var PassState = /** @class */ (function (_super) {
         return this.inputPath;
     };
     PassState.prototype.setInputPath = function (inputPath) {
-        //if json invalid parse will throw SyntaxError
         this.inputPath = inputPath;
     };
     PassState.prototype.getOutputPath = function () {
         return this.outputPath;
     };
     PassState.prototype.setOutputPath = function (outputPath) {
-        //if json invalid parse will throw SyntaxError
         if (outputPath)
             this.outputPath = outputPath;
     };
-    PassState.prototype.execute = function (rawInput) {
-        if (rawInput) {
-            rawInput = JSON.parse(rawInput); //converts string to jsonObject and validates
-            //let resoureResult = this.getResource()(JsonPath.query(rawInput, this.getInputPath()));
+    PassState.prototype.execute = function (input) {
+        if (input) {
+            input = JSON.parse(input);
             if (this.getOutputPath()) {
-                JsonPath.value(rawInput, this.getOutputPath(), this.getResult());
-                return rawInput;
+                JsonPath.value(input, this.getOutputPath(), this.getResult());
+                return input;
             }
             return this.getResult();
         }
@@ -91,10 +88,12 @@ var PassState = /** @class */ (function (_super) {
         return '"' + this.getName() + '":'
             + '{'
             + '"Type":"' + this.getType() + '"'
+            + ',"Result":"' + this.getResult() + '"'
             + ((this.getComment()) ? ',"Comment":"' + this.getComment() + '"' : '')
             + ((this.getNextStateName()) ? ',"Next":"' + this.getNextStateName() + '"' : '')
             + ((this.isEndState()) ? ',"End":' + this.isEndState() : '')
-            + ((this.getResult()) ? ',"Result":"' + this.getResult() + '"' : '')
+            + ((this.getInputPath()) ? ',"InputPath":"' + this.getInputPath() + '"' : '')
+            + ((this.getOutputPath()) ? ',"OutputPath":"' + this.getOutputPath() + '"' : '')
             + '}';
     };
     return PassState;

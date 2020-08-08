@@ -4,7 +4,7 @@ var PassState_1 = require("../../src/state_components/PassState");
 var TaskState_1 = require("../../src/state_components/TaskState");
 var StateMachine_1 = require("../../src/state_components/StateMachine");
 var chai_1 = require("chai");
-require("mocha");
+//import 'mocha';
 var SucceedState_1 = require("../../src/state_components/SucceedState");
 describe('Milestones', function () {
     context("1. Create/toString/simulate a state machine consisting of a single Pass state. No\n    input/output processing, parameters, result/result path, or error handling support", function () {
@@ -36,7 +36,7 @@ describe('Milestones', function () {
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("Hello World");
             chai_1.expect(stateMachine.validate()).to.equal(true);
-            chai_1.expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World":{"Type":"Pass","End":true,"Result":"Hello World Result"}}');
+            chai_1.expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World":{"Type":"Pass","Result":"Hello World Result","End":true}}');
             chai_1.expect(JSON.parse(stateMachine.toString())["StartAt"]).to.equal("Hello World");
             chai_1.expect(JSON.parse(stateMachine.toString())["Version"]).to.equal("1.0");
             chai_1.expect(JSON.parse(stateMachine.toString())["Comment"]).to.equal("A simple minimal example of the States language");

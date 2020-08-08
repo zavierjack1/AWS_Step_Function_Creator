@@ -1,9 +1,8 @@
-import { State }  from '../../src/state_components/State';
 import { PassState }  from '../../src/state_components/PassState';
 import { TaskState }  from '../../src/state_components/TaskState';
 import { StateMachine }  from '../../src/state_components/StateMachine';
-import { expect, assert } from 'chai';
-import 'mocha';
+import { expect } from 'chai';
+//import 'mocha';
 import { SucceedState } from '../../src/state_components/SucceedState';
 
 describe('Milestones', function () {
@@ -46,7 +45,7 @@ describe('Milestones', function () {
       expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
       expect(stateMachine.getStartStateName()).to.equal("Hello World");
       expect(stateMachine.validate()).to.equal(true);
-      expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World":{"Type":"Pass","End":true,"Result":"Hello World Result"}}');
+      expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World":{"Type":"Pass","Result":"Hello World Result","End":true}}');
       expect(JSON.parse(stateMachine.toString())["StartAt"]).to.equal("Hello World");
       expect(JSON.parse(stateMachine.toString())["Version"]).to.equal("1.0");
       expect(JSON.parse(stateMachine.toString())["Comment"]).to.equal("A simple minimal example of the States language");

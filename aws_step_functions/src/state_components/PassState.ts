@@ -63,7 +63,6 @@ export class PassState extends State implements Executable, InputOutputPath{
   }
 
   public setInputPath(inputPath: string | undefined): void {
-    //if json invalid parse will throw SyntaxError
     this.inputPath = inputPath;
   }
 
@@ -72,17 +71,15 @@ export class PassState extends State implements Executable, InputOutputPath{
   }
 
   public setOutputPath(outputPath: string | undefined): void {
-    //if json invalid parse will throw SyntaxError
     if (outputPath) this.outputPath = outputPath;
   }
 
-  public execute(rawInput?: string) {
-    if (rawInput){
-      rawInput = JSON.parse(rawInput); //converts string to jsonObject and validates
-      //let resoureResult = this.getResource()(JsonPath.query(rawInput, this.getInputPath()));
+  public execute(input?: string) {
+    if (input){
+      input = JSON.parse(input); 
       if (this.getOutputPath()) {
-        JsonPath.value(rawInput, this.getOutputPath(), this.getResult());
-        return rawInput;
+        JsonPath.value(input, this.getOutputPath(), this.getResult());
+        return input;
       }
       return this.getResult();
     }
@@ -95,12 +92,14 @@ export class PassState extends State implements Executable, InputOutputPath{
 
   public toString() : string{
     return '"'+this.getName()+'":'
-      +'{'
+    +'{'
         +'"Type":"'+this.getType()+'"'
+        +',"Result":"'+this.getResult()+'"' 
         + ( (this.getComment()) ? ',"Comment":"'+this.getComment()+'"': '') 
         + ( (this.getNextStateName()) ? ',"Next":"'+this.getNextStateName()+'"' : '') 
         + ( (this.isEndState()) ? ',"End":'+this.isEndState() : '') 
-        + ( (this.getResult()) ? ',"Result":"'+this.getResult()+'"' : '') 
-      + '}';
+        + ( (this.getInputPath()) ? ',"InputPath":"'+this.getInputPath()+'"' : '')
+        + ( (this.getOutputPath()) ? ',"OutputPath":"'+this.getOutputPath()+'"' : '')
+    + '}';
   }
 } 

@@ -42,8 +42,5 @@ export abstract class State {
     this.comment = comment;
   }
   
-  public abstract isTerminal(): Boolean; /*{
-    if (this.getType() == "Succeed" || this.getType() == "Fail") return true;
-    return false; 
-  }*/
+  public abstract isTerminal(): Boolean; 
 }

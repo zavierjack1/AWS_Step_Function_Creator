@@ -92,7 +92,7 @@ describe('PassState class tests', function () {
 
   context('toString test', function () {
     it('should return json version of state', function () {
-      expect(new PassState("myName", "myResult", "myComment").toString()).to.equal('"myName":{"Type":"Pass","Comment":"myComment","Result":"myResult"}');
+      expect(new PassState("myName", "myResult", "myComment").toString()).to.equal('"myName":{"Type":"Pass","Result":"myResult","Comment":"myComment"}');
     });
 
     it('should return json version of state', function () {

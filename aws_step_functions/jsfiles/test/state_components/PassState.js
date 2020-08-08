@@ -79,7 +79,7 @@ describe('PassState class tests', function () {
     });
     context('toString test', function () {
         it('should return json version of state', function () {
-            chai_1.expect(new PassState_1.PassState("myName", "myResult", "myComment").toString()).to.equal('"myName":{"Type":"Pass","Comment":"myComment","Result":"myResult"}');
+            chai_1.expect(new PassState_1.PassState("myName", "myResult", "myComment").toString()).to.equal('"myName":{"Type":"Pass","Result":"myResult","Comment":"myComment"}');
         });
         it('should return json version of state', function () {
             chai_1.expect(new PassState_1.PassState("myName", "myResult").toString()).to.equal('"myName":{"Type":"Pass","Result":"myResult"}');

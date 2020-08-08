@@ -67,7 +67,7 @@ export class TaskState extends State implements Executable, InputOutputPath, Nex
   }
 
   public setInputPath(inputPath: string | undefined): void {
-    //if json invalid parse will throw SyntaxError
+    //we need a jsonpath validator
     this.inputPath = inputPath;
   }
 
@@ -76,7 +76,6 @@ export class TaskState extends State implements Executable, InputOutputPath, Nex
   }
 
   public setOutputPath(outputPath: string | undefined): void {
-    //if json invalid parse will throw SyntaxError
     this.outputPath = outputPath;
   }
 
@@ -84,13 +83,13 @@ export class TaskState extends State implements Executable, InputOutputPath, Nex
     return this.isEndState();
   }
 
-  public execute(rawInput?: string) {
-    if (rawInput){
-      rawInput = JSON.parse(rawInput); //convert string to jsonObject
-      let resoureResult = this.getResource()(JsonPath.query(rawInput, this.getInputPath()));
+  public execute(input?: string) {
+    if (input){
+      input = JSON.parse(input); //convert string to jsonObject
+      let resoureResult = this.getResource()(JsonPath.query(input, this.getInputPath()));
       if (this.getOutputPath()) {
-        JsonPath.value(rawInput, this.getOutputPath(), resoureResult);
-        return rawInput;
+        JsonPath.value(input, this.getOutputPath(), resoureResult);
+        return input;
       }
       return resoureResult;
     } 
@@ -110,6 +109,8 @@ export class TaskState extends State implements Executable, InputOutputPath, Nex
         + ( (this.getComment()) ? ',"Comment":"'+this.getComment()+'"': '') 
         + ( (this.getNextStateName()) ? ',"Next":"'+this.getNextStateName()+'"' : '') 
         + ( (this.isEndState()) ? ',"End":'+this.isEndState() : '') 
+        + ( (this.getInputPath()) ? ',"InputPath":"'+this.getInputPath()+'"' : '')
+        + ( (this.getOutputPath()) ? ',"OutputPath":"'+this.getOutputPath()+'"' : '')
     + '}';
   }
 }

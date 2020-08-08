@@ -63,26 +63,25 @@ var TaskState = /** @class */ (function (_super) {
         return this.inputPath;
     };
     TaskState.prototype.setInputPath = function (inputPath) {
-        //if json invalid parse will throw SyntaxError
+        //we need a jsonpath validator
         this.inputPath = inputPath;
     };
     TaskState.prototype.getOutputPath = function () {
         return this.outputPath;
     };
     TaskState.prototype.setOutputPath = function (outputPath) {
-        //if json invalid parse will throw SyntaxError
         this.outputPath = outputPath;
     };
     TaskState.prototype.isTerminal = function () {
         return this.isEndState();
     };
-    TaskState.prototype.execute = function (rawInput) {
-        if (rawInput) {
-            rawInput = JSON.parse(rawInput); //convert string to jsonObject
-            var resoureResult = this.getResource()(JsonPath.query(rawInput, this.getInputPath()));
+    TaskState.prototype.execute = function (input) {
+        if (input) {
+            input = JSON.parse(input); //convert string to jsonObject
+            var resoureResult = this.getResource()(JsonPath.query(input, this.getInputPath()));
             if (this.getOutputPath()) {
-                JsonPath.value(rawInput, this.getOutputPath(), resoureResult);
-                return rawInput;
+                JsonPath.value(input, this.getOutputPath(), resoureResult);
+                return input;
             }
             return resoureResult;
         }
@@ -101,6 +100,8 @@ var TaskState = /** @class */ (function (_super) {
             + ((this.getComment()) ? ',"Comment":"' + this.getComment() + '"' : '')
             + ((this.getNextStateName()) ? ',"Next":"' + this.getNextStateName() + '"' : '')
             + ((this.isEndState()) ? ',"End":' + this.isEndState() : '')
+            + ((this.getInputPath()) ? ',"InputPath":"' + this.getInputPath() + '"' : '')
+            + ((this.getOutputPath()) ? ',"OutputPath":"' + this.getOutputPath() + '"' : '')
             + '}';
     };
     return TaskState;

@@ -193,5 +193,10 @@ describe('TaskState class tests', function () {
             var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
             chai_1.expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment"}');
         });
+        it('should return json of task state', function () {
+            var resource = function () { return 1 + 1; };
+            var taskState = new TaskState_1.TaskState("myName", resource, "myComment", "nextState", false, "$.test", "$.test2");
+            chai_1.expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment","Next":"nextState","InputPath":"$.test","OutputPath":"$.test2"}');
+        });
     });
 });
