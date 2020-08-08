@@ -107,7 +107,7 @@ var StateMachine = /** @class */ (function () {
     };
     StateMachine.prototype.setInput = function (input) {
         //if json invalid parse will throw SyntaxError
-        if (input && JSON.parse(input))
+        if (input)
             this.input = input;
     };
     StateMachine.prototype.execute = function () {
@@ -118,18 +118,21 @@ var StateMachine = /** @class */ (function () {
             return element.getName() == _this.getStartStateName();
         });
         while (true) {
-            if (currentState instanceof PassState_1.PassState || currentState instanceof TaskState_1.TaskState)
-                results.push(currentState.execute(this.getInput()));
+            if (currentState instanceof PassState_1.PassState || currentState instanceof TaskState_1.TaskState) {
+                var output = currentState.execute(this.getInput());
+                if (output)
+                    this.setInput(JSON.stringify(output));
+            }
+            if (currentState == undefined || currentState.isTerminal())
+                break;
             currentState = this.getStates().find(function (element) {
                 if (currentState instanceof PassState_1.PassState)
                     return currentState ? element.getName() == currentState.getNextStateName() : false;
                 if (currentState instanceof TaskState_1.TaskState)
                     return currentState ? element.getName() == currentState.getNextStateName() : false;
             });
-            if (currentState == undefined || currentState.isTerminal())
-                break;
         }
-        return results;
+        return this.getInput();
     };
     StateMachine.prototype.toString = function () {
         var json = '{'

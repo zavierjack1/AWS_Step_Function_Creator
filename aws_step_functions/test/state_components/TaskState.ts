@@ -2,6 +2,7 @@ import { TaskState }  from '../../src/state_components/TaskState';
 import { expect, assert } from 'chai';
 import 'mocha';
 var JsonPath = require('jsonpath');
+
 describe('TaskState class tests', function () {
   context('Name Tests', function () {
     it('should return name of State', function () {
@@ -214,51 +215,12 @@ describe('TaskState class tests', function () {
       let resource = function (x: string){
         return x;
       }
-      let taskState = new TaskState("myName", resource, "myComment");
-      let json = 
-        `{
-          "store": {
-              "book": [
-                  {
-                      "category": "reference",
-                      "author": "Nigel Rees",
-                      "title": "Sayings of the Century",
-                      "price": 8.95
-                  },
-                  {
-                      "category": "fiction",
-                      "author": "Evelyn Waugh",
-                      "title": "Sword of Honour",
-                      "price": 12.99
-                  },
-                  {
-                      "category": "fiction",
-                      "author": "Herman Melville",
-                      "title": "Moby Dick",
-                      "isbn": "0-553-21311-3",
-                      "price": 8.99
-                  },
-                  {
-                      "category": "fiction",
-                      "author": "J. R. R. Tolkien",
-                      "title": "The Lord of the Rings",
-                      "isbn": "0-395-19395-8",
-                      "price": 22.99
-                  }
-              ],
-              "bicycle": {
-                  "color": "red",
-                  "price": 19.95
-              }
-          },
-          "expensive": 10
-        }`;
       let state = new TaskState("myName", resource, "myComment");
       state.setOutputPath("$.store.book[*].author");
       expect(state.getOutputPath()).to.equal("$.store.book[*].author");
     });
 
-    it('should return list of authors from json', function () {
+    it('should output a json with store.result = list of authors', function () {
       let resource = function (x: string){
         return x;
       }
@@ -308,9 +270,9 @@ describe('TaskState class tests', function () {
     });
   })
 
-  it('should return list of authors from json', function () {
+  it('should set inputJson expense field to 2x', function () {
     let resource = function (x: string){
-      return x;
+      return Number(x)*2;
     }
     let taskState = new TaskState("myName", resource, "myComment");
     let json = 
@@ -354,7 +316,7 @@ describe('TaskState class tests', function () {
     taskState.setResource(resource);
     taskState.setInputPath("$.expensive");
     taskState.setOutputPath("$.expensive");
-    expect(JsonPath.query(taskState.execute(json), taskState.getOutputPath())).to.eql([[10]]);
+    expect(JsonPath.query(taskState.execute(json), taskState.getOutputPath())).to.eql([20]);
   });
 
   context('toString test', function () {

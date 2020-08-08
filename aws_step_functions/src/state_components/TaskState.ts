@@ -88,6 +88,7 @@ export class TaskState extends State implements Executable, InputOutputPath, Nex
     if (rawInput){
       rawInput = JSON.parse(rawInput); //convert string to jsonObject
       let resoureResult = this.getResource()(JsonPath.query(rawInput, this.getInputPath()));
+      console.log(rawInput);
       if (this.getOutputPath()) {
         JsonPath.value(rawInput, this.getOutputPath(), resoureResult);
         return rawInput;

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var PassState_1 = require("../../src/state_components/PassState");
 var chai_1 = require("chai");
 require("mocha");
-var assert = require('assert');
+var JsonPath = require('jsonpath');
 describe('PassState class tests', function () {
     context('Name Tests', function () {
         it('should return name of State', function () {
@@ -24,7 +24,6 @@ describe('PassState class tests', function () {
     });
     context('Type Tests', function () {
         it('should return state type', function () {
-            assert.equal(new PassState_1.PassState("myName").getType(), "Pass");
             chai_1.expect(new PassState_1.PassState("myName").getType()).to.equal("Pass");
         });
     });
@@ -92,5 +91,33 @@ describe('PassState class tests', function () {
             state.setInputPath("$.store.book[*].author");
             chai_1.expect(state.getInputPath()).to.equal("$.store.book[*].author");
         });
+    });
+    context('OutputPath Tests', function () {
+        it('should set and get outputPath', function () {
+            var state = new PassState_1.PassState("myName", "myResult", "myComment");
+            state.setOutputPath("$.store.book[*].author");
+            chai_1.expect(state.getOutputPath()).to.equal("$.store.book[*].author");
+        });
+        it('should output a json with store.result = list of authors', function () {
+            var state = new PassState_1.PassState("myName", "myResult", "myComment");
+            var json = "{\n          \"store\": {\n              \"book\": [\n                  {\n                      \"category\": \"reference\",\n                      \"author\": \"Nigel Rees\",\n                      \"title\": \"Sayings of the Century\",\n                      \"price\": 8.95\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Evelyn Waugh\",\n                      \"title\": \"Sword of Honour\",\n                      \"price\": 12.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Herman Melville\",\n                      \"title\": \"Moby Dick\",\n                      \"isbn\": \"0-553-21311-3\",\n                      \"price\": 8.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"J. R. R. Tolkien\",\n                      \"title\": \"The Lord of the Rings\",\n                      \"isbn\": \"0-395-19395-8\",\n                      \"price\": 22.99\n                  }\n              ],\n              \"bicycle\": {\n                  \"color\": \"red\",\n                  \"price\": 19.95\n              }\n          },\n          \"expensive\": 10\n        }";
+            state.setInputPath("$.store.book[*].author");
+            state.setOutputPath("$.store.result");
+            chai_1.expect(JsonPath.query(state.execute(json), '$.store.result')).to.eql(['myResult']);
+        });
+    });
+    it('should set inputJson expense field to array of numbers', function () {
+        var state = new PassState_1.PassState("myName", [100, 200], "myComment");
+        var json = "{\n        \"store\": {\n            \"book\": [\n                {\n                    \"category\": \"reference\",\n                    \"author\": \"Nigel Rees\",\n                    \"title\": \"Sayings of the Century\",\n                    \"price\": 8.95\n                },\n                {\n                    \"category\": \"fiction\",\n                    \"author\": \"Evelyn Waugh\",\n                    \"title\": \"Sword of Honour\",\n                    \"price\": 12.99\n                },\n                {\n                    \"category\": \"fiction\",\n                    \"author\": \"Herman Melville\",\n                    \"title\": \"Moby Dick\",\n                    \"isbn\": \"0-553-21311-3\",\n                    \"price\": 8.99\n                },\n                {\n                    \"category\": \"fiction\",\n                    \"author\": \"J. R. R. Tolkien\",\n                    \"title\": \"The Lord of the Rings\",\n                    \"isbn\": \"0-395-19395-8\",\n                    \"price\": 22.99\n                }\n            ],\n            \"bicycle\": {\n                \"color\": \"red\",\n                \"price\": 19.95\n            }\n        },\n        \"expensive\": 10\n      }";
+        state.setInputPath("$.expensive");
+        state.setOutputPath("$.expensive");
+        chai_1.expect(JsonPath.query(state.execute(json), state.getOutputPath())).to.eql([[100, 200]]);
+    });
+    it('should set inputJson expense field to 100', function () {
+        var state = new PassState_1.PassState("myName", 100, "myComment");
+        var json = "{\n        \"store\": {\n            \"book\": [\n                {\n                    \"category\": \"reference\",\n                    \"author\": \"Nigel Rees\",\n                    \"title\": \"Sayings of the Century\",\n                    \"price\": 8.95\n                },\n                {\n                    \"category\": \"fiction\",\n                    \"author\": \"Evelyn Waugh\",\n                    \"title\": \"Sword of Honour\",\n                    \"price\": 12.99\n                },\n                {\n                    \"category\": \"fiction\",\n                    \"author\": \"Herman Melville\",\n                    \"title\": \"Moby Dick\",\n                    \"isbn\": \"0-553-21311-3\",\n                    \"price\": 8.99\n                },\n                {\n                    \"category\": \"fiction\",\n                    \"author\": \"J. R. R. Tolkien\",\n                    \"title\": \"The Lord of the Rings\",\n                    \"isbn\": \"0-395-19395-8\",\n                    \"price\": 22.99\n                }\n            ],\n            \"bicycle\": {\n                \"color\": \"red\",\n                \"price\": 19.95\n            }\n        },\n        \"expensive\": 10\n      }";
+        state.setInputPath("$.expensive");
+        state.setOutputPath("$.expensive");
+        chai_1.expect(JsonPath.query(state.execute(json), state.getOutputPath())).to.eql([100]);
     });
 });

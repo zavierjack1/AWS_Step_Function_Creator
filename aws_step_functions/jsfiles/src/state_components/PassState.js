@@ -15,6 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PassState = void 0;
 var State_1 = require("./State");
+var JsonPath = require('jsonpath');
 var PassState = /** @class */ (function (_super) {
     __extends(PassState, _super);
     function PassState(name, result, comment, nextStateName, endState, inputPath, outputPath) {
@@ -68,10 +69,17 @@ var PassState = /** @class */ (function (_super) {
     };
     PassState.prototype.setOutputPath = function (outputPath) {
         //if json invalid parse will throw SyntaxError
-        if (outputPath && JSON.parse(outputPath))
-            this.outputPath = outputPath;
+        this.outputPath = outputPath;
     };
-    PassState.prototype.execute = function () {
+    PassState.prototype.execute = function (rawInput) {
+        if (rawInput) {
+            rawInput = JSON.parse(rawInput); //converts string to jsonObject and validates
+            if (this.getOutputPath()) {
+                JsonPath.value(rawInput, this.getOutputPath(), this.getResult());
+                return rawInput;
+            }
+            return this.getResult();
+        }
         return this.getResult();
     };
     PassState.prototype.isTerminal = function () {

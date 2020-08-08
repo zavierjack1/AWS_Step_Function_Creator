@@ -2,7 +2,6 @@ import { State } from './State';
 import { Executable } from './Executable';
 import { PassState } from './PassState';
 import { TaskState } from './TaskState';
-import { NextOrEnd } from './NextOrEnd';
 
 export class StateMachine implements Executable{
   private states: State[] = [];
@@ -10,9 +9,9 @@ export class StateMachine implements Executable{
   private comment?: string;
   private version: string;
   private timeoutSeconds?: number;
-  private input?: string;
+  private input?: Object;
 
-  constructor(states: State[] = [], startState: string, comment?: string, version: string="1.0", timeoutSeconds?: number, input?: string) {
+  constructor(states: State[] = [], startState: string, comment?: string, version: string="1.0", timeoutSeconds?: number, input?: Object) {
     if (states.length == 0) throw new Error("states must not be empty");
     this.states = states;
     this.startState = startState;
@@ -120,16 +119,16 @@ export class StateMachine implements Executable{
       this.timeoutSeconds = timeoutSeconds;
   }
 
-  public getInput(): string | undefined{
+  public getInput(): Object | undefined{
     return this.input;
   }
 
-  public setInput(input: string | undefined): void {
+  public setInput(input: Object | undefined): void {
     //if json invalid parse will throw SyntaxError
-    if (input && JSON.parse(input)) this.input = input;
+    if (input) this.input = input;
   }
 
-  public execute() : any[]{
+  public execute() : Object | undefined{
     let currentState: State | undefined;
     let results: any[] = [];
     currentState = this.getStates().find(element => {
@@ -137,16 +136,17 @@ export class StateMachine implements Executable{
     })
 
     while (true){
-      if (currentState instanceof PassState || currentState instanceof TaskState) results.push(currentState.execute(this.getInput()));
-
+      if (currentState instanceof PassState || currentState instanceof TaskState){
+        let output = currentState.execute(this.getInput());
+        if (output) this.setInput(JSON.stringify(output));
+      }
+      if (currentState == undefined || currentState.isTerminal()) break;
       currentState = this.getStates().find(element => {
         if (currentState instanceof PassState) return (<PassState> currentState) ? element.getName() == currentState.getNextStateName() : false;
         if (currentState instanceof TaskState) return (<TaskState> currentState) ? element.getName() == currentState.getNextStateName() : false;
       })
-
-      if (currentState == undefined || currentState.isTerminal()) break;
     }
-    return results;
+    return this.getInput();
   }
 
   public toString(){

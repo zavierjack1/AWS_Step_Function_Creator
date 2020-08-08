@@ -160,13 +160,11 @@ describe('TaskState class tests', function () {
             var resource = function (x) {
                 return x;
             };
-            var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
-            var json = "{\n          \"store\": {\n              \"book\": [\n                  {\n                      \"category\": \"reference\",\n                      \"author\": \"Nigel Rees\",\n                      \"title\": \"Sayings of the Century\",\n                      \"price\": 8.95\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Evelyn Waugh\",\n                      \"title\": \"Sword of Honour\",\n                      \"price\": 12.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Herman Melville\",\n                      \"title\": \"Moby Dick\",\n                      \"isbn\": \"0-553-21311-3\",\n                      \"price\": 8.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"J. R. R. Tolkien\",\n                      \"title\": \"The Lord of the Rings\",\n                      \"isbn\": \"0-395-19395-8\",\n                      \"price\": 22.99\n                  }\n              ],\n              \"bicycle\": {\n                  \"color\": \"red\",\n                  \"price\": 19.95\n              }\n          },\n          \"expensive\": 10\n        }";
             var state = new TaskState_1.TaskState("myName", resource, "myComment");
             state.setOutputPath("$.store.book[*].author");
             chai_1.expect(state.getOutputPath()).to.equal("$.store.book[*].author");
         });
-        it('should return list of authors from json', function () {
+        it('should output a json with store.result = list of authors', function () {
             var resource = function (x) {
                 return x;
             };
@@ -178,16 +176,16 @@ describe('TaskState class tests', function () {
             chai_1.expect(JsonPath.query(taskState.execute(json), '$.store.result')).to.eql([['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien']]);
         });
     });
-    it('should return list of authors from json', function () {
+    it('should set inputJson expense field to 2x', function () {
         var resource = function (x) {
-            return x;
+            return Number(x) * 2;
         };
         var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
         var json = "{\n        \"store\": {\n            \"book\": [\n                {\n                    \"category\": \"reference\",\n                    \"author\": \"Nigel Rees\",\n                    \"title\": \"Sayings of the Century\",\n                    \"price\": 8.95\n                },\n                {\n                    \"category\": \"fiction\",\n                    \"author\": \"Evelyn Waugh\",\n                    \"title\": \"Sword of Honour\",\n                    \"price\": 12.99\n                },\n                {\n                    \"category\": \"fiction\",\n                    \"author\": \"Herman Melville\",\n                    \"title\": \"Moby Dick\",\n                    \"isbn\": \"0-553-21311-3\",\n                    \"price\": 8.99\n                },\n                {\n                    \"category\": \"fiction\",\n                    \"author\": \"J. R. R. Tolkien\",\n                    \"title\": \"The Lord of the Rings\",\n                    \"isbn\": \"0-395-19395-8\",\n                    \"price\": 22.99\n                }\n            ],\n            \"bicycle\": {\n                \"color\": \"red\",\n                \"price\": 19.95\n            }\n        },\n        \"expensive\": 10\n      }";
         taskState.setResource(resource);
         taskState.setInputPath("$.expensive");
         taskState.setOutputPath("$.expensive");
-        chai_1.expect(JsonPath.query(taskState.execute(json), taskState.getOutputPath())).to.eql([[10]]);
+        chai_1.expect(JsonPath.query(taskState.execute(json), taskState.getOutputPath())).to.eql([20]);
     });
     context('toString test', function () {
         it('should return json of task state', function () {
