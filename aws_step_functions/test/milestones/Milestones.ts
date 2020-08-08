@@ -103,5 +103,42 @@ describe('Milestones', function () {
       stateMachine.setInput(json);
       expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld, GoodBye single state machines.");
     });
+
+    it('Statemachine w/ a TaskState1 and a TaskState2. The TaskState1 returns 123. The TaskState2 returns 123abc', 
+    function () {
+      let resource = function (x: string){
+        return "123";
+      }
+      let stateMachine = new StateMachine([new TaskState("TaskState1", resource, "comment", "TaskState2", false, "$.result", "$.result")], "TaskState1");
+      resource = function (x: string){
+        return x+"abc";
+      }
+      stateMachine.addState(new TaskState("TaskState2", resource, "", "", true, "$.result", "$.result"));
+      let json = `{
+          "first": 100,
+          "second": 200
+        }`;
+      stateMachine.setInput(json);
+      expect(JSON.parse(stateMachine.execute())["result"]).to.equal("123abc");
+    });
+
+    it('Statemachine w/ a TaskState1 and a TaskState2. The TaskState1 returns 100. The TaskState2 returns 200', 
+    function () {
+      let resource = function (x: number){
+        return x;
+      }
+      let stateMachine = new StateMachine([new TaskState("TaskState1", resource, "comment", "TaskState2", false, "$.param1", "$.result1")], "TaskState1");
+      let resource2 = function (x: number){
+        return x;
+      }
+      stateMachine.addState(new TaskState("TaskState2", resource2, "", "", true, "$.param2", "$.result2"));
+      let json = `{
+          "param1": 100,
+          "param2": 200
+        }`;
+      stateMachine.setInput(json);
+      expect(JSON.parse(stateMachine.execute())["result1"]).to.eql([100]);
+      expect(JSON.parse(stateMachine.execute())["result2"]).to.eql([200]);
+    });
   });
 })

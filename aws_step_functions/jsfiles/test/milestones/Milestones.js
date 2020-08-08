@@ -76,5 +76,32 @@ describe('Milestones', function () {
             stateMachine.setInput(json);
             chai_1.expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld, GoodBye single state machines.");
         });
+        it('Statemachine w/ a TaskState1 and a TaskState2. The TaskState1 returns 123. The TaskState2 returns 123abc', function () {
+            var resource = function (x) {
+                return "123";
+            };
+            var stateMachine = new StateMachine_1.StateMachine([new TaskState_1.TaskState("TaskState1", resource, "comment", "TaskState2", false, "$.result", "$.result")], "TaskState1");
+            resource = function (x) {
+                return x + "abc";
+            };
+            stateMachine.addState(new TaskState_1.TaskState("TaskState2", resource, "", "", true, "$.result", "$.result"));
+            var json = "{\n          \"first\": 100,\n          \"second\": 200\n        }";
+            stateMachine.setInput(json);
+            chai_1.expect(JSON.parse(stateMachine.execute())["result"]).to.equal("123abc");
+        });
+        it('Statemachine w/ a TaskState1 and a TaskState2. The TaskState1 returns 100. The TaskState2 returns 200', function () {
+            var resource = function (x) {
+                return x;
+            };
+            var stateMachine = new StateMachine_1.StateMachine([new TaskState_1.TaskState("TaskState1", resource, "comment", "TaskState2", false, "$.param1", "$.result1")], "TaskState1");
+            var resource2 = function (x) {
+                return x;
+            };
+            stateMachine.addState(new TaskState_1.TaskState("TaskState2", resource2, "", "", true, "$.param2", "$.result2"));
+            var json = "{\n          \"param1\": 100,\n          \"param2\": 200\n        }";
+            stateMachine.setInput(json);
+            chai_1.expect(JSON.parse(stateMachine.execute())["result1"]).to.eql([100]);
+            chai_1.expect(JSON.parse(stateMachine.execute())["result2"]).to.eql([200]);
+        });
     });
 });

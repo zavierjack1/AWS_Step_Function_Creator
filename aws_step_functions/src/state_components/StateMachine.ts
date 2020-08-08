@@ -38,6 +38,10 @@ export class StateMachine implements Executable{
     return this.validateNextStates();
   }
 
+  public isValid(): Boolean{
+    return this.validate();
+  }
+
   public stateNameIsUnique(stateName : string) : Boolean {
     if (this.getStates().some(element => { 
         return element.getName() == stateName;
@@ -130,6 +134,7 @@ export class StateMachine implements Executable{
   }
 
   public execute() : string {
+    //only execute if stateMachine valid
     let currentState: State | undefined;
     let results: any[] = [];
     currentState = this.getStates().find(element => {

@@ -30,6 +30,9 @@ var StateMachine = /** @class */ (function () {
     StateMachine.prototype.validate = function () {
         return this.validateNextStates();
     };
+    StateMachine.prototype.isValid = function () {
+        return this.validate();
+    };
     StateMachine.prototype.stateNameIsUnique = function (stateName) {
         if (this.getStates().some(function (element) {
             return element.getName() == stateName;
@@ -112,6 +115,7 @@ var StateMachine = /** @class */ (function () {
     };
     StateMachine.prototype.execute = function () {
         var _this = this;
+        //only execute if stateMachine valid
         var currentState;
         var results = [];
         currentState = this.getStates().find(function (element) {
