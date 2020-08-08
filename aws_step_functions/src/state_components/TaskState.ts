@@ -1,7 +1,7 @@
 import { State } from "./State";
 import { InputOutputPath } from "./InputOutputPath";
 import { NextOrEnd } from "./NextOrEnd";
-var JsonPath = require('jsonpath');
+import { JsonPathCustom } from "../utility/JsonPathCustom";
 
 export class TaskState extends State implements InputOutputPath, NextOrEnd//, Parameters, ResultPath, , RetryCatch
 {
@@ -85,13 +85,13 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd//, Pa
   public execute(input?: string) {
     let output = JSON.parse(input ? input : "{}"); 
     if (this.getInputPath() && this.getOutputPath()){
-      JsonPath.value(output, this.getOutputPath(), 
-        this.getResource()(JsonPath.query(output, this.getInputPath()))
+      JsonPathCustom.value(output, this.getOutputPath(), 
+        this.getResource()(JsonPathCustom.query(output, this.getInputPath()))
       );
       return output;
     }
     if (this.getOutputPath()) {
-      JsonPath.value(output, this.getOutputPath(), this.getResource()());
+      JsonPathCustom.value(output, this.getOutputPath(), this.getResource()());
       return output;
     }
     this.getResource()();

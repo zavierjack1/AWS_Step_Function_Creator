@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskState = void 0;
 var State_1 = require("./State");
-var JsonPath = require('jsonpath');
+var JsonPathCustom_1 = require("../utility/JsonPathCustom");
 var TaskState = /** @class */ (function (_super) {
     __extends(TaskState, _super);
     function TaskState(name, resource, comment, nextStateName, endState, inputPath, outputPath) {
@@ -78,11 +78,11 @@ var TaskState = /** @class */ (function (_super) {
     TaskState.prototype.execute = function (input) {
         var output = JSON.parse(input ? input : "{}");
         if (this.getInputPath() && this.getOutputPath()) {
-            JsonPath.value(output, this.getOutputPath(), this.getResource()(JsonPath.query(output, this.getInputPath())));
+            JsonPathCustom_1.JsonPathCustom.value(output, this.getOutputPath(), this.getResource()(JsonPathCustom_1.JsonPathCustom.query(output, this.getInputPath())));
             return output;
         }
         if (this.getOutputPath()) {
-            JsonPath.value(output, this.getOutputPath(), this.getResource()());
+            JsonPathCustom_1.JsonPathCustom.value(output, this.getOutputPath(), this.getResource()());
             return output;
         }
         this.getResource()();
