@@ -81,6 +81,11 @@ var PassState = /** @class */ (function (_super) {
     PassState.prototype.isTerminal = function () {
         return this.isEndState();
     };
+    PassState.prototype.validateNextStateName = function () {
+        if (this.isTerminal() || this.getNextStateName() != "")
+            return true;
+        return false;
+    };
     PassState.prototype.toString = function () {
         return '"' + this.getName() + '":'
             + '{'

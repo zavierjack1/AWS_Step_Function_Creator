@@ -1,7 +1,8 @@
 import { State } from "./State";
 import { InputOutputPath } from "./InputOutputPath";
+import { NextOrEnd } from "./NextOrEnd";
 var JsonPath = require('jsonpath');
-export class PassState extends State implements InputOutputPath{
+export class PassState extends State implements InputOutputPath, NextOrEnd{
   private result?: string;
   private nextStateName?: string;
   private endState: Boolean = false;
@@ -84,6 +85,11 @@ export class PassState extends State implements InputOutputPath{
 
   public isTerminal(): Boolean{
     return this.isEndState();
+  }
+
+  public validateNextStateName() : Boolean {
+    if (this.isTerminal() || this.getNextStateName() != "") return true;
+    return false;
   }
 
   public toString() : string{
