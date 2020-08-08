@@ -1,8 +1,7 @@
 import { State } from "./State";
-import { Executable } from "./Executable";
 import { InputOutputPath } from "./InputOutputPath";
 var JsonPath = require('jsonpath');
-export class PassState extends State implements Executable, InputOutputPath{
+export class PassState extends State implements InputOutputPath{
   private result?: string;
   private nextStateName?: string;
   private endState: Boolean = false;
@@ -67,7 +66,7 @@ export class PassState extends State implements Executable, InputOutputPath{
   }
 
   public getOutputPath(): string | undefined{
-    return this.outputPath;
+    return this.outputPath ? this.outputPath : "";
   }
 
   public setOutputPath(outputPath: string | undefined): void {
@@ -75,15 +74,12 @@ export class PassState extends State implements Executable, InputOutputPath{
   }
 
   public execute(input?: string) {
-    if (input){
-      input = JSON.parse(input); 
-      if (this.getOutputPath()) {
-        JsonPath.value(input, this.getOutputPath(), this.getResult());
-        return input;
-      }
-      return this.getResult();
+    let output = JSON.parse(input ? input : "{}");
+    if(this.getOutputPath()){
+      JsonPath.value(output, this.getOutputPath(), this.getResult());
+      return output;
     }
-    return this.getResult();
+    return output;
   }
 
   public isTerminal(): Boolean{

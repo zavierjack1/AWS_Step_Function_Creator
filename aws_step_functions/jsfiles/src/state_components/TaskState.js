@@ -76,19 +76,20 @@ var TaskState = /** @class */ (function (_super) {
         return this.isEndState();
     };
     TaskState.prototype.execute = function (input) {
-        if (input) {
-            input = JSON.parse(input); //convert string to jsonObject
-            var resoureResult = this.getResource()(JsonPath.query(input, this.getInputPath()));
-            if (this.getOutputPath()) {
-                JsonPath.value(input, this.getOutputPath(), resoureResult);
-                return input;
-            }
-            return resoureResult;
+        var output = JSON.parse(input ? input : "{}");
+        if (this.getInputPath() && this.getOutputPath()) {
+            JsonPath.value(output, this.getOutputPath(), this.getResource()(JsonPath.query(output, this.getInputPath())));
+            return output;
         }
-        return this.getResource()();
+        if (this.getOutputPath()) {
+            JsonPath.value(output, this.getOutputPath(), this.getResource()());
+            return output;
+        }
+        this.getResource()();
+        return output;
     };
     TaskState.prototype.validateNextStateName = function () {
-        if (!this.isTerminal || this.getNextStateName() != "")
+        if (this.isTerminal() || this.getNextStateName() != "")
             return true;
         return false;
     };

@@ -122,13 +122,22 @@ describe('TaskState class tests', function () {
   })
 
   context('Resource & Execution Tests', function () {
-    it('should return "test"', function () {
+    it('should return json result', function () {
+      let resource = function (){
+        return "test";
+      }
+      let taskState = new TaskState("myName", resource, "myComment", "", true, "", "$.result");
+      taskState.setResource(resource);
+      expect(taskState.execute()['result']).to.equal("test");
+    });
+
+    it('should return empty json', function () {
       let resource = function (){
         return "test";
       }
       let taskState = new TaskState("myName", resource, "myComment");
       taskState.setResource(resource);
-      expect(taskState.execute()).to.equal("test");
+      expect(taskState.execute()).to.eql(JSON.parse("{}"));
     });
 
     it('should return undefined', function () {
@@ -137,7 +146,7 @@ describe('TaskState class tests', function () {
       }
       let taskState = new TaskState("myName", resource, "myComment");
       taskState.setResource(resource);
-      expect(taskState.execute()).to.equal(undefined);
+      expect(taskState.execute()).to.eql(JSON.parse("{}"));
     });
   });
 
@@ -206,7 +215,7 @@ describe('TaskState class tests', function () {
         }`;
       taskState.setResource(resource);
       taskState.setInputPath("$.store.book[*].author");
-      expect(taskState.execute(json)).to.eql([ 'Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien' ]);
+      expect(JsonPath.query(taskState.execute(json), '$.store.book[*].author')).to.eql([ 'Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien' ]);
     });
   })
 

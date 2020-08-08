@@ -72,9 +72,9 @@ describe('PassState class tests', function () {
     });
     context('Result and Execution Tests', function () {
         it('should return result', function () {
-            var state = new PassState_1.PassState("myName", "result", "myComment");
-            var result = state.execute();
-            chai_1.expect(result).to.equal("result");
+            var state = new PassState_1.PassState("myName", "result", "myComment", "", false, "", "$.result");
+            var result = state.execute("{}");
+            chai_1.expect(result['result']).to.equal("result");
         });
     });
     context('toString test', function () {

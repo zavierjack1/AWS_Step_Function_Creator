@@ -64,22 +64,19 @@ var PassState = /** @class */ (function (_super) {
         this.inputPath = inputPath;
     };
     PassState.prototype.getOutputPath = function () {
-        return this.outputPath;
+        return this.outputPath ? this.outputPath : "";
     };
     PassState.prototype.setOutputPath = function (outputPath) {
         if (outputPath)
             this.outputPath = outputPath;
     };
     PassState.prototype.execute = function (input) {
-        if (input) {
-            input = JSON.parse(input);
-            if (this.getOutputPath()) {
-                JsonPath.value(input, this.getOutputPath(), this.getResult());
-                return input;
-            }
-            return this.getResult();
+        var output = JSON.parse(input ? input : "{}");
+        if (this.getOutputPath()) {
+            JsonPath.value(output, this.getOutputPath(), this.getResult());
+            return output;
         }
-        return this.getResult();
+        return output;
     };
     PassState.prototype.isTerminal = function () {
         return this.isEndState();

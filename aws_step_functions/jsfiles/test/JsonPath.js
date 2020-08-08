@@ -30,4 +30,11 @@ describe('JsonPath tests', function () {
             chai_1.expect(jsonpath.query(json, '$.store.bicycle.result')).to.eql(["MyResults"]);
         });
     });
+    context('Adding new value to Json', function () {
+        it('should add results to bicyle', function () {
+            var json = JSON.parse("{}");
+            jsonpath.value(json, '$.store', "MyResults");
+            chai_1.expect(jsonpath.query(json, '$.store')).to.eql(["MyResults"]);
+        });
+    });
 });

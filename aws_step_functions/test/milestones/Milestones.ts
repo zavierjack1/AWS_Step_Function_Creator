@@ -53,13 +53,13 @@ describe('Milestones', function () {
 
     it('HelloWorld single PassState', 
     function () {
-      let stateMachine = new StateMachine([new PassState("Hello World", "Hello World Result", "", "", true)], "Hello World", "A simple minimal example of the States language");
-      let results = stateMachine.execute();
+      let stateMachine = new StateMachine([new PassState("Hello World", "Hello World Result", "", "", true, "", "$.result")], "Hello World", "A simple minimal example of the States language");
+      stateMachine.execute();
       expect(stateMachine.getStates()[0].getName()).to.equal("Hello World");
       expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
       expect(stateMachine.getStartStateName()).to.equal("Hello World");
       expect(stateMachine.validate()).to.equal(true);
-      expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World":{"Type":"Pass","Result":"Hello World Result","End":true}}');
+      expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World":{"Type":"Pass","Result":"Hello World Result","End":true,"OutputPath":"$.result"}}');
       expect(JSON.parse(stateMachine.toString())["StartAt"]).to.equal("Hello World");
       expect(JSON.parse(stateMachine.toString())["Version"]).to.equal("1.0");
       expect(JSON.parse(stateMachine.toString())["Comment"]).to.equal("A simple minimal example of the States language");
@@ -86,13 +86,13 @@ describe('Milestones', function () {
     it('HelloWorld single TaskState', 
     function () {
       let resource = function (){ return 1 + 1; };
-      let stateMachine = new StateMachine([new TaskState("Hello World Task", resource, "", "", true)], "Hello World Task", "A simple minimal example of the States language");
-      let results = stateMachine.execute();
+      let stateMachine = new StateMachine([new TaskState("Hello World Task", resource, "", "", true, "", "$.result")], "Hello World Task", "A simple minimal example of the States language");
+      stateMachine.execute();
       expect(stateMachine.getStates()[0].getName()).to.equal("Hello World Task");
       expect(stateMachine.getStates()[0].getType()).to.equal("Task");
       expect(stateMachine.getStartStateName()).to.equal("Hello World Task");
       expect(stateMachine.validate()).to.equal(true);
-      expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World Task", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World Task":{"Type":"Task","Resource":"function () { return 1 + 1; }","End":true}}');
+      expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World Task", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World Task":{"Type":"Task","Resource":"function () { return 1 + 1; }","End":true,"OutputPath":"$.result"}}');
       expect(JSON.parse(stateMachine.toString())["StartAt"]).to.equal("Hello World Task");
       expect(JSON.parse(stateMachine.toString())["Version"]).to.equal("1.0");
       expect(JSON.parse(stateMachine.toString())["Comment"]).to.equal("A simple minimal example of the States language");

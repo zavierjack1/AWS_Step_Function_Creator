@@ -84,9 +84,9 @@ describe('PassState class tests', function () {
 
   context('Result and Execution Tests', function () {
     it('should return result', function () {
-      let state = new PassState("myName", "result", "myComment");
-      let result = state.execute();
-      expect(result).to.equal("result");
+      let state = new PassState("myName", "result", "myComment", "", false, "", "$.result");
+      let result = state.execute("{}");
+      expect(result['result']).to.equal("result");
     });
   })
 

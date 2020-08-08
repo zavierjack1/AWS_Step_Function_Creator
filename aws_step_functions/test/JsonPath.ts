@@ -95,4 +95,12 @@ describe('JsonPath tests', function () {
       expect(jsonpath.query(json, '$.store.bicycle.result')).to.eql(["MyResults"]);
     });
   })
+
+  context('Adding new value to Json', function () {
+    it('should add results to bicyle', function () {
+      let json = JSON.parse(`{}`);
+      jsonpath.value(json, '$.store', "MyResults");
+      expect(jsonpath.query(json, '$.store')).to.eql(["MyResults"]);
+    });
+  })
 })

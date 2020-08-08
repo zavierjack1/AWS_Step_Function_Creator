@@ -105,10 +105,19 @@ describe('StateMachine Tests', function () {
         });
     });
     context('execute statemachine', function () {
-        it('should simulate statemachine with single pass state', function () {
-            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "", true)], "myState", "myComment", "2.0", 10);
-            chai_1.expect(stateMachine.validate()).to.equal(true);
-            //expect(stateMachine.execute()[0]).to.equal("result");
+        it('should fail statemachine validation', function () {
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "", false)], "myState", "myComment", "2.0", 10);
+            chai_1.expect(function () { stateMachine.execute(); }).to.throw("this stateMachine is invalid!");
+        });
+        it('Statemachine w/ a PassState. The PassState returns Hello World.', function () {
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myPassState", "HelloWorld", "", "myTaskState", true, "", "$.result")], "myPassState");
+            var json = "{\n          \"first\": 100,\n          \"second\": 200\n        }";
+            stateMachine.setInput(json);
+            chai_1.expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld");
+        });
+        it('Statemachine w/ a PassState. The PassState returns Hello World.', function () {
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myPassState", "HelloWorld", "", "myTaskState", true, "", "$.result")], "myPassState");
+            chai_1.expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld");
         });
         it('should simulate statemachine with single pass state and succeed state', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState")], "myState", "myComment", "2.0", 10);

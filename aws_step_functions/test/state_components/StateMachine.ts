@@ -121,10 +121,26 @@ describe('StateMachine Tests', function () {
   });
 
   context('execute statemachine', function () {
-    it('should simulate statemachine with single pass state', function () {
-      let stateMachine = new StateMachine([new PassState("myState", "result", "xyz", "", true)], "myState", "myComment", "2.0", 10);
-      expect(stateMachine.validate()).to.equal(true);
-      //expect(stateMachine.execute()[0]).to.equal("result");
+    it('should fail statemachine validation', function () {
+      let stateMachine = new StateMachine([new PassState("myState", "result", "xyz", "", false)], "myState", "myComment", "2.0", 10);
+      expect(function () {stateMachine.execute()}).to.throw("this stateMachine is invalid!");
+    });
+
+    it('Statemachine w/ a PassState. The PassState returns Hello World.', 
+    function () {
+      let stateMachine = new StateMachine([new PassState("myPassState", "HelloWorld", "", "myTaskState", true, "", "$.result")], "myPassState");
+      let json = `{
+          "first": 100,
+          "second": 200
+        }`;
+      stateMachine.setInput(json);
+      expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld");
+    });
+
+    it('Statemachine w/ a PassState. The PassState returns Hello World.', 
+    function () {
+      let stateMachine = new StateMachine([new PassState("myPassState", "HelloWorld", "", "myTaskState", true, "", "$.result")], "myPassState");
+      expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld");
     });
 
     it('should simulate statemachine with single pass state and succeed state', function () {

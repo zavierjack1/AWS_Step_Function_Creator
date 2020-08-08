@@ -124,7 +124,7 @@ export class StateMachine implements Executable{
   }
 
   public getInput(): string {
-    return (this.input) ? this.input : "";
+    return (this.input) ? this.input : "{}";
   }
 
   public setInput(input: string | undefined): void {
@@ -134,16 +134,18 @@ export class StateMachine implements Executable{
 
   public execute() : string {
     //only execute if stateMachine valid
+    if (!this.isValid()) throw Error("this stateMachine is invalid!");
     let currentState: State | undefined;
-    let results: any[] = [];
     currentState = this.getStates().find(element => {
       return element.getName() == this.getStartStateName();
     })
-
+    console.log("initial input: "+this.getInput());
     while (true){
       if (currentState instanceof PassState || currentState instanceof TaskState){
-        let output = currentState.execute(this.getInput());
-        if (output) this.setInput(JSON.stringify(output));
+        console.log("running: "+currentState.getName());
+        console.log("input pre state run: "+this.getInput()); 
+        this.setInput(JSON.stringify(currentState.execute(this.getInput())));
+        console.log("input after state run: "+this.getInput()); 
       }
       if (currentState == undefined || currentState.isTerminal()) break;
       currentState = this.getStates().find(element => {

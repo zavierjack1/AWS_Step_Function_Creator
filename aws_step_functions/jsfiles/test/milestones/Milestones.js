@@ -43,13 +43,13 @@ describe('Milestones', function () {
             chai_1.expect(stateMachine.validate()).to.equal(true);
         });
         it('HelloWorld single PassState', function () {
-            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("Hello World", "Hello World Result", "", "", true)], "Hello World", "A simple minimal example of the States language");
-            var results = stateMachine.execute();
+            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("Hello World", "Hello World Result", "", "", true, "", "$.result")], "Hello World", "A simple minimal example of the States language");
+            stateMachine.execute();
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("Hello World");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("Hello World");
             chai_1.expect(stateMachine.validate()).to.equal(true);
-            chai_1.expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World":{"Type":"Pass","Result":"Hello World Result","End":true}}');
+            chai_1.expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World":{"Type":"Pass","Result":"Hello World Result","End":true,"OutputPath":"$.result"}}');
             chai_1.expect(JSON.parse(stateMachine.toString())["StartAt"]).to.equal("Hello World");
             chai_1.expect(JSON.parse(stateMachine.toString())["Version"]).to.equal("1.0");
             chai_1.expect(JSON.parse(stateMachine.toString())["Comment"]).to.equal("A simple minimal example of the States language");
@@ -67,13 +67,13 @@ describe('Milestones', function () {
     context("2. Add support for a Task state. The state machine representation can now be created either\n    with a single Pass state or a single Task state. The interpreter must support a way\n    for the client to provide mock implementations for function resources used in task states.\n    When simulated, the output of the Task state should be the result of an invocation to the\n    corresponding mock function.", function () {
         it('HelloWorld single TaskState', function () {
             var resource = function () { return 1 + 1; };
-            var stateMachine = new StateMachine_1.StateMachine([new TaskState_1.TaskState("Hello World Task", resource, "", "", true)], "Hello World Task", "A simple minimal example of the States language");
-            var results = stateMachine.execute();
+            var stateMachine = new StateMachine_1.StateMachine([new TaskState_1.TaskState("Hello World Task", resource, "", "", true, "", "$.result")], "Hello World Task", "A simple minimal example of the States language");
+            stateMachine.execute();
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("Hello World Task");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Task");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("Hello World Task");
             chai_1.expect(stateMachine.validate()).to.equal(true);
-            chai_1.expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World Task", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World Task":{"Type":"Task","Resource":"function () { return 1 + 1; }","End":true}}');
+            chai_1.expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World Task", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World Task":{"Type":"Task","Resource":"function () { return 1 + 1; }","End":true,"OutputPath":"$.result"}}');
             chai_1.expect(JSON.parse(stateMachine.toString())["StartAt"]).to.equal("Hello World Task");
             chai_1.expect(JSON.parse(stateMachine.toString())["Version"]).to.equal("1.0");
             chai_1.expect(JSON.parse(stateMachine.toString())["Comment"]).to.equal("A simple minimal example of the States language");

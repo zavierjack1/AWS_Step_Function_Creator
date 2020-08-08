@@ -106,7 +106,7 @@ var StateMachine = /** @class */ (function () {
         this.timeoutSeconds = timeoutSeconds;
     };
     StateMachine.prototype.getInput = function () {
-        return (this.input) ? this.input : "";
+        return (this.input) ? this.input : "{}";
     };
     StateMachine.prototype.setInput = function (input) {
         //if json invalid parse will throw SyntaxError
@@ -116,16 +116,19 @@ var StateMachine = /** @class */ (function () {
     StateMachine.prototype.execute = function () {
         var _this = this;
         //only execute if stateMachine valid
+        if (!this.isValid())
+            throw Error("this stateMachine is invalid!");
         var currentState;
-        var results = [];
         currentState = this.getStates().find(function (element) {
             return element.getName() == _this.getStartStateName();
         });
+        console.log("initial input: " + this.getInput());
         while (true) {
             if (currentState instanceof PassState_1.PassState || currentState instanceof TaskState_1.TaskState) {
-                var output = currentState.execute(this.getInput());
-                if (output)
-                    this.setInput(JSON.stringify(output));
+                console.log("running: " + currentState.getName());
+                console.log("input pre state run: " + this.getInput());
+                this.setInput(JSON.stringify(currentState.execute(this.getInput())));
+                console.log("input after state run: " + this.getInput());
             }
             if (currentState == undefined || currentState.isTerminal())
                 break;

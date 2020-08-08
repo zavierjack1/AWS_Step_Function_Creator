@@ -1,10 +1,9 @@
 import { State } from "./State";
-import { Executable } from "./Executable";
 import { InputOutputPath } from "./InputOutputPath";
 import { NextOrEnd } from "./NextOrEnd";
 var JsonPath = require('jsonpath');
 
-export class TaskState extends State implements Executable, InputOutputPath, NextOrEnd//, Parameters, ResultPath, , RetryCatch
+export class TaskState extends State implements InputOutputPath, NextOrEnd//, Parameters, ResultPath, , RetryCatch
 {
   private resource: Function;
   private nextStateName?: string;
@@ -84,20 +83,23 @@ export class TaskState extends State implements Executable, InputOutputPath, Nex
   }
 
   public execute(input?: string) {
-    if (input){
-      input = JSON.parse(input); //convert string to jsonObject
-      let resoureResult = this.getResource()(JsonPath.query(input, this.getInputPath()));
-      if (this.getOutputPath()) {
-        JsonPath.value(input, this.getOutputPath(), resoureResult);
-        return input;
-      }
-      return resoureResult;
-    } 
-    return this.getResource()();
+    let output = JSON.parse(input ? input : "{}"); 
+    if (this.getInputPath() && this.getOutputPath()){
+      JsonPath.value(output, this.getOutputPath(), 
+        this.getResource()(JsonPath.query(output, this.getInputPath()))
+      );
+      return output;
+    }
+    if (this.getOutputPath()) {
+      JsonPath.value(output, this.getOutputPath(), this.getResource()());
+      return output;
+    }
+    this.getResource()();
+    return output;
   }
 
   public validateNextStateName() : Boolean {
-    if (!this.isTerminal || this.getNextStateName() != "") return true;
+    if (this.isTerminal() || this.getNextStateName() != "") return true;
     return false;
   }
 

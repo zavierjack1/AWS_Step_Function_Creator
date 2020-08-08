@@ -110,13 +110,21 @@ describe('TaskState class tests', function () {
         });
     });
     context('Resource & Execution Tests', function () {
-        it('should return "test"', function () {
+        it('should return json result', function () {
+            var resource = function () {
+                return "test";
+            };
+            var taskState = new TaskState_1.TaskState("myName", resource, "myComment", "", true, "", "$.result");
+            taskState.setResource(resource);
+            chai_1.expect(taskState.execute()['result']).to.equal("test");
+        });
+        it('should return empty json', function () {
             var resource = function () {
                 return "test";
             };
             var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
             taskState.setResource(resource);
-            chai_1.expect(taskState.execute()).to.equal("test");
+            chai_1.expect(taskState.execute()).to.eql(JSON.parse("{}"));
         });
         it('should return undefined', function () {
             var resource = function () {
@@ -124,7 +132,7 @@ describe('TaskState class tests', function () {
             };
             var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
             taskState.setResource(resource);
-            chai_1.expect(taskState.execute()).to.equal(undefined);
+            chai_1.expect(taskState.execute()).to.eql(JSON.parse("{}"));
         });
     });
     context('InputPath Tests', function () {
@@ -152,7 +160,7 @@ describe('TaskState class tests', function () {
             var json = "{\n          \"store\": {\n              \"book\": [\n                  {\n                      \"category\": \"reference\",\n                      \"author\": \"Nigel Rees\",\n                      \"title\": \"Sayings of the Century\",\n                      \"price\": 8.95\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Evelyn Waugh\",\n                      \"title\": \"Sword of Honour\",\n                      \"price\": 12.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Herman Melville\",\n                      \"title\": \"Moby Dick\",\n                      \"isbn\": \"0-553-21311-3\",\n                      \"price\": 8.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"J. R. R. Tolkien\",\n                      \"title\": \"The Lord of the Rings\",\n                      \"isbn\": \"0-395-19395-8\",\n                      \"price\": 22.99\n                  }\n              ],\n              \"bicycle\": {\n                  \"color\": \"red\",\n                  \"price\": 19.95\n              }\n          },\n          \"expensive\": 10\n        }";
             taskState.setResource(resource);
             taskState.setInputPath("$.store.book[*].author");
-            chai_1.expect(taskState.execute(json)).to.eql(['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien']);
+            chai_1.expect(JsonPath.query(taskState.execute(json), '$.store.book[*].author')).to.eql(['Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien']);
         });
     });
     context('OutputPath Tests', function () {
