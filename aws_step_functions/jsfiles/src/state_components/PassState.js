@@ -69,11 +69,13 @@ var PassState = /** @class */ (function (_super) {
     };
     PassState.prototype.setOutputPath = function (outputPath) {
         //if json invalid parse will throw SyntaxError
-        this.outputPath = outputPath;
+        if (outputPath)
+            this.outputPath = outputPath;
     };
     PassState.prototype.execute = function (rawInput) {
         if (rawInput) {
             rawInput = JSON.parse(rawInput); //converts string to jsonObject and validates
+            //let resoureResult = this.getResource()(JsonPath.query(rawInput, this.getInputPath()));
             if (this.getOutputPath()) {
                 JsonPath.value(rawInput, this.getOutputPath(), this.getResult());
                 return rawInput;

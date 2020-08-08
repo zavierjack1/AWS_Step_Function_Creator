@@ -80,7 +80,6 @@ var TaskState = /** @class */ (function (_super) {
         if (rawInput) {
             rawInput = JSON.parse(rawInput); //convert string to jsonObject
             var resoureResult = this.getResource()(JsonPath.query(rawInput, this.getInputPath()));
-            console.log(rawInput);
             if (this.getOutputPath()) {
                 JsonPath.value(rawInput, this.getOutputPath(), resoureResult);
                 return rawInput;

@@ -6,7 +6,6 @@ var StateMachine_1 = require("../../src/state_components/StateMachine");
 var chai_1 = require("chai");
 require("mocha");
 var SucceedState_1 = require("../../src/state_components/SucceedState");
-//!!!!!!! WE NEED TO PASS AND RETURN JSON OBJECTS TO STATES NOT STRINGS!!!
 describe('Milestones', function () {
     context("1. Create/toString/simulate a state machine consisting of a single Pass state. No\n    input/output processing, parameters, result/result path, or error handling support", function () {
         it('should create a State Machine w/ a Pass state using State class', function () {
@@ -75,7 +74,7 @@ describe('Milestones', function () {
             stateMachine.addState(new TaskState_1.TaskState("myTaskState", resource, "", "", true, "$.result", "$.result"));
             var json = "{\n          \"first\": 100,\n          \"second\": 200\n        }";
             stateMachine.setInput(json);
-            console.log(stateMachine.execute());
+            chai_1.expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld, GoodBye single state machines.");
         });
     });
 });

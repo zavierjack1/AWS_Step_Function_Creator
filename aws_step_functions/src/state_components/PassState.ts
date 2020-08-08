@@ -2,7 +2,6 @@ import { State } from "./State";
 import { Executable } from "./Executable";
 import { InputOutputPath } from "./InputOutputPath";
 var JsonPath = require('jsonpath');
-
 export class PassState extends State implements Executable, InputOutputPath{
   private result?: string;
   private nextStateName?: string;
@@ -31,7 +30,7 @@ export class PassState extends State implements Executable, InputOutputPath{
     return this.result;
   }
 
-  public setResult(result: any){
+  public setResult(result: string){
     this.result = result;
   }
 
@@ -74,12 +73,13 @@ export class PassState extends State implements Executable, InputOutputPath{
 
   public setOutputPath(outputPath: string | undefined): void {
     //if json invalid parse will throw SyntaxError
-    this.outputPath = outputPath;
+    if (outputPath) this.outputPath = outputPath;
   }
 
   public execute(rawInput?: string) {
     if (rawInput){
       rawInput = JSON.parse(rawInput); //converts string to jsonObject and validates
+      //let resoureResult = this.getResource()(JsonPath.query(rawInput, this.getInputPath()));
       if (this.getOutputPath()) {
         JsonPath.value(rawInput, this.getOutputPath(), this.getResult());
         return rawInput;

@@ -103,7 +103,7 @@ var StateMachine = /** @class */ (function () {
         this.timeoutSeconds = timeoutSeconds;
     };
     StateMachine.prototype.getInput = function () {
-        return this.input;
+        return (this.input) ? this.input : "";
     };
     StateMachine.prototype.setInput = function (input) {
         //if json invalid parse will throw SyntaxError

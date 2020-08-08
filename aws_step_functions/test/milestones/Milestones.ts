@@ -6,7 +6,6 @@ import { expect, assert } from 'chai';
 import 'mocha';
 import { SucceedState } from '../../src/state_components/SucceedState';
 
-//!!!!!!! WE NEED TO PASS AND RETURN JSON OBJECTS TO STATES NOT STRINGS!!!
 describe('Milestones', function () {
   context(
     `1. Create/toString/simulate a state machine consisting of a single Pass state. No
@@ -102,7 +101,7 @@ describe('Milestones', function () {
           "second": 200
         }`;
       stateMachine.setInput(json);
-      console.log(stateMachine.execute());
+      expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld, GoodBye single state machines.");
     });
   });
 })

@@ -2,6 +2,7 @@ import { State } from './State';
 import { Executable } from './Executable';
 import { PassState } from './PassState';
 import { TaskState } from './TaskState';
+import { NextOrEnd } from './NextOrEnd';
 
 export class StateMachine implements Executable{
   private states: State[] = [];
@@ -119,8 +120,8 @@ export class StateMachine implements Executable{
       this.timeoutSeconds = timeoutSeconds;
   }
 
-  public getInput(): string | undefined{
-    return this.input;
+  public getInput(): string {
+    return (this.input) ? this.input : "";
   }
 
   public setInput(input: string | undefined): void {
@@ -128,7 +129,7 @@ export class StateMachine implements Executable{
     if (input && JSON.parse(input)) this.input = input;
   }
 
-  public execute() : string | undefined{
+  public execute() : string {
     let currentState: State | undefined;
     let results: any[] = [];
     currentState = this.getStates().find(element => {
