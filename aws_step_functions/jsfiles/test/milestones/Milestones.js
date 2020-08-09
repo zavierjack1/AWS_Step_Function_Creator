@@ -43,8 +43,9 @@ describe('Milestones', function () {
             chai_1.expect(stateMachine.validate()).to.equal(true);
         });
         it('HelloWorld single PassState', function () {
+            var input = "\n        {\n          \"result\": \"\"\n        }\n      ";
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("Hello World", "Hello World Result", "", "", true, "", "$.result")], "Hello World", "A simple minimal example of the States language");
-            stateMachine.execute();
+            stateMachine.execute(input);
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("Hello World");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("Hello World");
@@ -68,7 +69,8 @@ describe('Milestones', function () {
         it('HelloWorld single TaskState', function () {
             var resource = function () { return 1 + 1; };
             var stateMachine = new StateMachine_1.StateMachine([new TaskState_1.TaskState("Hello World Task", resource, "", "", true, "", "$.result")], "Hello World Task", "A simple minimal example of the States language");
-            stateMachine.execute();
+            var input = "\n        {\n          \"result\": \"\"\n        }\n      ";
+            stateMachine.execute(input);
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("Hello World Task");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Task");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("Hello World Task");
@@ -95,9 +97,8 @@ describe('Milestones', function () {
                 return x + ", GoodBye single state machines.";
             };
             stateMachine.addState(new TaskState_1.TaskState("myTaskState", resource, "", "", true, "$.result", "$.result"));
-            var json = "{\n          \"first\": 100,\n          \"second\": 200\n        }";
-            stateMachine.setInput(json);
-            chai_1.expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld, GoodBye single state machines.");
+            var input = "{\n          \"first\": 100,\n          \"second\": 200,\n          \"result\": \"\"\n        }";
+            chai_1.expect(stateMachine.execute(input)["result"]).to.equal("HelloWorld, GoodBye single state machines.");
         });
         it('Statemachine w/ a TaskState1 and a TaskState2. The TaskState1 returns 123. The TaskState2 returns 123abc', function () {
             var resource = function (x) {
@@ -108,9 +109,8 @@ describe('Milestones', function () {
                 return x + "abc";
             };
             stateMachine.addState(new TaskState_1.TaskState("TaskState2", resource, "", "", true, "$.result", "$.result"));
-            var json = "{\n          \"first\": 100,\n          \"second\": 200\n        }";
-            stateMachine.setInput(json);
-            chai_1.expect(JSON.parse(stateMachine.execute())["result"]).to.equal("123abc");
+            var input = "{\n          \"first\": 100,\n          \"second\": 200,\n          \"result\": \"\"\n        }";
+            chai_1.expect(stateMachine.execute(input)["result"]).to.equal("123abc");
         });
         it('Statemachine w/ a TaskState1 and a TaskState2. The TaskState1 returns 100. The TaskState2 returns 200', function () {
             var resource = function (x) {
@@ -121,10 +121,9 @@ describe('Milestones', function () {
                 return x;
             };
             stateMachine.addState(new TaskState_1.TaskState("TaskState2", resource2, "", "", true, "$.param2", "$.result2"));
-            var json = "{\n          \"param1\": 100,\n          \"param2\": 200\n        }";
-            stateMachine.setInput(json);
-            chai_1.expect(JSON.parse(stateMachine.execute())["result1"]).to.eql([100]);
-            chai_1.expect(JSON.parse(stateMachine.execute())["result2"]).to.eql([200]);
+            var input = "{\n          \"param1\": 100,\n          \"param2\": 200,\n          \"result1\": \"\",\n          \"result2\": \"\"\n        }";
+            chai_1.expect(stateMachine.execute(input)["result1"]).to.eql([100]);
+            chai_1.expect(stateMachine.execute(input)["result2"]).to.eql([200]);
         });
     });
 });

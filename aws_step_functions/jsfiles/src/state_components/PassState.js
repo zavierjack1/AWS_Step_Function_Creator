@@ -15,19 +15,17 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PassState = void 0;
 var State_1 = require("./State");
-var JsonPath = require('jsonpath');
+var JsonPathCustom_1 = require("../utility/JsonPathCustom");
 var PassState = /** @class */ (function (_super) {
     __extends(PassState, _super);
     function PassState(name, result, comment, nextStateName, endState, inputPath, outputPath) {
+        if (endState === void 0) { endState = false; }
         var _this = _super.call(this, name, "Pass", comment) || this;
         _this.endState = false;
         _this.setNextStateName(nextStateName);
-        if (endState)
-            _this.setEndState(endState);
-        else
-            endState = false;
-        _this.setInputPath(inputPath);
-        _this.setOutputPath(outputPath);
+        _this.endState = endState;
+        _this.inputPath = inputPath;
+        _this.outputPath = outputPath;
         _this.result = result;
         return _this;
     }
@@ -71,12 +69,23 @@ var PassState = /** @class */ (function (_super) {
             this.outputPath = outputPath;
     };
     PassState.prototype.execute = function (input) {
-        var output = JSON.parse(input ? input : "{}");
+        if (input === void 0) { input = ""; }
+        if (typeof input === 'string')
+            input = JSON.parse((input) ? input : "{}");
+        else if (typeof input === 'object')
+            input = input;
+        else
+            throw new Error("Input may only be string or valid json");
         if (this.getOutputPath()) {
-            JsonPath.value(output, this.getOutputPath(), this.getResult());
-            return output;
+            if (JsonPathCustom_1.JsonPathCustom.containsNode(input, this.getOutputPath())) {
+                JsonPathCustom_1.JsonPathCustom.value(input, this.getOutputPath(), this.getResult());
+                return input;
+            }
+            else {
+                throw new Error("outputPath not found in input json");
+            }
         }
-        return output;
+        return input;
     };
     PassState.prototype.isTerminal = function () {
         return this.isEndState();

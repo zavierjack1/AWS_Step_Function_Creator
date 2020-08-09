@@ -71,9 +71,13 @@ describe('PassState class tests', function () {
         });
     });
     context('Result and Execution Tests', function () {
+        it('should fail with outputPath Error', function () {
+            var state = new PassState_1.PassState("myName", "result", "myComment", "", false, "", "$.result");
+            chai_1.expect(function () { var result = state.execute("{}"); }).to.throw(Error, "outputPath not found in input json");
+        });
         it('should return result', function () {
             var state = new PassState_1.PassState("myName", "result", "myComment", "", false, "", "$.result");
-            var result = state.execute("{}");
+            var result = state.execute('{"result":""}');
             chai_1.expect(result['result']).to.equal("result");
         });
     });
@@ -100,7 +104,7 @@ describe('PassState class tests', function () {
         });
         it('should output a json with store.result = list of authors', function () {
             var state = new PassState_1.PassState("myName", "myResult", "myComment");
-            var json = "{\n          \"store\": {\n              \"book\": [\n                  {\n                      \"category\": \"reference\",\n                      \"author\": \"Nigel Rees\",\n                      \"title\": \"Sayings of the Century\",\n                      \"price\": 8.95\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Evelyn Waugh\",\n                      \"title\": \"Sword of Honour\",\n                      \"price\": 12.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Herman Melville\",\n                      \"title\": \"Moby Dick\",\n                      \"isbn\": \"0-553-21311-3\",\n                      \"price\": 8.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"J. R. R. Tolkien\",\n                      \"title\": \"The Lord of the Rings\",\n                      \"isbn\": \"0-395-19395-8\",\n                      \"price\": 22.99\n                  }\n              ],\n              \"bicycle\": {\n                  \"color\": \"red\",\n                  \"price\": 19.95\n              }\n          },\n          \"expensive\": 10\n        }";
+            var json = "{\n          \"store\": {\n              \"book\": [\n                  {\n                      \"category\": \"reference\",\n                      \"author\": \"Nigel Rees\",\n                      \"title\": \"Sayings of the Century\",\n                      \"price\": 8.95\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Evelyn Waugh\",\n                      \"title\": \"Sword of Honour\",\n                      \"price\": 12.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"Herman Melville\",\n                      \"title\": \"Moby Dick\",\n                      \"isbn\": \"0-553-21311-3\",\n                      \"price\": 8.99\n                  },\n                  {\n                      \"category\": \"fiction\",\n                      \"author\": \"J. R. R. Tolkien\",\n                      \"title\": \"The Lord of the Rings\",\n                      \"isbn\": \"0-395-19395-8\",\n                      \"price\": 22.99\n                  }\n              ],\n              \"bicycle\": {\n                  \"color\": \"red\",\n                  \"price\": 19.95\n              },\n              \"result\":\"\"\n          },\n          \"expensive\": 10\n        }";
             state.setInputPath("$.store.book[*].author");
             state.setOutputPath("$.store.result");
             chai_1.expect(JsonPath.query(state.execute(json), '$.store.result')).to.eql(['myResult']);

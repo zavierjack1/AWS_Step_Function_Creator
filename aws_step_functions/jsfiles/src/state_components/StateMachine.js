@@ -4,7 +4,7 @@ exports.StateMachine = void 0;
 var PassState_1 = require("./PassState");
 var TaskState_1 = require("./TaskState");
 var StateMachine = /** @class */ (function () {
-    function StateMachine(states, startState, comment, version, timeoutSeconds, input) {
+    function StateMachine(states, startState, comment, version, timeoutSeconds) {
         if (states === void 0) { states = []; }
         if (version === void 0) { version = "1.0"; }
         this.states = [];
@@ -15,7 +15,6 @@ var StateMachine = /** @class */ (function () {
         this.setComment(comment);
         this.version = version;
         this.setTimeoutSeconds(timeoutSeconds);
-        this.setInput(input);
     }
     StateMachine.prototype.getStates = function () {
         return this.states;
@@ -105,16 +104,12 @@ var StateMachine = /** @class */ (function () {
     StateMachine.prototype.setTimeoutSeconds = function (timeoutSeconds) {
         this.timeoutSeconds = timeoutSeconds;
     };
-    StateMachine.prototype.getInput = function () {
-        return (this.input) ? this.input : "{}";
-    };
-    StateMachine.prototype.setInput = function (input) {
-        //if json invalid parse will throw SyntaxError
-        if (input && JSON.parse(input))
-            this.input = input;
-    };
-    StateMachine.prototype.execute = function () {
+    StateMachine.prototype.execute = function (input) {
         var _this = this;
+        if (typeof input === 'string')
+            input = JSON.parse((input) ? input : "{}");
+        if (typeof input === 'object')
+            input = input;
         //only execute if stateMachine valid
         if (!this.isValid())
             throw Error("this stateMachine is invalid!");
@@ -122,13 +117,13 @@ var StateMachine = /** @class */ (function () {
         currentState = this.getStates().find(function (element) {
             return element.getName() == _this.getStartStateName();
         });
-        console.log("initial input: " + this.getInput());
+        console.log("initial input: " + JSON.stringify(input));
         while (true) {
             if (currentState instanceof PassState_1.PassState || currentState instanceof TaskState_1.TaskState) {
                 console.log("running: " + currentState.getName());
-                console.log("input pre state run: " + this.getInput());
-                this.setInput(JSON.stringify(currentState.execute(this.getInput())));
-                console.log("input after state run: " + this.getInput());
+                console.log("input pre-state run: " + JSON.stringify(input));
+                input = currentState.execute(input);
+                console.log("input after-state run: " + JSON.stringify(input));
             }
             if (currentState == undefined || currentState.isTerminal())
                 break;
@@ -139,7 +134,7 @@ var StateMachine = /** @class */ (function () {
                     return currentState ? element.getName() == currentState.getNextStateName() : false;
             });
         }
-        return this.getInput();
+        return input;
     };
     StateMachine.prototype.toString = function () {
         var json = '{'

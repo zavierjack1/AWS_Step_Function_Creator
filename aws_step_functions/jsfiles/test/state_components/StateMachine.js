@@ -107,17 +107,18 @@ describe('StateMachine Tests', function () {
     context('execute statemachine', function () {
         it('should fail statemachine validation', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "", false)], "myState", "myComment", "2.0", 10);
-            chai_1.expect(function () { stateMachine.execute(); }).to.throw("this stateMachine is invalid!");
+            var input = "{\n        \"result\": \"\"\n      }";
+            chai_1.expect(function () { stateMachine.execute(input); }).to.throw("this stateMachine is invalid!");
         });
         it('Statemachine w/ a PassState. The PassState returns Hello World.', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myPassState", "HelloWorld", "", "myTaskState", true, "", "$.result")], "myPassState");
-            var json = "{\n          \"first\": 100,\n          \"second\": 200\n        }";
-            stateMachine.setInput(json);
-            chai_1.expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld");
+            var input = "{\n          \"first\": 100,\n          \"second\": 200,\n          \"result\": \"\"\n        }";
+            chai_1.expect(stateMachine.execute(input)["result"]).to.equal("HelloWorld");
         });
         it('Statemachine w/ a PassState. The PassState returns Hello World.', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myPassState", "HelloWorld", "", "myTaskState", true, "", "$.result")], "myPassState");
-            chai_1.expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld");
+            var input = "{\n        \"result\": \"\"\n      }";
+            chai_1.expect(stateMachine.execute(input)["result"]).to.equal("HelloWorld");
         });
         it('should simulate statemachine with single pass state and succeed state', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState")], "myState", "myComment", "2.0", 10);
@@ -157,17 +158,6 @@ describe('StateMachine Tests', function () {
             chai_1.expect(stateMachine.toJSON()['myState']['Result']).to.equal("result");
             chai_1.expect(stateMachine.toJSON()['myState']['Comment']).to.equal("xyz");
             chai_1.expect(stateMachine.toJSON()['myState']['End']).to.equal(true);
-        });
-    });
-    context('Input Test', function () {
-        it('should fail to validate input JSON', function () {
-            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);
-            chai_1.expect(function () { stateMachine.setInput("abcd"); }).to.throw(SyntaxError);
-        });
-        it('should validate & add input JSON', function () {
-            var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState", true)], "myState", "myComment", "2.0", 10);
-            stateMachine.setInput('{"test" : "abcd"}');
-            chai_1.expect(stateMachine.getInput()).to.equal('{"test" : "abcd"}');
         });
     });
 });

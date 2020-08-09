@@ -128,7 +128,7 @@ describe('TaskState class tests', function () {
       }
       let taskState = new TaskState("myName", resource, "myComment", "", true, "", "$.result");
       taskState.setResource(resource);
-      expect(taskState.execute()['result']).to.equal("test");
+      expect(taskState.execute('{"result": ""}')['result']).to.equal("test");
     });
 
     it('should return empty json', function () {
@@ -137,7 +137,7 @@ describe('TaskState class tests', function () {
       }
       let taskState = new TaskState("myName", resource, "myComment");
       taskState.setResource(resource);
-      expect(taskState.execute()).to.eql(JSON.parse("{}"));
+      expect(taskState.execute('{"result":""}')).to.eql(JSON.parse('{"result":""}'));
     });
 
     it('should return undefined', function () {
@@ -146,7 +146,7 @@ describe('TaskState class tests', function () {
       }
       let taskState = new TaskState("myName", resource, "myComment");
       taskState.setResource(resource);
-      expect(taskState.execute()).to.eql(JSON.parse("{}"));
+      expect(taskState.execute('{"result":""}')).to.eql(JSON.parse('{"result":""}'));
     });
   });
 
@@ -275,9 +275,61 @@ describe('TaskState class tests', function () {
       taskState.setResource(resource);
       taskState.setInputPath("$.store.book[*].author");
       taskState.setOutputPath("$.store.result");
-      expect(JsonPath.query(taskState.execute(json), '$.store.result')).to.eql([[ 'Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien' ]]);
+      //expect(JsonPath.query(taskState.execute(json), '$.store.result')).to.eql([[ 'Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien' ]]);
+      expect(function (){JsonPath.query(taskState.execute(json), '$.store.result')}).to.throw(Error, "outputPath not found in input json");
+      //expect(JsonPath.query(taskState.execute(json), '$.store.result')).to.eql([[ 'Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien' ]]);
     });
   })
+
+  it('should output a json with store.result = list of authors', function () {
+    let resource = function (x: string){
+      return x;
+    }
+    let taskState = new TaskState("myName", resource, "myComment");
+    let json = 
+      `{
+        "store": {
+            "book": [
+                {
+                    "category": "reference",
+                    "author": "Nigel Rees",
+                    "title": "Sayings of the Century",
+                    "price": 8.95
+                },
+                {
+                    "category": "fiction",
+                    "author": "Evelyn Waugh",
+                    "title": "Sword of Honour",
+                    "price": 12.99
+                },
+                {
+                    "category": "fiction",
+                    "author": "Herman Melville",
+                    "title": "Moby Dick",
+                    "isbn": "0-553-21311-3",
+                    "price": 8.99
+                },
+                {
+                    "category": "fiction",
+                    "author": "J. R. R. Tolkien",
+                    "title": "The Lord of the Rings",
+                    "isbn": "0-395-19395-8",
+                    "price": 22.99
+                }
+            ],
+            "bicycle": {
+                "color": "red",
+                "price": 19.95
+            },
+            "result": ""
+        },
+        "expensive": 10
+      }`;
+    taskState.setResource(resource);
+    taskState.setInputPath("$.store.book[*].author");
+    taskState.setOutputPath("$.store.result");
+    expect(JsonPath.query(taskState.execute(json), '$.store.result')).to.eql([[ 'Nigel Rees', 'Evelyn Waugh', 'Herman Melville', 'J. R. R. Tolkien' ]]);
+  });
 
   it('should set inputJson expense field to 2x', function () {
     let resource = function (x: string){

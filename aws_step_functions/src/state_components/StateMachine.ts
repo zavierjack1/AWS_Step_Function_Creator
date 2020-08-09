@@ -1,24 +1,21 @@
 import { State } from './State';
-import { Executable } from './Executable';
 import { PassState } from './PassState';
 import { TaskState } from './TaskState';
 
-export class StateMachine implements Executable{
+export class StateMachine {
   private states: State[] = [];
   private startState: string; 
   private comment?: string;
   private version: string;
   private timeoutSeconds?: number;
-  private input?: string;
 
-  constructor(states: State[] = [], startState: string, comment?: string, version: string="1.0", timeoutSeconds?: number, input?: string) {
+  constructor(states: State[] = [], startState: string, comment?: string, version: string="1.0", timeoutSeconds?: number) {
     if (states.length == 0) throw new Error("states must not be empty");
     this.states = states;
     this.startState = startState;
     this.setComment(comment);
     this.version = version;
     this.setTimeoutSeconds(timeoutSeconds);
-    this.setInput(input);
   }
 
   public getStates(): State[]{
@@ -123,29 +120,22 @@ export class StateMachine implements Executable{
       this.timeoutSeconds = timeoutSeconds;
   }
 
-  public getInput(): string {
-    return (this.input) ? this.input : "{}";
-  }
-
-  public setInput(input: string | undefined): void {
-    //if json invalid parse will throw SyntaxError
-    if (input && JSON.parse(input)) this.input = input;
-  }
-
-  public execute() : string {
+  public execute(input: string | object) : any {
+    if (typeof input === 'string') input = JSON.parse((input) ? input : "{}");
+    if (typeof input === 'object') input = input;
     //only execute if stateMachine valid
     if (!this.isValid()) throw Error("this stateMachine is invalid!");
     let currentState: State | undefined;
     currentState = this.getStates().find(element => {
       return element.getName() == this.getStartStateName();
     })
-    console.log("initial input: "+this.getInput());
+    console.log("initial input: "+JSON.stringify(input));
     while (true){
       if (currentState instanceof PassState || currentState instanceof TaskState){
         console.log("running: "+currentState.getName());
-        console.log("input pre state run: "+this.getInput()); 
-        this.setInput(JSON.stringify(currentState.execute(this.getInput())));
-        console.log("input after state run: "+this.getInput()); 
+        console.log("input pre-state run: "+JSON.stringify(input)); 
+        input = currentState.execute(input);
+        console.log("input after-state run: "+JSON.stringify(input)); 
       }
       if (currentState == undefined || currentState.isTerminal()) break;
       currentState = this.getStates().find(element => {
@@ -153,7 +143,7 @@ export class StateMachine implements Executable{
         if (currentState instanceof TaskState) return (<TaskState> currentState) ? element.getName() == currentState.getNextStateName() : false;
       })
     }
-    return this.getInput();
+    return input;
   }
 
   public toString() : string{

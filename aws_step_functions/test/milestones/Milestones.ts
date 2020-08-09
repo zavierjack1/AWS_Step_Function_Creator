@@ -53,8 +53,13 @@ describe('Milestones', function () {
 
     it('HelloWorld single PassState', 
     function () {
+      let input = `
+        {
+          "result": ""
+        }
+      `;
       let stateMachine = new StateMachine([new PassState("Hello World", "Hello World Result", "", "", true, "", "$.result")], "Hello World", "A simple minimal example of the States language");
-      stateMachine.execute();
+      stateMachine.execute(input);
       expect(stateMachine.getStates()[0].getName()).to.equal("Hello World");
       expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
       expect(stateMachine.getStartStateName()).to.equal("Hello World");
@@ -87,7 +92,12 @@ describe('Milestones', function () {
     function () {
       let resource = function (){ return 1 + 1; };
       let stateMachine = new StateMachine([new TaskState("Hello World Task", resource, "", "", true, "", "$.result")], "Hello World Task", "A simple minimal example of the States language");
-      stateMachine.execute();
+      let input = `
+        {
+          "result": ""
+        }
+      `;
+      stateMachine.execute(input);
       expect(stateMachine.getStates()[0].getName()).to.equal("Hello World Task");
       expect(stateMachine.getStates()[0].getType()).to.equal("Task");
       expect(stateMachine.getStartStateName()).to.equal("Hello World Task");
@@ -120,12 +130,12 @@ describe('Milestones', function () {
         return x+", GoodBye single state machines.";
       }
       stateMachine.addState(new TaskState("myTaskState", resource, "", "", true, "$.result", "$.result"));
-      let json = `{
+      let input = `{
           "first": 100,
-          "second": 200
+          "second": 200,
+          "result": ""
         }`;
-      stateMachine.setInput(json);
-      expect(JSON.parse(stateMachine.execute())["result"]).to.equal("HelloWorld, GoodBye single state machines.");
+      expect(stateMachine.execute(input)["result"]).to.equal("HelloWorld, GoodBye single state machines.");
     });
 
     it('Statemachine w/ a TaskState1 and a TaskState2. The TaskState1 returns 123. The TaskState2 returns 123abc', 
@@ -138,12 +148,12 @@ describe('Milestones', function () {
         return x+"abc";
       }
       stateMachine.addState(new TaskState("TaskState2", resource, "", "", true, "$.result", "$.result"));
-      let json = `{
+      let input = `{
           "first": 100,
-          "second": 200
+          "second": 200,
+          "result": ""
         }`;
-      stateMachine.setInput(json);
-      expect(JSON.parse(stateMachine.execute())["result"]).to.equal("123abc");
+      expect(stateMachine.execute(input)["result"]).to.equal("123abc");
     });
 
     it('Statemachine w/ a TaskState1 and a TaskState2. The TaskState1 returns 100. The TaskState2 returns 200', 
@@ -156,13 +166,14 @@ describe('Milestones', function () {
         return x;
       }
       stateMachine.addState(new TaskState("TaskState2", resource2, "", "", true, "$.param2", "$.result2"));
-      let json = `{
+      let input = `{
           "param1": 100,
-          "param2": 200
+          "param2": 200,
+          "result1": "",
+          "result2": ""
         }`;
-      stateMachine.setInput(json);
-      expect(JSON.parse(stateMachine.execute())["result1"]).to.eql([100]);
-      expect(JSON.parse(stateMachine.execute())["result2"]).to.eql([200]);
+      expect(stateMachine.execute(input)["result1"]).to.eql([100]);
+      expect(stateMachine.execute(input)["result2"]).to.eql([200]);
     });
   });
 })

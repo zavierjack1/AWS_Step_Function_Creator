@@ -83,9 +83,14 @@ describe('PassState class tests', function () {
   })
 
   context('Result and Execution Tests', function () {
+    it('should fail with outputPath Error', function () {
+      let state = new PassState("myName", "result", "myComment", "", false, "", "$.result");
+      expect(function(){let result = state.execute("{}");}).to.throw(Error, "outputPath not found in input json");
+    });
+
     it('should return result', function () {
       let state = new PassState("myName", "result", "myComment", "", false, "", "$.result");
-      let result = state.execute("{}");
+      let result = state.execute('{"result":""}');
       expect(result['result']).to.equal("result");
     });
   })
@@ -151,7 +156,8 @@ describe('PassState class tests', function () {
               "bicycle": {
                   "color": "red",
                   "price": 19.95
-              }
+              },
+              "result":""
           },
           "expensive": 10
         }`;

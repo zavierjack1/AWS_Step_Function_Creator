@@ -16,16 +16,16 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd//, Pa
     resource: Function, 
     comment?: string, 
     nextStateName?: string, 
-    endState?: Boolean, 
+    endState: Boolean = false, 
     inputPath?: string, 
     outputPath?: string
   ){
     super(name, "Task", comment);
     if (!resource) throw new Error("Task State must have a resource");
-    this.setNextStateName(nextStateName);
-    if (endState) this.setEndState(endState); else endState = false;
-    this.setInputPath(inputPath);
-    this.setOutputPath(outputPath);
+    this.nextStateName = nextStateName;
+    this.endState = endState;
+    this.inputPath = inputPath;
+    this.outputPath = outputPath;
     this.resource = resource;
   }
 
@@ -41,7 +41,7 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd//, Pa
     return this.nextStateName;
   }
 
-  public setNextStateName(nextStateName: string | undefined): void {
+  public setNextStateName(nextStateName: string): void {
     this.nextStateName = nextStateName;
   }
 
@@ -61,20 +61,20 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd//, Pa
     }
   }
 
-  public getInputPath(): string | undefined{
-    return this.inputPath;
+  public getInputPath(): string {
+    return (this.inputPath) ? this.inputPath : "";
   }
 
-  public setInputPath(inputPath: string | undefined): void {
+  public setInputPath(inputPath: string): void {
     //we need a jsonpath validator
     this.inputPath = inputPath;
   }
 
-  public getOutputPath(): string | undefined{
-    return this.outputPath;
+  public getOutputPath(): string {
+    return (this.outputPath) ? this.outputPath : "";
   }
 
-  public setOutputPath(outputPath: string | undefined): void {
+  public setOutputPath(outputPath: string): void {
     this.outputPath = outputPath;
   }
 
@@ -82,20 +82,25 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd//, Pa
     return this.isEndState();
   }
 
-  public execute(input?: string) {
-    let output = JSON.parse(input ? input : "{}"); 
+  public execute(input: any = "") {
+    if (typeof input === 'string') input = JSON.parse((input) ? input : "{}");
+    if (typeof input === 'object') input = input;
+    else throw new Error("Input may only be string or valid json");
     if (this.getInputPath() && this.getOutputPath()){
-      JsonPathCustom.value(output, this.getOutputPath(), 
-        this.getResource()(JsonPathCustom.query(output, this.getInputPath()))
-      );
-      return output;
+      if (JsonPathCustom.containsNode(input, this.getOutputPath())){
+        JsonPathCustom.value(input, this.getOutputPath(), this.getResource()(JsonPathCustom.query(input, this.getInputPath())));
+        return input;
+      }
+      else {
+        throw new Error("outputPath not found in input json");
+      }
     }
     if (this.getOutputPath()) {
-      JsonPathCustom.value(output, this.getOutputPath(), this.getResource()());
-      return output;
+      JsonPathCustom.value(input, this.getOutputPath(), this.getResource()());
+      return input;
     }
     this.getResource()();
-    return output;
+    return input;
   }
 
   public validateNextStateName() : Boolean {

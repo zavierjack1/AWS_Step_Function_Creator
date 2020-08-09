@@ -19,17 +19,15 @@ var JsonPathCustom_1 = require("../utility/JsonPathCustom");
 var TaskState = /** @class */ (function (_super) {
     __extends(TaskState, _super);
     function TaskState(name, resource, comment, nextStateName, endState, inputPath, outputPath) {
+        if (endState === void 0) { endState = false; }
         var _this = _super.call(this, name, "Task", comment) || this;
         _this.endState = false;
         if (!resource)
             throw new Error("Task State must have a resource");
-        _this.setNextStateName(nextStateName);
-        if (endState)
-            _this.setEndState(endState);
-        else
-            endState = false;
-        _this.setInputPath(inputPath);
-        _this.setOutputPath(outputPath);
+        _this.nextStateName = nextStateName;
+        _this.endState = endState;
+        _this.inputPath = inputPath;
+        _this.outputPath = outputPath;
         _this.resource = resource;
         return _this;
     }
@@ -60,14 +58,14 @@ var TaskState = /** @class */ (function (_super) {
         }
     };
     TaskState.prototype.getInputPath = function () {
-        return this.inputPath;
+        return (this.inputPath) ? this.inputPath : "";
     };
     TaskState.prototype.setInputPath = function (inputPath) {
         //we need a jsonpath validator
         this.inputPath = inputPath;
     };
     TaskState.prototype.getOutputPath = function () {
-        return this.outputPath;
+        return (this.outputPath) ? this.outputPath : "";
     };
     TaskState.prototype.setOutputPath = function (outputPath) {
         this.outputPath = outputPath;
@@ -76,17 +74,28 @@ var TaskState = /** @class */ (function (_super) {
         return this.isEndState();
     };
     TaskState.prototype.execute = function (input) {
-        var output = JSON.parse(input ? input : "{}");
+        if (input === void 0) { input = ""; }
+        if (typeof input === 'string')
+            input = JSON.parse((input) ? input : "{}");
+        if (typeof input === 'object')
+            input = input;
+        else
+            throw new Error("Input may only be string or valid json");
         if (this.getInputPath() && this.getOutputPath()) {
-            JsonPathCustom_1.JsonPathCustom.value(output, this.getOutputPath(), this.getResource()(JsonPathCustom_1.JsonPathCustom.query(output, this.getInputPath())));
-            return output;
+            if (JsonPathCustom_1.JsonPathCustom.containsNode(input, this.getOutputPath())) {
+                JsonPathCustom_1.JsonPathCustom.value(input, this.getOutputPath(), this.getResource()(JsonPathCustom_1.JsonPathCustom.query(input, this.getInputPath())));
+                return input;
+            }
+            else {
+                throw new Error("outputPath not found in input json");
+            }
         }
         if (this.getOutputPath()) {
-            JsonPathCustom_1.JsonPathCustom.value(output, this.getOutputPath(), this.getResource()());
-            return output;
+            JsonPathCustom_1.JsonPathCustom.value(input, this.getOutputPath(), this.getResource()());
+            return input;
         }
         this.getResource()();
-        return output;
+        return input;
     };
     TaskState.prototype.validateNextStateName = function () {
         if (this.isTerminal() || this.getNextStateName() != "")

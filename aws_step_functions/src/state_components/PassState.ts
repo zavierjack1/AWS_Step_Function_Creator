@@ -1,7 +1,8 @@
 import { State } from "./State";
 import { InputOutputPath } from "./InputOutputPath";
 import { NextOrEnd } from "./NextOrEnd";
-var JsonPath = require('jsonpath');
+import { JsonPathCustom } from "../utility/JsonPathCustom";
+
 export class PassState extends State implements InputOutputPath, NextOrEnd{
   private result?: string;
   private nextStateName?: string;
@@ -14,15 +15,15 @@ export class PassState extends State implements InputOutputPath, NextOrEnd{
     result?: any, 
     comment?: string, 
     nextStateName?: string, 
-    endState?: Boolean, 
+    endState: Boolean = false, 
     inputPath?: string, 
     outputPath?: string, 
   ){
     super(name, "Pass", comment);
     this.setNextStateName(nextStateName);
-    if (endState) this.setEndState(endState); else endState = false;
-    this.setInputPath(inputPath);
-    this.setOutputPath(outputPath);
+    this.endState = endState;
+    this.inputPath = inputPath;
+    this.outputPath = outputPath;
     this.result = result;
   }
 
@@ -66,21 +67,28 @@ export class PassState extends State implements InputOutputPath, NextOrEnd{
     this.inputPath = inputPath;
   }
 
-  public getOutputPath(): string | undefined{
+  public getOutputPath(): string{
     return this.outputPath ? this.outputPath : "";
   }
 
-  public setOutputPath(outputPath: string | undefined): void {
+  public setOutputPath(outputPath: string): void {
     if (outputPath) this.outputPath = outputPath;
   }
 
-  public execute(input?: string) {
-    let output = JSON.parse(input ? input : "{}");
+  public execute(input: any = "") {
+    if (typeof input === 'string') input = JSON.parse((input) ? input : "{}");
+    else if (typeof input === 'object') input = input;
+    else throw new Error("Input may only be string or valid json");
     if(this.getOutputPath()){
-      JsonPath.value(output, this.getOutputPath(), this.getResult());
-      return output;
+      if (JsonPathCustom.containsNode(input, this.getOutputPath())){
+        JsonPathCustom.value(input, this.getOutputPath(), this.getResult());
+        return input;
+      }
+      else{
+        throw new Error("outputPath not found in input json");
+      }
     }
-    return output;
+    return input;
   }
 
   public isTerminal(): Boolean{
