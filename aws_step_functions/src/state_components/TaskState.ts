@@ -1,15 +1,18 @@
 import { State } from "./State";
 import { InputOutputPath } from "./InputOutputPath";
 import { NextOrEnd } from "./NextOrEnd";
+import { RetryOrCatch } from "./RetryOrCatch";
 import { JsonPathCustom } from "../utility/JsonPathCustom";
 
-export class TaskState extends State implements InputOutputPath, NextOrEnd//, Parameters, ResultPath, , RetryCatch
+export class TaskState extends State implements InputOutputPath, NextOrEnd, RetryOrCatch//, Parameters, ResultPath, , 
 {
   private resource: Function;
   private nextStateName?: string;
   private endState: Boolean = false;
   private inputPath?: string;
   private outputPath?: string;
+  private retries: any[];
+  private catches: any[];
 
   constructor (
     name: string, 
@@ -18,7 +21,9 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd//, Pa
     nextStateName?: string, 
     endState: Boolean = false, 
     inputPath?: string, 
-    outputPath?: string
+    outputPath?: string,
+    retries: any[] = [],
+    catches: any[] = []
   ){
     super(name, "Task", comment);
     if (!resource) throw new Error("Task State must have a resource");
@@ -27,6 +32,8 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd//, Pa
     this.inputPath = inputPath;
     this.outputPath = outputPath;
     this.resource = resource;
+    this.retries = retries;
+    this.catches = catches;
   }
 
   public setResource(resource: Function){
@@ -76,6 +83,34 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd//, Pa
 
   public setOutputPath(outputPath: string): void {
     this.outputPath = outputPath;
+  }
+
+  public getRetries() : any[]{
+    return this.retries;
+  }
+  
+  public addRetry(retry: any) : void{
+    this.getRetries().push(retry);
+  }
+
+  public setRetries(retries: any[]) : Boolean{
+    this.retries = [];
+    retries.forEach( (r) => this.addRetry(r));
+    return true;
+  }
+
+  public getCatches() : any[]{
+    return this.catches;
+  }
+
+  public addCatch(catch_: any) : void{
+    this.getCatches().push(catch_);
+  }
+
+  public setCatches(catches: any[]) : Boolean{
+    this.catches = [];
+    catches.forEach( (c) => this.addCatch(c));
+    return true;
   }
 
   public isTerminal(): Boolean{

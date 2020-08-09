@@ -18,8 +18,10 @@ var State_1 = require("./State");
 var JsonPathCustom_1 = require("../utility/JsonPathCustom");
 var TaskState = /** @class */ (function (_super) {
     __extends(TaskState, _super);
-    function TaskState(name, resource, comment, nextStateName, endState, inputPath, outputPath) {
+    function TaskState(name, resource, comment, nextStateName, endState, inputPath, outputPath, retries, catches) {
         if (endState === void 0) { endState = false; }
+        if (retries === void 0) { retries = []; }
+        if (catches === void 0) { catches = []; }
         var _this = _super.call(this, name, "Task", comment) || this;
         _this.endState = false;
         if (!resource)
@@ -29,6 +31,8 @@ var TaskState = /** @class */ (function (_super) {
         _this.inputPath = inputPath;
         _this.outputPath = outputPath;
         _this.resource = resource;
+        _this.retries = retries;
+        _this.catches = catches;
         return _this;
     }
     TaskState.prototype.setResource = function (resource) {
@@ -69,6 +73,30 @@ var TaskState = /** @class */ (function (_super) {
     };
     TaskState.prototype.setOutputPath = function (outputPath) {
         this.outputPath = outputPath;
+    };
+    TaskState.prototype.getRetries = function () {
+        return this.retries;
+    };
+    TaskState.prototype.addRetry = function (retry) {
+        this.getRetries().push(retry);
+    };
+    TaskState.prototype.setRetries = function (retries) {
+        var _this = this;
+        this.retries = [];
+        retries.forEach(function (r) { return _this.addRetry(r); });
+        return true;
+    };
+    TaskState.prototype.getCatches = function () {
+        return this.catches;
+    };
+    TaskState.prototype.addCatch = function (catch_) {
+        this.getCatches().push(catch_);
+    };
+    TaskState.prototype.setCatches = function (catches) {
+        var _this = this;
+        this.catches = [];
+        catches.forEach(function (c) { return _this.addCatch(c); });
+        return true;
     };
     TaskState.prototype.isTerminal = function () {
         return this.isEndState();

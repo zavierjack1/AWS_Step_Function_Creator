@@ -1,5 +1,5 @@
 import { TaskState }  from '../../src/state_components/TaskState';
-import { expect, assert } from 'chai';
+import { expect } from 'chai';
 import 'mocha';
 var JsonPath = require('jsonpath');
 

@@ -119,19 +119,34 @@ var StateMachine = /** @class */ (function () {
         });
         console.log("initial input: " + JSON.stringify(input));
         while (true) {
-            if (currentState instanceof PassState_1.PassState || currentState instanceof TaskState_1.TaskState) {
-                console.log("running: " + currentState.getName());
-                console.log("input pre-state run: " + JSON.stringify(input));
-                input = currentState.execute(input);
-                console.log("input after-state run: " + JSON.stringify(input));
+            try {
+                if (currentState instanceof PassState_1.PassState || currentState instanceof TaskState_1.TaskState) {
+                    console.log("running: " + currentState.getName());
+                    console.log("input pre-state run: " + JSON.stringify(input));
+                    input = currentState.execute(input);
+                    console.log("input after-state run: " + JSON.stringify(input));
+                }
+            }
+            catch (e) {
+                if (currentState instanceof TaskState_1.TaskState && currentState.getCatches().length > 0) {
+                    //assume we only catch 1 error for now
+                    currentState = this.getStates().find(function (element) {
+                        //we should be checking for if state is implementing NextOrEnd but typescript makes that a pain
+                        currentState.getCatches()[0].getNextStateName() == element.getName();
+                    });
+                }
+                else {
+                    throw e;
+                }
             }
             if (currentState == undefined || currentState.isTerminal())
                 break;
             currentState = this.getStates().find(function (element) {
+                //we should be checking for if state is implementing NextOrEnd but typescript makes that a pain
                 if (currentState instanceof PassState_1.PassState)
-                    return currentState ? element.getName() == currentState.getNextStateName() : false;
+                    return currentState.getNextStateName() == element.getName();
                 if (currentState instanceof TaskState_1.TaskState)
-                    return currentState ? element.getName() == currentState.getNextStateName() : false;
+                    return currentState.getNextStateName() == element.getName();
             });
         }
         return input;
