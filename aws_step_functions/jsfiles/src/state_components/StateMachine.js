@@ -26,11 +26,9 @@ var StateMachine = /** @class */ (function () {
         this.getStates().push(state);
         return this.validateNextStates();
     };
-    StateMachine.prototype.validate = function () {
-        return this.validateNextStates();
-    };
     StateMachine.prototype.isValid = function () {
-        return this.validate();
+        return this.validateNextStates() &&
+            this.validateCatchNextStates();
     };
     StateMachine.prototype.stateNameIsUnique = function (stateName) {
         if (this.getStates().some(function (element) {
@@ -66,6 +64,28 @@ var StateMachine = /** @class */ (function () {
         var this_1 = this;
         for (var idx in states) {
             _loop_1(idx);
+        }
+        return returnVal;
+    };
+    StateMachine.prototype.validateCatchNextStates = function () {
+        //check that each task state w/ Catchers in the machine points to another state in the machine
+        var states = this.getStates();
+        var returnVal = true;
+        var _loop_2 = function (idx) {
+            if (states[idx] instanceof TaskState_1.TaskState) {
+                var taskState_1 = states[idx];
+                if (taskState_1.getCatchers().length > 0) {
+                    if (!this_2.getStates().some(function matchesNextState(element) {
+                        return taskState_1.getCatchers()[0].getNextStateName() == element.getName();
+                    })) {
+                        returnVal = false;
+                    }
+                }
+            }
+        };
+        var this_2 = this;
+        for (var idx in states) {
+            _loop_2(idx);
         }
         return returnVal;
     };
@@ -113,8 +133,7 @@ var StateMachine = /** @class */ (function () {
         //only execute if stateMachine valid
         if (!this.isValid())
             throw Error("this stateMachine is invalid!");
-        var currentState;
-        currentState = this.getStates().find(function (element) {
+        var currentState = this.getStates().find(function (element) {
             return element.getName() == _this.getStartStateName();
         });
         console.log("initial input: " + JSON.stringify(input));
@@ -128,12 +147,14 @@ var StateMachine = /** @class */ (function () {
                 }
             }
             catch (e) {
-                if (currentState instanceof TaskState_1.TaskState && currentState.getCatches().length > 0) {
+                console.log("exception thrown");
+                if (currentState instanceof TaskState_1.TaskState && currentState.getCatchers().length > 0) {
+                    console.log("in catcher handler");
                     //assume we only catch 1 error for now
                     currentState = this.getStates().find(function (element) {
-                        //we should be checking for if state is implementing NextOrEnd but typescript makes that a pain
-                        currentState.getCatches()[0].getNextStateName() == element.getName();
+                        return currentState.getCatchers()[0].getNextStateName() == element.getName();
                     });
+                    continue;
                 }
                 else {
                     throw e;

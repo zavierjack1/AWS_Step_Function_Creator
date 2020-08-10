@@ -6,6 +6,7 @@ var StateMachine_1 = require("../../src/state_components/StateMachine");
 var chai_1 = require("chai");
 require("mocha");
 var SucceedState_1 = require("../../src/state_components/SucceedState");
+var Catcher_1 = require("../../src/state_components/Catcher");
 describe('StateMachine Tests', function () {
     context('Constructor Tests', function () {
         it('fails to create a stateMachine states array is length 0', function () {
@@ -124,18 +125,73 @@ describe('StateMachine Tests', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "xyz", "EndState")], "myState", "myComment", "2.0", 10);
             var state = new SucceedState_1.SucceedState("EndState");
             stateMachine.addState(state);
-            chai_1.expect(stateMachine.validate()).to.equal(true);
-            //expect(stateMachine.execute()[0]).to.equal("result");
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
+            chai_1.expect(stateMachine.execute('{"result":""}')).to.eql({ "result": "" });
         });
         it('should simulate statemachine with a single task state', function () {
             var resource = function () {
                 return 1 + 1;
             };
-            var stateMachine = new StateMachine_1.StateMachine([new TaskState_1.TaskState("myState", resource, "xyz", "EndState")], "myState", "myComment", "2.0", 10);
+            var stateMachine = new StateMachine_1.StateMachine([new TaskState_1.TaskState("myState", resource, "xyz", "EndState", false, "", "$.result")], "myState", "myComment", "2.0", 10);
             var state = new SucceedState_1.SucceedState("EndState");
             stateMachine.addState(state);
-            chai_1.expect(stateMachine.validate()).to.equal(true);
-            //expect(stateMachine.execute()[0]).to.equal(2);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
+            chai_1.expect(stateMachine.execute('{"result":""}')).to.eql({ "result": 2 });
+        });
+        it('should simulate statemachine with error', function () {
+            var resource = function () {
+                throw new Error("resource error");
+            };
+            var catcher = new Catcher_1.Catcher("myEnd");
+            var stateMachine = new StateMachine_1.StateMachine([
+                new TaskState_1.TaskState("myState", resource, "xyz", "myEnd", false, "", "", [catcher]),
+                new SucceedState_1.SucceedState("myEnd")
+            ], "myState", "myComment", "2.0", 10);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
+            chai_1.expect(stateMachine.execute('{"result":""}')).to.eql({ "result": "" });
+        });
+        it('should simulate statemachine with error', function () {
+            var resource = function () {
+                throw new Error("resource error");
+            };
+            var catcher = new Catcher_1.Catcher("myEnd");
+            var stateMachine = new StateMachine_1.StateMachine([
+                new TaskState_1.TaskState("myState", resource, "xyz", "myEnd", false, "", "", [catcher]),
+                new SucceedState_1.SucceedState("myEnd")
+            ], "myState", "myComment", "2.0", 10);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
+            chai_1.expect(stateMachine.execute('{"result":""}')).to.eql({ "result": "" });
+        });
+        it('myState->Error->myState2->myEnd', function () {
+            var resource = function () {
+                throw new Error("resource error");
+            };
+            var resource2 = function () {
+                return "abcde";
+            };
+            var catcher = new Catcher_1.Catcher("myState2");
+            var stateMachine = new StateMachine_1.StateMachine([
+                new TaskState_1.TaskState("myState", resource, "xyz", "myEnd", false, "", "", [catcher]),
+                new SucceedState_1.SucceedState("myEnd"),
+                new TaskState_1.TaskState("myState2", resource2, "xyz", "myEnd", false, "", "$.result")
+            ], "myState", "myComment", "2.0", 10);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
+            chai_1.expect(stateMachine.execute('{"result":""}')).to.eql({ "result": "abcde" });
+        });
+        it('should simulate statemachine that fails validation because catcher points to non-existent state', function () {
+            var resource = function () {
+                throw new Error("resource error");
+            };
+            var resource2 = function () {
+                return "abcde";
+            };
+            var catcher = new Catcher_1.Catcher("NOT_REAL");
+            var stateMachine = new StateMachine_1.StateMachine([
+                new TaskState_1.TaskState("myState", resource, "xyz", "myEnd", false, "", "", [catcher]),
+                new SucceedState_1.SucceedState("myEnd"),
+                new TaskState_1.TaskState("myState2", resource2, "xyz", "myEnd", false, "", "$.result")
+            ], "myState", "myComment", "2.0", 10);
+            chai_1.expect(stateMachine.isValid()).to.equal(false);
         });
     });
     context('toString statemachine', function () {

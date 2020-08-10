@@ -1,6 +1,7 @@
 import { TaskState }  from '../../src/state_components/TaskState';
 import { expect } from 'chai';
 import 'mocha';
+import { Catcher } from '../../src/state_components/Catcher';
 var JsonPath = require('jsonpath');
 
 describe('TaskState class tests', function () {
@@ -391,6 +392,16 @@ describe('TaskState class tests', function () {
       let resource = function (){ return 1 + 1; }
       let taskState = new TaskState("myName", resource, "myComment", "nextState", false, "$.test", "$.test2");
       expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment","Next":"nextState","InputPath":"$.test","OutputPath":"$.test2"}');
+    });
+  })
+
+  context('Catcher test', function () {
+    it('should add Catcher to TaskState', function () {
+      let resource = function (){ return 1 + 1; }
+      let taskState = new TaskState("myName", resource, "myComment");
+      taskState.addCatcher(new Catcher("nextStateName"));
+      expect(taskState.getCatchers()[0].getNextStateName()).to.equal("nextStateName");
+      expect(taskState.getCatchers()[0].getErrorEquals()).to.eql(['States.ALL']);
     });
   })
 });

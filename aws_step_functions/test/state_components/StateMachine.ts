@@ -5,6 +5,7 @@ import { StateMachine }  from '../../src/state_components/StateMachine';
 import { expect, assert } from 'chai';
 import 'mocha';
 import { SucceedState } from '../../src/state_components/SucceedState';
+import { Catcher } from '../../src/state_components/Catcher';
 
 describe('StateMachine Tests', function () {
   context('Constructor Tests', function () {
@@ -153,19 +154,84 @@ describe('StateMachine Tests', function () {
       let stateMachine = new StateMachine([new PassState("myState", "result", "xyz", "EndState")], "myState", "myComment", "2.0", 10);
       let state = new SucceedState("EndState");
       stateMachine.addState(state);
-      expect(stateMachine.validate()).to.equal(true);
-      //expect(stateMachine.execute()[0]).to.equal("result");
+      expect(stateMachine.isValid()).to.equal(true);
+      expect(stateMachine.execute('{"result":""}')).to.eql({"result":""});
     });
 
     it('should simulate statemachine with a single task state', function () {
       let resource = function (){
         return 1+1;
       }
-      let stateMachine = new StateMachine([new TaskState("myState", resource, "xyz", "EndState")], "myState", "myComment", "2.0", 10);
+      let stateMachine = new StateMachine([new TaskState("myState", resource, "xyz", "EndState", false, "", "$.result")], "myState", "myComment", "2.0", 10);
       let state = new SucceedState("EndState");
       stateMachine.addState(state);
-      expect(stateMachine.validate()).to.equal(true);
-      //expect(stateMachine.execute()[0]).to.equal(2);
+      expect(stateMachine.isValid()).to.equal(true);
+      expect(stateMachine.execute('{"result":""}')).to.eql({"result":2});
+    });
+
+    it('should simulate statemachine with error', function () {
+      let resource = function (){
+        throw new Error("resource error");
+      }
+      let catcher = new Catcher("myEnd");
+      let stateMachine = new StateMachine(
+        [
+          new TaskState("myState", resource, "xyz", "myEnd",false, "","", [catcher]),
+          new SucceedState("myEnd")
+        ], "myState", "myComment", "2.0", 10);
+      expect(stateMachine.isValid()).to.equal(true);
+      expect(stateMachine.execute('{"result":""}')).to.eql({"result":""});
+    });
+
+    it('should simulate statemachine with error', function () {
+      let resource = function (){
+        throw new Error("resource error");
+      }
+      let catcher = new Catcher("myEnd");
+      let stateMachine = new StateMachine(
+        [
+          new TaskState("myState", resource, "xyz", "myEnd",false, "","", [catcher]),
+          new SucceedState("myEnd")
+        ], "myState", "myComment", "2.0", 10);
+      expect(stateMachine.isValid()).to.equal(true);
+      expect(stateMachine.execute('{"result":""}')).to.eql({"result":""});
+    });
+
+    it('myState->Error->myState2->myEnd', function () {
+      let resource = function (){
+        throw new Error("resource error");
+      }
+
+      let resource2 = function (){
+        return "abcde";
+      }
+      let catcher = new Catcher("myState2");
+      let stateMachine = new StateMachine(
+        [
+          new TaskState("myState", resource, "xyz", "myEnd",false, "","", [catcher]),
+          new SucceedState("myEnd"), 
+          new TaskState("myState2", resource2, "xyz", "myEnd",false, "","$.result")
+        ], "myState", "myComment", "2.0", 10);
+      expect(stateMachine.isValid()).to.equal(true);
+      expect(stateMachine.execute('{"result":""}')).to.eql({"result":"abcde"});
+    });
+
+    it('should simulate statemachine that fails validation because catcher points to non-existent state', function () {
+      let resource = function (){
+        throw new Error("resource error");
+      }
+
+      let resource2 = function (){
+        return "abcde";
+      }
+      let catcher = new Catcher("NOT_REAL");
+      let stateMachine = new StateMachine(
+        [
+          new TaskState("myState", resource, "xyz", "myEnd",false, "","", [catcher]),
+          new SucceedState("myEnd"), 
+          new TaskState("myState2", resource2, "xyz", "myEnd",false, "","$.result")
+        ], "myState", "myComment", "2.0", 10);
+      expect(stateMachine.isValid()).to.equal(false);
     });
   })
 

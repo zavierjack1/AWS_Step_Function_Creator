@@ -30,12 +30,9 @@ export class StateMachine {
     return this.validateNextStates();
   }
 
-  public validate(): Boolean{
-    return this.validateNextStates();
-  }
-
   public isValid(): Boolean{
-    return this.validate();
+    return this.validateNextStates() &&
+      this.validateCatchNextStates();
   }
 
   public stateNameIsUnique(stateName : string) : Boolean {
@@ -72,6 +69,27 @@ export class StateMachine {
         ))
       ){
         returnVal = false;
+      }
+    }
+    return returnVal;
+  }
+
+  public validateCatchNextStates(): Boolean {
+    //check that each task state w/ Catchers in the machine points to another state in the machine
+    let states: State[] = this.getStates();
+    let returnVal = true;
+    for (let idx in states){
+      if (states[idx] instanceof TaskState){
+        let taskState = <TaskState> states[idx];
+        if (taskState.getCatchers().length > 0){
+          if (!this.getStates().some(
+            function matchesNextState(element){
+              return taskState.getCatchers()[0].getNextStateName() == element.getName()
+            }
+          )){
+            returnVal = false;
+          }
+        }
       }
     }
     return returnVal;
@@ -125,8 +143,7 @@ export class StateMachine {
     if (typeof input === 'object') input = input;
     //only execute if stateMachine valid
     if (!this.isValid()) throw Error("this stateMachine is invalid!");
-    let currentState: State | undefined;
-    currentState = this.getStates().find(element => {
+    let currentState = this.getStates().find(element => {
       return element.getName() == this.getStartStateName();
     })
     console.log("initial input: "+JSON.stringify(input));
@@ -140,12 +157,14 @@ export class StateMachine {
         }
       }
       catch(e){
-        if (currentState instanceof TaskState && currentState.getCatches().length > 0){
+        console.log("exception thrown"); 
+        if (currentState instanceof TaskState && currentState.getCatchers().length > 0){
+          console.log("in catcher handler")
           //assume we only catch 1 error for now
           currentState = this.getStates().find(element => {
-            //we should be checking for if state is implementing NextOrEnd but typescript makes that a pain
-            (<TaskState>currentState).getCatches()[0].getNextStateName() == element.getName();
+            return (<TaskState>currentState).getCatchers()[0].getNextStateName() == element.getName();
           })
+          continue;
         }
         else{
           throw e;

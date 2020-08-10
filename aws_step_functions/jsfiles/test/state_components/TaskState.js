@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var TaskState_1 = require("../../src/state_components/TaskState");
 var chai_1 = require("chai");
 require("mocha");
+var Catcher_1 = require("../../src/state_components/Catcher");
 var JsonPath = require('jsonpath');
 describe('TaskState class tests', function () {
     context('Name Tests', function () {
@@ -218,6 +219,15 @@ describe('TaskState class tests', function () {
             var resource = function () { return 1 + 1; };
             var taskState = new TaskState_1.TaskState("myName", resource, "myComment", "nextState", false, "$.test", "$.test2");
             chai_1.expect(taskState.toString()).to.equal('"myName":{"Type":"Task","Resource":"function () { return 1 + 1; }","Comment":"myComment","Next":"nextState","InputPath":"$.test","OutputPath":"$.test2"}');
+        });
+    });
+    context('Catcher test', function () {
+        it('should add Catcher to TaskState', function () {
+            var resource = function () { return 1 + 1; };
+            var taskState = new TaskState_1.TaskState("myName", resource, "myComment");
+            taskState.addCatcher(new Catcher_1.Catcher("nextStateName"));
+            chai_1.expect(taskState.getCatchers()[0].getNextStateName()).to.equal("nextStateName");
+            chai_1.expect(taskState.getCatchers()[0].getErrorEquals()).to.eql(['States.ALL']);
         });
     });
 });

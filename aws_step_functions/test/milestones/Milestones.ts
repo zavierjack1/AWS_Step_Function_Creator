@@ -4,11 +4,10 @@ import { StateMachine }  from '../../src/state_components/StateMachine';
 import { expect } from 'chai';
 //import 'mocha';
 import { SucceedState } from '../../src/state_components/SucceedState';
+import { Catcher } from '../../src/state_components/Catcher';
 
 describe('Milestones', function () {
-  context(
-    `1. Create/toString/simulate a state machine consisting of a single Pass state. No
-    input/output processing, parameters, result/result path, or error handling support`, 
+  context('Milestone 1', 
   function () {
     it('should create a State Machine w/ a Pass state using State class', 
     function () {
@@ -16,7 +15,7 @@ describe('Milestones', function () {
       expect(stateMachine.getStates()[0].getName()).to.equal("myState");
       expect(stateMachine.getStates()[0].getType()).to.equal("Succeed");
       expect(stateMachine.getStartStateName()).to.equal("myState");
-      expect(stateMachine.validate()).to.equal(true);
+      expect(stateMachine.isValid()).to.equal(true);
     });
 
     it('should create a State Machine w/ a Pass state using the PassState class', 
@@ -25,7 +24,7 @@ describe('Milestones', function () {
       expect(stateMachine.getStates()[0].getName()).to.equal("myState");
       expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
       expect(stateMachine.getStartStateName()).to.equal("myState");
-      expect(stateMachine.validate()).to.equal(true);
+      expect(stateMachine.isValid()).to.equal(true);
       console.log(stateMachine.toString());
       expect(JSON.parse(stateMachine.toString())["myState"]["Result"]).to.equal("result");
       expect(JSON.parse(stateMachine.toString())["myState"]["Comment"]).to.equal("comment");
@@ -48,7 +47,7 @@ describe('Milestones', function () {
       expect(stateMachine.getStates()[0].getName()).to.equal("myState");
       expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
       expect(stateMachine.getStartStateName()).to.equal("myState");
-      expect(stateMachine.validate()).to.equal(true);
+      expect(stateMachine.isValid()).to.equal(true);
     });
 
     it('HelloWorld single PassState', 
@@ -63,7 +62,7 @@ describe('Milestones', function () {
       expect(stateMachine.getStates()[0].getName()).to.equal("Hello World");
       expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
       expect(stateMachine.getStartStateName()).to.equal("Hello World");
-      expect(stateMachine.validate()).to.equal(true);
+      expect(stateMachine.isValid()).to.equal(true);
       expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World":{"Type":"Pass","Result":"Hello World Result","End":true,"OutputPath":"$.result"}}');
       expect(JSON.parse(stateMachine.toString())["StartAt"]).to.equal("Hello World");
       expect(JSON.parse(stateMachine.toString())["Version"]).to.equal("1.0");
@@ -81,12 +80,7 @@ describe('Milestones', function () {
     });
   })
 
-  context(
-    `2. Add support for a Task state. The state machine representation can now be created either
-    with a single Pass state or a single Task state. The interpreter must support a way
-    for the client to provide mock implementations for function resources used in task states.
-    When simulated, the output of the Task state should be the result of an invocation to the
-    corresponding mock function.`, 
+  context('Milestone 2', 
   function () {
     it('HelloWorld single TaskState', 
     function () {
@@ -101,7 +95,7 @@ describe('Milestones', function () {
       expect(stateMachine.getStates()[0].getName()).to.equal("Hello World Task");
       expect(stateMachine.getStates()[0].getType()).to.equal("Task");
       expect(stateMachine.getStartStateName()).to.equal("Hello World Task");
-      expect(stateMachine.validate()).to.equal(true);
+      expect(stateMachine.isValid()).to.equal(true);
       expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World Task", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World Task":{"Type":"Task","Resource":"function () { return 1 + 1; }","End":true,"OutputPath":"$.result"}}');
       expect(JSON.parse(stateMachine.toString())["StartAt"]).to.equal("Hello World Task");
       expect(JSON.parse(stateMachine.toString())["Version"]).to.equal("1.0");
@@ -118,10 +112,7 @@ describe('Milestones', function () {
     });
   });
 
-  context(
-    `3. Add support for state transitions. The state machine representation can now be created
-    with a sequence of states (Pass or Task) with outputs of previous states passing on to
-    the inputs of next states.`, 
+  context('Milestone 3', 
   function () {
     it('Statemachine w/ a PassState and a TaskState. The PassState returns Hello World. The TaskState returns Hello World, Goodbye single state machines', 
     function () {
@@ -174,6 +165,33 @@ describe('Milestones', function () {
         }`;
       expect(stateMachine.execute(input)["result1"]).to.eql([100]);
       expect(stateMachine.execute(input)["result2"]).to.eql([200]);
+    });
+  });
+
+  context('Milestone 4', 
+  function () {
+    it('myState->Error->myState2->Error->myState3(only reachable via error)->Success', function () {
+      let resource = function (){
+        throw new Error("resource error");
+      }
+      let resource2 = function (){
+        throw new Error("resource error 2");
+      }
+
+      let resource3 = function (){
+        return "abcde";
+      }
+      let catcher1 = new Catcher("myState2");
+      let catcher2 = new Catcher("myState3");
+      let stateMachine = new StateMachine(
+        [
+          new TaskState("myState", resource, "xyz", "myEnd",false, "","", [catcher1]),
+          new TaskState("myState2", resource2, "xyz", "myEnd",false, "","", [catcher2]),
+          new SucceedState("myEnd"), 
+          new TaskState("myState3", resource3, "xyz", "myEnd",false, "","$.result")
+        ], "myState", "myComment", "2.0", 10);
+      expect(stateMachine.isValid()).to.equal(true);
+      expect(stateMachine.execute('{"result":""}')).to.eql({"result":"abcde"});
     });
   });
 })

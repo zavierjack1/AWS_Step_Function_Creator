@@ -1,2 +1,4 @@
 add validation on states with NextOrEnd
 add interface for catch proprty
+
+on statemachine validation check that the error next state exists within the statemachine

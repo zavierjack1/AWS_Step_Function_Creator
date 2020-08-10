@@ -6,21 +6,22 @@ var StateMachine_1 = require("../../src/state_components/StateMachine");
 var chai_1 = require("chai");
 //import 'mocha';
 var SucceedState_1 = require("../../src/state_components/SucceedState");
+var Catcher_1 = require("../../src/state_components/Catcher");
 describe('Milestones', function () {
-    context("1. Create/toString/simulate a state machine consisting of a single Pass state. No\n    input/output processing, parameters, result/result path, or error handling support", function () {
+    context('Milestone 1', function () {
         it('should create a State Machine w/ a Pass state using State class', function () {
             var stateMachine = new StateMachine_1.StateMachine([new SucceedState_1.SucceedState("myState")], "myState");
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("myState");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Succeed");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("myState");
-            chai_1.expect(stateMachine.validate()).to.equal(true);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
         });
         it('should create a State Machine w/ a Pass state using the PassState class', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myState", "result", "comment", "myState2"), new SucceedState_1.SucceedState("myState2", "Succeed")], "myState");
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("myState");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("myState");
-            chai_1.expect(stateMachine.validate()).to.equal(true);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
             console.log(stateMachine.toString());
             chai_1.expect(JSON.parse(stateMachine.toString())["myState"]["Result"]).to.equal("result");
             chai_1.expect(JSON.parse(stateMachine.toString())["myState"]["Comment"]).to.equal("comment");
@@ -40,7 +41,7 @@ describe('Milestones', function () {
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("myState");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("myState");
-            chai_1.expect(stateMachine.validate()).to.equal(true);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
         });
         it('HelloWorld single PassState', function () {
             var input = "\n        {\n          \"result\": \"\"\n        }\n      ";
@@ -49,7 +50,7 @@ describe('Milestones', function () {
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("Hello World");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("Hello World");
-            chai_1.expect(stateMachine.validate()).to.equal(true);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
             chai_1.expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World":{"Type":"Pass","Result":"Hello World Result","End":true,"OutputPath":"$.result"}}');
             chai_1.expect(JSON.parse(stateMachine.toString())["StartAt"]).to.equal("Hello World");
             chai_1.expect(JSON.parse(stateMachine.toString())["Version"]).to.equal("1.0");
@@ -65,7 +66,7 @@ describe('Milestones', function () {
             chai_1.expect(stateMachine.toJSON()["Hello World"]["Result"]).to.equal("Hello World Result");
         });
     });
-    context("2. Add support for a Task state. The state machine representation can now be created either\n    with a single Pass state or a single Task state. The interpreter must support a way\n    for the client to provide mock implementations for function resources used in task states.\n    When simulated, the output of the Task state should be the result of an invocation to the\n    corresponding mock function.", function () {
+    context('Milestone 2', function () {
         it('HelloWorld single TaskState', function () {
             var resource = function () { return 1 + 1; };
             var stateMachine = new StateMachine_1.StateMachine([new TaskState_1.TaskState("Hello World Task", resource, "", "", true, "", "$.result")], "Hello World Task", "A simple minimal example of the States language");
@@ -74,7 +75,7 @@ describe('Milestones', function () {
             chai_1.expect(stateMachine.getStates()[0].getName()).to.equal("Hello World Task");
             chai_1.expect(stateMachine.getStates()[0].getType()).to.equal("Task");
             chai_1.expect(stateMachine.getStartStateName()).to.equal("Hello World Task");
-            chai_1.expect(stateMachine.validate()).to.equal(true);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
             chai_1.expect(stateMachine.toString()).to.equal('{"StartAt":"Hello World Task", "Version":"1.0", "Comment":"A simple minimal example of the States language", "Hello World Task":{"Type":"Task","Resource":"function () { return 1 + 1; }","End":true,"OutputPath":"$.result"}}');
             chai_1.expect(JSON.parse(stateMachine.toString())["StartAt"]).to.equal("Hello World Task");
             chai_1.expect(JSON.parse(stateMachine.toString())["Version"]).to.equal("1.0");
@@ -90,7 +91,7 @@ describe('Milestones', function () {
             chai_1.expect(stateMachine.toJSON()["Hello World Task"]["Resource"]).to.equal("function () { return 1 + 1; }");
         });
     });
-    context("3. Add support for state transitions. The state machine representation can now be created\n    with a sequence of states (Pass or Task) with outputs of previous states passing on to\n    the inputs of next states.", function () {
+    context('Milestone 3', function () {
         it('Statemachine w/ a PassState and a TaskState. The PassState returns Hello World. The TaskState returns Hello World, Goodbye single state machines', function () {
             var stateMachine = new StateMachine_1.StateMachine([new PassState_1.PassState("myPassState", "HelloWorld", "", "myTaskState", false, "", "$.result")], "myPassState");
             var resource = function (x) {
@@ -124,6 +125,29 @@ describe('Milestones', function () {
             var input = "{\n          \"param1\": 100,\n          \"param2\": 200,\n          \"result1\": \"\",\n          \"result2\": \"\"\n        }";
             chai_1.expect(stateMachine.execute(input)["result1"]).to.eql([100]);
             chai_1.expect(stateMachine.execute(input)["result2"]).to.eql([200]);
+        });
+    });
+    context('Milestone 4', function () {
+        it('myState->Error->myState2->Error->myState3(only reachable via error)->Success', function () {
+            var resource = function () {
+                throw new Error("resource error");
+            };
+            var resource2 = function () {
+                throw new Error("resource error 2");
+            };
+            var resource3 = function () {
+                return "abcde";
+            };
+            var catcher1 = new Catcher_1.Catcher("myState2");
+            var catcher2 = new Catcher_1.Catcher("myState3");
+            var stateMachine = new StateMachine_1.StateMachine([
+                new TaskState_1.TaskState("myState", resource, "xyz", "myEnd", false, "", "", [catcher1]),
+                new TaskState_1.TaskState("myState2", resource2, "xyz", "myEnd", false, "", "", [catcher2]),
+                new SucceedState_1.SucceedState("myEnd"),
+                new TaskState_1.TaskState("myState3", resource3, "xyz", "myEnd", false, "", "$.result")
+            ], "myState", "myComment", "2.0", 10);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
+            chai_1.expect(stateMachine.execute('{"result":""}')).to.eql({ "result": "abcde" });
         });
     });
 });
