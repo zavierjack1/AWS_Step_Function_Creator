@@ -228,6 +228,7 @@ describe('TaskState class tests', function () {
             taskState.addCatcher(new Catcher_1.Catcher("nextStateName"));
             chai_1.expect(taskState.getCatchers()[0].getNextStateName()).to.equal("nextStateName");
             chai_1.expect(taskState.getCatchers()[0].getErrorEquals()).to.eql(['States.ALL']);
+            console.log(taskState.toString());
         });
     });
 });

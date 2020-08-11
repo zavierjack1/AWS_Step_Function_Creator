@@ -24,4 +24,15 @@ describe('Catcher class tests', function () {
       expect(new Catcher("myNextState").getErrorEquals()[0]).equal("States.ALL");
     });
   });
+
+  context('toString Tests', function () {
+    it('should return toString of Catcher', function () {
+      let catcher = new Catcher("myNextState");
+      console.log(catcher.toString());
+      expect(catcher.toString()).to.equal('{'+
+        '"ErrorEquals": ["States.ALL"],'+
+        '"Next": "'+catcher.getNextStateName()+'"'+
+      '}');
+    });
+  });
 })

@@ -18,6 +18,12 @@ var Catcher = /** @class */ (function () {
     Catcher.prototype.getErrorEquals = function () {
         return this.errorEquals;
     };
+    Catcher.prototype.toString = function () {
+        return '{' +
+            '"ErrorEquals": ["States.ALL"],' +
+            '"Next": "' + this.getNextStateName() + '"' +
+            '}';
+    };
     return Catcher;
 }());
 exports.Catcher = Catcher;

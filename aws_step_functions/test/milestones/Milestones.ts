@@ -2,7 +2,6 @@ import { PassState }  from '../../src/state_components/PassState';
 import { TaskState }  from '../../src/state_components/TaskState';
 import { StateMachine }  from '../../src/state_components/StateMachine';
 import { expect } from 'chai';
-//import 'mocha';
 import { SucceedState } from '../../src/state_components/SucceedState';
 import { Catcher } from '../../src/state_components/Catcher';
 
@@ -192,6 +191,31 @@ describe('Milestones', function () {
         ], "myState", "myComment", "2.0", 10);
       expect(stateMachine.isValid()).to.equal(true);
       expect(stateMachine.execute('{"result":""}')).to.eql({"result":"abcde"});
+    });
+
+    it('myState->Error->myState2->myState1->Success', function () {
+      let resource = function (param : number){
+        if (param < 1) throw new Error("resource error");
+        return Number(param)+1;
+      }
+      let resource2 = function (){
+        return 1;
+      }
+
+      let resource3 = function (){
+        return 5;
+      }
+      let catcher1 = new Catcher("myState2");
+      let catcher2 = new Catcher("myState3");
+      let stateMachine = new StateMachine(
+        [
+          new TaskState("myState", resource, "xyz", "myEnd",false, "$.param1","$.param1", [catcher1]),
+          new TaskState("myState2", resource2, "xyz", "myState",false, "","$.param1", [catcher2]),
+          new SucceedState("myEnd"), 
+          new TaskState("myState3", resource3, "xyz", "myEnd",false, "","$.result")
+        ], "myState", "myComment", "2.0", 10);
+      expect(stateMachine.isValid()).to.equal(true);
+      expect(stateMachine.execute('{"param1": 0, "result":""}')).to.eql({"param1":2, "result":""});
     });
   });
 })

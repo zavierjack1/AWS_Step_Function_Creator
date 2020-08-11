@@ -22,4 +22,11 @@ export class Catcher
   public getErrorEquals(): string[]{
     return this.errorEquals;
   }
+  
+  public toString(){
+    return '{'+
+      '"ErrorEquals": ["States.ALL"],'+
+      '"Next": "'+this.getNextStateName()+'"'+
+    '}';
+  }
 }

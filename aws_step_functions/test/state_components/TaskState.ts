@@ -402,6 +402,7 @@ describe('TaskState class tests', function () {
       taskState.addCatcher(new Catcher("nextStateName"));
       expect(taskState.getCatchers()[0].getNextStateName()).to.equal("nextStateName");
       expect(taskState.getCatchers()[0].getErrorEquals()).to.eql(['States.ALL']);
+      console.log(taskState.toString());
     });
   })
 });

@@ -4,7 +4,6 @@ var PassState_1 = require("../../src/state_components/PassState");
 var TaskState_1 = require("../../src/state_components/TaskState");
 var StateMachine_1 = require("../../src/state_components/StateMachine");
 var chai_1 = require("chai");
-//import 'mocha';
 var SucceedState_1 = require("../../src/state_components/SucceedState");
 var Catcher_1 = require("../../src/state_components/Catcher");
 describe('Milestones', function () {
@@ -148,6 +147,29 @@ describe('Milestones', function () {
             ], "myState", "myComment", "2.0", 10);
             chai_1.expect(stateMachine.isValid()).to.equal(true);
             chai_1.expect(stateMachine.execute('{"result":""}')).to.eql({ "result": "abcde" });
+        });
+        it('myState->Error->myState2->myState1->Success', function () {
+            var resource = function (param) {
+                if (param < 1)
+                    throw new Error("resource error");
+                return Number(param) + 1;
+            };
+            var resource2 = function () {
+                return 1;
+            };
+            var resource3 = function () {
+                return 5;
+            };
+            var catcher1 = new Catcher_1.Catcher("myState2");
+            var catcher2 = new Catcher_1.Catcher("myState3");
+            var stateMachine = new StateMachine_1.StateMachine([
+                new TaskState_1.TaskState("myState", resource, "xyz", "myEnd", false, "$.param1", "$.param1", [catcher1]),
+                new TaskState_1.TaskState("myState2", resource2, "xyz", "myState", false, "", "$.param1", [catcher2]),
+                new SucceedState_1.SucceedState("myEnd"),
+                new TaskState_1.TaskState("myState3", resource3, "xyz", "myEnd", false, "", "$.result")
+            ], "myState", "myComment", "2.0", 10);
+            chai_1.expect(stateMachine.isValid()).to.equal(true);
+            chai_1.expect(stateMachine.execute('{"param1": 0, "result":""}')).to.eql({ "param1": 2, "result": "" });
         });
     });
 });

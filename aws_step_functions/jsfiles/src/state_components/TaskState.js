@@ -139,6 +139,7 @@ var TaskState = /** @class */ (function (_super) {
             + ((this.isTerminal()) ? ',"End":' + this.isTerminal() : '')
             + ((this.getInputPath()) ? ',"InputPath":"' + this.getInputPath() + '"' : '')
             + ((this.getOutputPath()) ? ',"OutputPath":"' + this.getOutputPath() + '"' : '')
+            + ((this.getCatchers().length > 0) ? ", Catch: " + this.getCatchers()[0].toString() : "")
             + '}';
     };
     return TaskState;

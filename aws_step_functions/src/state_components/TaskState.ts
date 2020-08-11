@@ -153,6 +153,7 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd, Retr
         + ( (this.isTerminal()) ? ',"End":'+this.isTerminal() : '') 
         + ( (this.getInputPath()) ? ',"InputPath":"'+this.getInputPath()+'"' : '')
         + ( (this.getOutputPath()) ? ',"OutputPath":"'+this.getOutputPath()+'"' : '')
+        + ( (this.getCatchers().length > 0) ? ", Catch: "+this.getCatchers()[0].toString() : "")
     + '}';
   }
 }
