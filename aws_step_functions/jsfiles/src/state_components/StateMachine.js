@@ -20,7 +20,7 @@ var StateMachine = /** @class */ (function () {
         return this.states;
     };
     StateMachine.prototype.addState = function (state) {
-        if (!this.validateState(state)) {
+        if (!this.stateNameIsUnique(state.getName())) {
             throw new Error("State names must be unique");
         }
         this.getStates().push(state);
@@ -38,9 +38,9 @@ var StateMachine = /** @class */ (function () {
         }
         return true;
     };
-    StateMachine.prototype.validateState = function (state) {
-        return this.stateNameIsUnique(state.getName());
-    };
+    //public validateState(state: State): Boolean{
+    //  return this.stateNameIsUnique(state.getName());
+    //}
     StateMachine.prototype.validateNextStates = function () {
         //check that each non-terminal state in the machine points to another state in the machine
         var states = this.getStates();

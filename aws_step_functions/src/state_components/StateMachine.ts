@@ -23,7 +23,7 @@ export class StateMachine {
   }
 
   public addState(state: State) : Boolean{
-    if (!this.validateState(state)) {
+    if (!this.stateNameIsUnique(state.getName())) {
         throw new Error("State names must be unique");
     }
     this.getStates().push(state);
@@ -45,9 +45,9 @@ export class StateMachine {
     return true;
   }
 
-  public validateState(state: State): Boolean{
-    return this.stateNameIsUnique(state.getName());
-  }
+  //public validateState(state: State): Boolean{
+  //  return this.stateNameIsUnique(state.getName());
+  //}
 
   public validateNextStates(): Boolean {
     //check that each non-terminal state in the machine points to another state in the machine

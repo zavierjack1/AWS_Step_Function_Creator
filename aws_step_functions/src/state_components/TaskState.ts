@@ -13,7 +13,7 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd, Retr
   private inputPath?: string;
   private outputPath?: string;
   private retries: any[];
-  private catchers: any[];
+  private catchers: Catcher[];
 
   constructor (
     name: string, 

@@ -15,6 +15,8 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FailState = void 0;
 var State_1 = require("./State");
+//MUST ADD CAUSE TO FAIL STATE
+//MUST ADD ERROR TO FAIL STATE
 var FailState = /** @class */ (function (_super) {
     __extends(FailState, _super);
     function FailState(name, comment) {
