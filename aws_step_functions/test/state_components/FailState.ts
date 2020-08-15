@@ -1,3 +1,4 @@
+/*
 import { FailState }  from '../../src/state_components/FailState';
 import { expect, assert } from 'chai';
 import 'mocha';
@@ -47,3 +48,4 @@ describe('SucceedState class tests', function () {
     });
   })
 });
+*/
