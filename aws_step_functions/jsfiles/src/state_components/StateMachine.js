@@ -5,7 +5,6 @@ var PassState_1 = require("./PassState");
 var TaskState_1 = require("./TaskState");
 var StateMachine = /** @class */ (function () {
     function StateMachine(states, startState, comment, version, timeoutSeconds) {
-        if (states === void 0) { states = []; }
         if (version === void 0) { version = "1.0"; }
         this.states = [];
         if (states.length == 0)
@@ -28,7 +27,9 @@ var StateMachine = /** @class */ (function () {
     };
     StateMachine.prototype.isValid = function () {
         return this.validateNextStates() &&
-            this.validateCatchNextStates();
+            this.validateCatchNextStates() &&
+            this.validateStartStateName() &&
+            this.getStates().length > 0;
     };
     StateMachine.prototype.stateNameIsUnique = function (stateName) {
         if (this.getStates().some(function (element) {
@@ -38,9 +39,6 @@ var StateMachine = /** @class */ (function () {
         }
         return true;
     };
-    //public validateState(state: State): Boolean{
-    //  return this.stateNameIsUnique(state.getName());
-    //}
     StateMachine.prototype.validateNextStates = function () {
         //check that each non-terminal state in the machine points to another state in the machine
         var states = this.getStates();
@@ -88,6 +86,12 @@ var StateMachine = /** @class */ (function () {
             _loop_2(idx);
         }
         return returnVal;
+    };
+    StateMachine.prototype.validateStartStateName = function () {
+        var _this = this;
+        return this.getStates().some(function (state) {
+            return state.getName() == _this.getStartStateName();
+        });
     };
     StateMachine.prototype.setStates = function (states) {
         var _this = this;

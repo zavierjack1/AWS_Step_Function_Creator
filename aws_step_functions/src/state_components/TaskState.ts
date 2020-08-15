@@ -16,7 +16,7 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd, Retr
   private catchers: Catcher[];
 
   constructor (
-    name: string, 
+    name: string,  
     resource: Function, 
     comment?: string, 
     nextStateName?: string, 
@@ -117,9 +117,9 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd, Retr
     return this.isEndState();
   }
 
-  public execute(input: any = "") {
+  public execute(input: any = "") : any {
     if (typeof input === 'string') input = JSON.parse((input) ? input : "{}");
-    if (typeof input === 'object') input = input;
+    if (typeof input === 'object') null;
     else throw new Error("Input may only be string or valid json");
     if (this.getInputPath() && this.getOutputPath()){
       if (JsonPathCustom.containsNode(input, this.getOutputPath())){
@@ -130,7 +130,11 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd, Retr
         throw new Error("outputPath not found in input json");
       }
     }
-    if (this.getOutputPath()) {
+    if (this.getInputPath() && !this.getOutputPath()) {
+      this.getResource()(JsonPathCustom.query(input, this.getInputPath()));
+      return input;
+    }
+    if (!this.getInputPath() && this.getOutputPath()) {
       JsonPathCustom.value(input, this.getOutputPath(), this.getResource()());
       return input;
     }

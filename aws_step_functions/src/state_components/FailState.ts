@@ -1,5 +1,4 @@
 import { State } from "./State";
-
 //MUST ADD CAUSE TO FAIL STATE
 //MUST ADD ERROR TO FAIL STATE
 export class FailState extends State{

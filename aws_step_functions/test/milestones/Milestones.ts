@@ -4,6 +4,9 @@ import { StateMachine }  from '../../src/state_components/StateMachine';
 import { expect } from 'chai';
 import { SucceedState } from '../../src/state_components/SucceedState';
 import { Catcher } from '../../src/state_components/Catcher';
+import { MapIterator } from '../../src/state_components/MapIterator';
+import { MapState } from '../../src/state_components/MapState';
+var JsonPath = require('jsonpath');
 
 describe('Milestones', function () {
   context('Milestone 1', 
@@ -216,6 +219,50 @@ describe('Milestones', function () {
         ], "myState", "myComment", "2.0", 10);
       expect(stateMachine.isValid()).to.equal(true);
       expect(stateMachine.execute('{"param1": 0, "result":""}')).to.eql({"param1":2, "result":""});
+    });
+  });
+
+  context('Milestone 5', 
+  function () {
+    it('Basic MapState', function () {
+      let mapStateInputJson = 
+      `{
+        "ship-date": "2016-03-14T01:59:00Z",
+        "detail": {
+          "delivery-partner": "UQS",
+          "shipped": [
+            { "prod": "R31", "dest-code": 9511, "quantity": 1344, "result": "" },
+            { "prod": "S39", "dest-code": 9511, "quantity": 40, "result": "" },
+            { "prod": "R31", "dest-code": 9833, "quantity": 12, "result": "" },
+            { "prod": "R40", "dest-code": 9860, "quantity": 887, "result": "" },
+            { "prod": "R40", "dest-code": 9511, "quantity": 1220, "result": "" }
+          ]
+        },
+        "result": ""
+      }`;
+
+      let json = mapStateInputJson;
+      let resource = function (x: string){
+        console.log(x);
+        return x;
+      }
+      let mapIterator = new MapIterator(
+        [new TaskState("myTaskState", resource, "", "", true, "$.prod", "$.result")],
+        "myTaskState"
+      );
+      let mapState = new MapState("myName", mapIterator, "myComment");
+      mapState.setInputPath("$.detail.shipped");
+      expect(JsonPath.query(mapState.execute(json), '$.detail.shipped')).to.eql(
+        [
+          [
+            { prod: 'R31', 'dest-code': 9511, quantity: 1344, result: ["R31"] },
+            { prod: 'S39', 'dest-code': 9511, quantity: 40, result: ["S39"] },
+            { prod: 'R31', 'dest-code': 9833, quantity: 12, result: ["R31"] },
+            { prod: 'R40', 'dest-code': 9860, quantity: 887, result: ["R40"] },
+            { prod: 'R40', 'dest-code': 9511, quantity: 1220, result: ["R40"] }
+          ]
+        ]
+      );
     });
   });
 })

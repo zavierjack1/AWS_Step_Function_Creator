@@ -30,7 +30,7 @@ export abstract class State {
     return this.type;
   }
 
-  private setType(type: string): void {
+  protected setType(type: string): void {
     this.type = type;
   }
 

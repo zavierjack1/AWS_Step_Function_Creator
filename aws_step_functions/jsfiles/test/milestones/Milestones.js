@@ -6,6 +6,9 @@ var StateMachine_1 = require("../../src/state_components/StateMachine");
 var chai_1 = require("chai");
 var SucceedState_1 = require("../../src/state_components/SucceedState");
 var Catcher_1 = require("../../src/state_components/Catcher");
+var MapIterator_1 = require("../../src/state_components/MapIterator");
+var MapState_1 = require("../../src/state_components/MapState");
+var JsonPath = require('jsonpath');
 describe('Milestones', function () {
     context('Milestone 1', function () {
         it('should create a State Machine w/ a Pass state using State class', function () {
@@ -170,6 +173,28 @@ describe('Milestones', function () {
             ], "myState", "myComment", "2.0", 10);
             chai_1.expect(stateMachine.isValid()).to.equal(true);
             chai_1.expect(stateMachine.execute('{"param1": 0, "result":""}')).to.eql({ "param1": 2, "result": "" });
+        });
+    });
+    context('Milestone 5', function () {
+        it('Basic MapState', function () {
+            var mapStateInputJson = "{\n        \"ship-date\": \"2016-03-14T01:59:00Z\",\n        \"detail\": {\n          \"delivery-partner\": \"UQS\",\n          \"shipped\": [\n            { \"prod\": \"R31\", \"dest-code\": 9511, \"quantity\": 1344, \"result\": \"\" },\n            { \"prod\": \"S39\", \"dest-code\": 9511, \"quantity\": 40, \"result\": \"\" },\n            { \"prod\": \"R31\", \"dest-code\": 9833, \"quantity\": 12, \"result\": \"\" },\n            { \"prod\": \"R40\", \"dest-code\": 9860, \"quantity\": 887, \"result\": \"\" },\n            { \"prod\": \"R40\", \"dest-code\": 9511, \"quantity\": 1220, \"result\": \"\" }\n          ]\n        },\n        \"result\": \"\"\n      }";
+            var json = mapStateInputJson;
+            var resource = function (x) {
+                console.log(x);
+                return x;
+            };
+            var mapIterator = new MapIterator_1.MapIterator([new TaskState_1.TaskState("myTaskState", resource, "", "", true, "$.prod", "$.result")], "myTaskState");
+            var mapState = new MapState_1.MapState("myName", mapIterator, "myComment");
+            mapState.setInputPath("$.detail.shipped");
+            chai_1.expect(JsonPath.query(mapState.execute(json), '$.detail.shipped')).to.eql([
+                [
+                    { prod: 'R31', 'dest-code': 9511, quantity: 1344, result: ["R31"] },
+                    { prod: 'S39', 'dest-code': 9511, quantity: 40, result: ["S39"] },
+                    { prod: 'R31', 'dest-code': 9833, quantity: 12, result: ["R31"] },
+                    { prod: 'R40', 'dest-code': 9860, quantity: 887, result: ["R40"] },
+                    { prod: 'R40', 'dest-code': 9511, quantity: 1220, result: ["R40"] }
+                ]
+            ]);
         });
     });
 });

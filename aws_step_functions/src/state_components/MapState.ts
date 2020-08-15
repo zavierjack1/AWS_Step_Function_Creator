@@ -1,25 +1,18 @@
 import { Catcher } from "./Catcher";
-import { State } from "./State";
 import { InputOutputPath } from "./InputOutputPath";
 import { NextOrEnd } from "./NextOrEnd";
 import { RetryOrCatch } from "./RetryOrCatch";
-import { MapIterator } from "./MapIterator";
 import { JsonPathCustom } from "../utility/JsonPathCustom";
+import { TaskState } from "./TaskState";
+import { MapIterator } from "./MapIterator";
 
-export class MapState extends State implements InputOutputPath, NextOrEnd, RetryOrCatch
+export class MapState extends TaskState implements InputOutputPath, NextOrEnd, RetryOrCatch
 {
-  private resource: Function;
-  private nextStateName?: string;
-  private endState: Boolean = false;
-  private inputPath?: string;
-  private outputPath?: string;
-  private retries: any[];
-  private catchers: Catcher[];
   private mapIterator: MapIterator;
-
+  
   constructor (
-    name: string, 
-    resource: Function, 
+    name: string,  
+    mapIterator: MapIterator,
     comment?: string, 
     nextStateName?: string, 
     endState: Boolean = false, 
@@ -27,124 +20,59 @@ export class MapState extends State implements InputOutputPath, NextOrEnd, Retry
     outputPath?: string,
     catchers: Catcher[] = [],
     retries: any[] = [],
-    mapIterator: MapIterator = new MapIterator()
   ){
-    super(name, "Map", comment);
-    if (!resource) throw new Error("Task State must have a resource");
-    this.nextStateName = nextStateName;
-    this.endState = endState;
-    this.inputPath = inputPath;
-    this.outputPath = outputPath;
-    this.resource = resource;
-    this.catchers = catchers;
-    this.retries = retries;
+    super(name, function(){throw Error("Map States have no resource")}, comment, nextStateName, endState, inputPath, outputPath, catchers, retries);
+    this.setType("Map");
+    this.setResource(this.execute);
     this.mapIterator = mapIterator;
-  }
-  
-  public setResource(resource: Function){
-    this.resource = resource;
-  }
-
-  public getResource(){
-    return this.resource;
-  }
-
-  public getNextStateName(): string | undefined{
-    return this.nextStateName;
-  }
-
-  public setNextStateName(nextStateName: string): void {
-    this.nextStateName = nextStateName;
-  }
-
-  public isEndState(): Boolean{
-    return this.endState;
-  }
-
-  public setEndState(endState: Boolean): void{
-    if (endState && !(this.getType() == "Choice" || this.getType() == "Succeed" || this.getType() == "Fail")){
-      this.endState = endState;
-    }
-    else if (endState) {
-      throw new Error("you can only set EndState if type == Choice, type == Succeed, or type == Fail");
-    }
-    else{
-      this.endState = endState;
-    }
-  }
-
-  public getInputPath(): string {
-    return (this.inputPath) ? this.inputPath : "";
-  }
-
-  public setInputPath(inputPath: string): void {
-    //we need a jsonpath validator
-    this.inputPath = inputPath;
-  }
-
-  public getOutputPath(): string {
-    return (this.outputPath) ? this.outputPath : "";
-  }
-
-  public setOutputPath(outputPath: string): void {
-    this.outputPath = outputPath;
-  }
-
-  public getRetries() : any[]{
-    return this.retries;
-  }
-  
-  public addRetry(retry: any) : void{
-    this.getRetries().push(retry);
-  }
-
-  public setRetries(retries: any[]) : Boolean{
-    this.retries = [];
-    retries.forEach( (r) => this.addRetry(r));
-    return true;
-  }
- 
-  public getCatchers() : Catcher[]{
-    return this.catchers;
-  }
-
-  public addCatcher(catch_: Catcher) : void{
-    this.getCatchers().push(catch_);
-  }
-
-  public setCatchers(catchers: any[]) {
-    this.catchers = [];
-    catchers.forEach( (c) => this.addCatcher(c));
   }
 
   public isTerminal(): Boolean{
     return this.isEndState();
   }
-
-  public execute(input: any = "") {
+  
+  public execute(input: any = "") :any  {
+    if (!this.getInputPath()) throw new Error("MapStates require an inputPath");
     if (typeof input === 'string') input = JSON.parse((input) ? input : "{}");
-    if (typeof input === 'object') input = input;
+    if (typeof input === 'object') null;
     else throw new Error("Input may only be string or valid json");
     if (this.getInputPath() && this.getOutputPath()){
       if (JsonPathCustom.containsNode(input, this.getOutputPath())){
-        JsonPathCustom.value(input, this.getOutputPath(), this.getResource()(JsonPathCustom.query(input, this.getInputPath())));
+        let inputArray = JsonPathCustom.query(input, this.getInputPath());
+        if (Array.isArray(JsonPathCustom.query(input, this.getInputPath())[0])) inputArray = JsonPathCustom.query(input, this.getInputPath())[0];
+        //else inputArray = JsonPathCustom.query(input, this.getInputPath());
+        inputArray.forEach((element: string | object, index: number)=> {
+          inputArray[index] = this.getMapIterator().execute(element);
+        });
+        JsonPathCustom.value(input, this.getOutputPath(), inputArray);
         return input;
       }
       else {
         throw new Error("outputPath not found in input json");
       }
     }
-    if (this.getOutputPath()) {
-      JsonPathCustom.value(input, this.getOutputPath(), this.getResource()());
+    if (this.getInputPath() && !this.getOutputPath()){
+      let inputArray: any[] = JsonPathCustom.query(input, this.getInputPath())[0];
+      let count = 0;
+      inputArray.forEach((element: string | object, index: number)=> {
+        inputArray[index] = this.getMapIterator().execute(element);
+        count++;
+      });
       return input;
     }
-    this.getResource()();
-    return input;
   }
 
   public validateNextStateName() : Boolean {
     if (this.isTerminal() || this.getNextStateName() != "") return true;
     return false;
+  }
+
+  public getMapIterator() : MapIterator {
+    return this.mapIterator;
+  }
+
+  public setMapIterator(mapIterator : MapIterator) : void {
+    this.mapIterator = mapIterator;
   }
 
   public toString() : string{

@@ -105,7 +105,7 @@ var TaskState = /** @class */ (function (_super) {
         if (typeof input === 'string')
             input = JSON.parse((input) ? input : "{}");
         if (typeof input === 'object')
-            input = input;
+            null;
         else
             throw new Error("Input may only be string or valid json");
         if (this.getInputPath() && this.getOutputPath()) {
@@ -117,7 +117,11 @@ var TaskState = /** @class */ (function (_super) {
                 throw new Error("outputPath not found in input json");
             }
         }
-        if (this.getOutputPath()) {
+        if (this.getInputPath() && !this.getOutputPath()) {
+            this.getResource()(JsonPathCustom_1.JsonPathCustom.query(input, this.getInputPath()));
+            return input;
+        }
+        if (!this.getInputPath() && this.getOutputPath()) {
             JsonPathCustom_1.JsonPathCustom.value(input, this.getOutputPath(), this.getResource()());
             return input;
         }

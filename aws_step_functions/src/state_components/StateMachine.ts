@@ -9,7 +9,7 @@ export class StateMachine {
   private version: string;
   private timeoutSeconds?: number;
 
-  constructor(states: State[] = [], startState: string, comment?: string, version: string="1.0", timeoutSeconds?: number) {
+  constructor(states: State[], startState: string, comment?: string, version: string="1.0", timeoutSeconds?: number) {
     if (states.length == 0) throw new Error("states must not be empty");
     this.states = states;
     this.startState = startState;
@@ -32,7 +32,9 @@ export class StateMachine {
 
   public isValid(): Boolean{
     return this.validateNextStates() &&
-      this.validateCatchNextStates();
+      this.validateCatchNextStates() &&
+      this.validateStartStateName() &&
+      this.getStates().length > 0;
   }
 
   public stateNameIsUnique(stateName : string) : Boolean {
@@ -44,10 +46,6 @@ export class StateMachine {
     
     return true;
   }
-
-  //public validateState(state: State): Boolean{
-  //  return this.stateNameIsUnique(state.getName());
-  //}
 
   public validateNextStates(): Boolean {
     //check that each non-terminal state in the machine points to another state in the machine
@@ -93,6 +91,14 @@ export class StateMachine {
       }
     }
     return returnVal;
+  }
+
+  public validateStartStateName(): Boolean{
+    return this.getStates().some(
+      state => {
+        return state.getName() == this.getStartStateName();
+      }
+    );
   }
 
   public setStates(states: State[]) : Boolean{
