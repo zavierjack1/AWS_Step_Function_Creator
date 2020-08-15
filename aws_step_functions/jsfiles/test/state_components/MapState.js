@@ -94,7 +94,6 @@ describe('MapState class tests', function () {
         it('should output a json with store.result = list of authors', function () {
             var json = mapStateInputJson;
             var resource = function (x) {
-                console.log(x);
                 return x;
             };
             var mapIterator = new MapIterator_1.MapIterator([new TaskState_1.TaskState("myTaskState", resource, "", "", true, "$.prod", "$.result")], "myTaskState");
@@ -133,7 +132,7 @@ describe('MapState class tests', function () {
     context('toString test', function () {
         it('should return json of task state', function () {
             var mapState = new MapState_1.MapState("myName", defaultMapIterator, "myComment");
-            chai_1.expect(mapState.toString()).to.equal('"myName":{"Type":"Map","Comment":"myComment", Iterator: {"StartAt":"", "myState":{"Type":"Succeed","End":true}}}');
+            chai_1.expect(mapState.toString()).to.equal('"myName":{"Type":"Map","Comment":"myComment", "Iterator": {"StartAt":"", "myState":{"Type":"Succeed","End":true}}}');
         });
     });
     context('Catcher test', function () {
