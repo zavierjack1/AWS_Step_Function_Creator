@@ -21,6 +21,16 @@ var MapIterator = /** @class */ (function (_super) {
         if (version === void 0) { version = "1.0"; }
         return _super.call(this, states, startState, comment, version, timeoutSeconds) || this;
     }
+    MapIterator.prototype.toString = function () {
+        var json = '{'
+            + '"StartAt":"' + this.getStartStateName() + '"';
+        for (var _i = 0, _a = this.getStates(); _i < _a.length; _i++) {
+            var state = _a[_i];
+            json = json + ", " + state.toString();
+        }
+        json = json + "}";
+        return json;
+    };
     return MapIterator;
 }(StateMachine_1.StateMachine));
 exports.MapIterator = MapIterator;

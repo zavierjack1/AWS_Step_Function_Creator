@@ -79,13 +79,13 @@ export class MapState extends TaskState implements InputOutputPath, NextOrEnd, R
     return '"'+this.getName()+'":'
     +'{'
         +'"Type":"'+this.getType()+'"'
-        +',"Resource":"'+this.getResource()+'"' 
         + ( (this.getComment()) ? ',"Comment":"'+this.getComment()+'"': '') 
         + ( (this.getNextStateName()) ? ',"Next":"'+this.getNextStateName()+'"' : '') 
         + ( (this.isTerminal()) ? ',"End":'+this.isTerminal() : '') 
         + ( (this.getInputPath()) ? ',"InputPath":"'+this.getInputPath()+'"' : '')
         + ( (this.getOutputPath()) ? ',"OutputPath":"'+this.getOutputPath()+'"' : '')
         + ( (this.getCatchers().length > 0) ? ", Catch: "+this.getCatchers()[0].toString() : "")
+        + ( ', "Iterator": '+ this.getMapIterator().toString())
     + '}';
   }
 }

@@ -83,13 +83,13 @@ var MapState = /** @class */ (function (_super) {
         return '"' + this.getName() + '":'
             + '{'
             + '"Type":"' + this.getType() + '"'
-            + ',"Resource":"' + this.getResource() + '"'
             + ((this.getComment()) ? ',"Comment":"' + this.getComment() + '"' : '')
             + ((this.getNextStateName()) ? ',"Next":"' + this.getNextStateName() + '"' : '')
             + ((this.isTerminal()) ? ',"End":' + this.isTerminal() : '')
             + ((this.getInputPath()) ? ',"InputPath":"' + this.getInputPath() + '"' : '')
             + ((this.getOutputPath()) ? ',"OutputPath":"' + this.getOutputPath() + '"' : '')
             + ((this.getCatchers().length > 0) ? ", Catch: " + this.getCatchers()[0].toString() : "")
+            + (', "Iterator": ' + this.getMapIterator().toString())
             + '}';
     };
     return MapState;

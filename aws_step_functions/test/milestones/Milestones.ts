@@ -224,8 +224,7 @@ describe('Milestones', function () {
 
   context('Milestone 5', 
   function () {
-    it('Basic MapState', function () {
-      let mapStateInputJson = 
+    let mapStateInputJson = 
       `{
         "ship-date": "2016-03-14T01:59:00Z",
         "detail": {
@@ -241,6 +240,7 @@ describe('Milestones', function () {
         "result": ""
       }`;
 
+    it('Basic MapState', function () {
       let json = mapStateInputJson;
       let resource = function (x: string){
         console.log(x);
@@ -263,6 +263,86 @@ describe('Milestones', function () {
           ]
         ]
       );
+    });
+
+    it('concat 123 to prod', function () {
+      let json = mapStateInputJson;
+      let resource = function (x: string){
+        return x+123;
+      }
+      let mapIterator = new MapIterator(
+        [new TaskState("myTaskState", resource, "", "", true, "$.prod", "$.result")],
+        "myTaskState"
+      );
+      let mapState = new MapState("myName", mapIterator, "myComment");
+      mapState.setInputPath("$.detail.shipped");
+      expect(JsonPath.query(mapState.execute(json), '$.detail.shipped')).to.eql(
+        [
+          [
+            { prod: 'R31', 'dest-code': 9511, quantity: 1344, result: "R31123" },
+            { prod: 'S39', 'dest-code': 9511, quantity: 40, result: "S39123" },
+            { prod: 'R31', 'dest-code': 9833, quantity: 12, result: "R31123" },
+            { prod: 'R40', 'dest-code': 9860, quantity: 887, result: "R40123" },
+            { prod: 'R40', 'dest-code': 9511, quantity: 1220, result: "R40123" }
+          ]
+        ]
+      );
+    });
+
+    it('should set quantity field to 5x', function () {
+      let json = mapStateInputJson;
+      let resource = function (x: string){
+        return Number(x)*5;
+      }
+
+      let mapIterator = new MapIterator(
+        [new TaskState("myTaskState", resource, "", "", true, "$.quantity", "$.result")],
+        "myTaskState"
+      );
+
+      let mapState = new MapState("myName", mapIterator, "myComment");
+      mapState.setResource(resource);
+      mapState.setInputPath("$.detail.shipped");
+      expect(JsonPath.query(mapState.execute(json), '$.detail.shipped')).to.eql(
+        [
+          [
+            { prod: 'R31', 'dest-code': 9511, quantity: 1344, result: 6720 },
+            { prod: 'S39', 'dest-code': 9511, quantity: 40, result: 200 },
+            { prod: 'R31', 'dest-code': 9833, quantity: 12, result: 60 },
+            { prod: 'R40', 'dest-code': 9860, quantity: 887, result: 4435 },
+            { prod: 'R40', 'dest-code': 9511, quantity: 1220, result: 6100 }
+          ]
+        ]
+      );
+    });
+
+    it('create a state machine with a map state inside', function () {
+      let json = mapStateInputJson;
+      let resource = function (x: string){
+        return Number(x)*5;
+      }
+
+      let mapIterator = new MapIterator(
+        [new TaskState("myTaskState", resource, "", "", true, "$.quantity", "$.result")],
+        "myTaskState"
+      );
+
+      let mapState = new MapState("myState", mapIterator, "myComment","", true);
+      mapState.setResource(resource);
+      mapState.setInputPath("$.detail.shipped");
+      expect(JsonPath.query(mapState.execute(json), '$.detail.shipped')).to.eql(
+        [
+          [
+            { prod: 'R31', 'dest-code': 9511, quantity: 1344, result: 6720 },
+            { prod: 'S39', 'dest-code': 9511, quantity: 40, result: 200 },
+            { prod: 'R31', 'dest-code': 9833, quantity: 12, result: 60 },
+            { prod: 'R40', 'dest-code': 9860, quantity: 887, result: 4435 },
+            { prod: 'R40', 'dest-code': 9511, quantity: 1220, result: 6100 }
+          ]
+        ]
+      );
+      let stateMachine = new StateMachine([mapState], "myState");
+      console.log(stateMachine.toString());
     });
   });
 })

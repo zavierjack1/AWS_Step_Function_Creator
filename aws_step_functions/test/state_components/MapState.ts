@@ -173,22 +173,16 @@ describe('MapState class tests', function () {
       );
     });
   });
-  /*
+  
   context('toString test', function () {
     it('should return json of task state', function () {
       let mapState = new MapState("myName", defaultMapIterator, "myComment");
-      expect(mapState.toString()).to.equal('"myName":{"Type":"Map","Resource":"function () { throw Error("Map States have no resource"); }","Comment":"myComment"}');
-    });
-
-    it('should return json of task state', function () {
-      let mapState = new MapState("myName", defaultMapIterator, "myComment", "nextState", false, "$.test", "$.test2");
-      expect(mapState.toString()).to.equal('"myName":{"Type":"Map","Resource":"function () { throw Error("Map States have no resource"); }","Comment":"myComment","Next":"nextState","InputPath":"$.test","OutputPath":"$.test2"}');
+      expect(mapState.toString()).to.equal('"myName":{"Type":"Map","Comment":"myComment", Iterator: {"StartAt":"", "myState":{"Type":"Succeed","End":true}}}');
     });
   })
-*/
+
   context('Catcher test', function () {
     it('should add Catcher to MapState', function () {
-      let resource = function (){ return 1 + 1; }
       let mapState = new MapState("myName", defaultMapIterator, "myComment");
       mapState.addCatcher(new Catcher("nextStateName"));
       expect(mapState.getCatchers()[0].getNextStateName()).to.equal("nextStateName");

@@ -176,8 +176,8 @@ describe('Milestones', function () {
         });
     });
     context('Milestone 5', function () {
+        var mapStateInputJson = "{\n        \"ship-date\": \"2016-03-14T01:59:00Z\",\n        \"detail\": {\n          \"delivery-partner\": \"UQS\",\n          \"shipped\": [\n            { \"prod\": \"R31\", \"dest-code\": 9511, \"quantity\": 1344, \"result\": \"\" },\n            { \"prod\": \"S39\", \"dest-code\": 9511, \"quantity\": 40, \"result\": \"\" },\n            { \"prod\": \"R31\", \"dest-code\": 9833, \"quantity\": 12, \"result\": \"\" },\n            { \"prod\": \"R40\", \"dest-code\": 9860, \"quantity\": 887, \"result\": \"\" },\n            { \"prod\": \"R40\", \"dest-code\": 9511, \"quantity\": 1220, \"result\": \"\" }\n          ]\n        },\n        \"result\": \"\"\n      }";
         it('Basic MapState', function () {
-            var mapStateInputJson = "{\n        \"ship-date\": \"2016-03-14T01:59:00Z\",\n        \"detail\": {\n          \"delivery-partner\": \"UQS\",\n          \"shipped\": [\n            { \"prod\": \"R31\", \"dest-code\": 9511, \"quantity\": 1344, \"result\": \"\" },\n            { \"prod\": \"S39\", \"dest-code\": 9511, \"quantity\": 40, \"result\": \"\" },\n            { \"prod\": \"R31\", \"dest-code\": 9833, \"quantity\": 12, \"result\": \"\" },\n            { \"prod\": \"R40\", \"dest-code\": 9860, \"quantity\": 887, \"result\": \"\" },\n            { \"prod\": \"R40\", \"dest-code\": 9511, \"quantity\": 1220, \"result\": \"\" }\n          ]\n        },\n        \"result\": \"\"\n      }";
             var json = mapStateInputJson;
             var resource = function (x) {
                 console.log(x);
@@ -195,6 +195,64 @@ describe('Milestones', function () {
                     { prod: 'R40', 'dest-code': 9511, quantity: 1220, result: ["R40"] }
                 ]
             ]);
+        });
+        it('concat 123 to prod', function () {
+            var json = mapStateInputJson;
+            var resource = function (x) {
+                return x + 123;
+            };
+            var mapIterator = new MapIterator_1.MapIterator([new TaskState_1.TaskState("myTaskState", resource, "", "", true, "$.prod", "$.result")], "myTaskState");
+            var mapState = new MapState_1.MapState("myName", mapIterator, "myComment");
+            mapState.setInputPath("$.detail.shipped");
+            chai_1.expect(JsonPath.query(mapState.execute(json), '$.detail.shipped')).to.eql([
+                [
+                    { prod: 'R31', 'dest-code': 9511, quantity: 1344, result: "R31123" },
+                    { prod: 'S39', 'dest-code': 9511, quantity: 40, result: "S39123" },
+                    { prod: 'R31', 'dest-code': 9833, quantity: 12, result: "R31123" },
+                    { prod: 'R40', 'dest-code': 9860, quantity: 887, result: "R40123" },
+                    { prod: 'R40', 'dest-code': 9511, quantity: 1220, result: "R40123" }
+                ]
+            ]);
+        });
+        it('should set quantity field to 5x', function () {
+            var json = mapStateInputJson;
+            var resource = function (x) {
+                return Number(x) * 5;
+            };
+            var mapIterator = new MapIterator_1.MapIterator([new TaskState_1.TaskState("myTaskState", resource, "", "", true, "$.quantity", "$.result")], "myTaskState");
+            var mapState = new MapState_1.MapState("myName", mapIterator, "myComment");
+            mapState.setResource(resource);
+            mapState.setInputPath("$.detail.shipped");
+            chai_1.expect(JsonPath.query(mapState.execute(json), '$.detail.shipped')).to.eql([
+                [
+                    { prod: 'R31', 'dest-code': 9511, quantity: 1344, result: 6720 },
+                    { prod: 'S39', 'dest-code': 9511, quantity: 40, result: 200 },
+                    { prod: 'R31', 'dest-code': 9833, quantity: 12, result: 60 },
+                    { prod: 'R40', 'dest-code': 9860, quantity: 887, result: 4435 },
+                    { prod: 'R40', 'dest-code': 9511, quantity: 1220, result: 6100 }
+                ]
+            ]);
+        });
+        it('create a state machine with a map state inside', function () {
+            var json = mapStateInputJson;
+            var resource = function (x) {
+                return Number(x) * 5;
+            };
+            var mapIterator = new MapIterator_1.MapIterator([new TaskState_1.TaskState("myTaskState", resource, "", "", true, "$.quantity", "$.result")], "myTaskState");
+            var mapState = new MapState_1.MapState("myState", mapIterator, "myComment", "", true);
+            mapState.setResource(resource);
+            mapState.setInputPath("$.detail.shipped");
+            chai_1.expect(JsonPath.query(mapState.execute(json), '$.detail.shipped')).to.eql([
+                [
+                    { prod: 'R31', 'dest-code': 9511, quantity: 1344, result: 6720 },
+                    { prod: 'S39', 'dest-code': 9511, quantity: 40, result: 200 },
+                    { prod: 'R31', 'dest-code': 9833, quantity: 12, result: 60 },
+                    { prod: 'R40', 'dest-code': 9860, quantity: 887, result: 4435 },
+                    { prod: 'R40', 'dest-code': 9511, quantity: 1220, result: 6100 }
+                ]
+            ]);
+            var stateMachine = new StateMachine_1.StateMachine([mapState], "myState");
+            console.log(stateMachine.toString());
         });
     });
 });
