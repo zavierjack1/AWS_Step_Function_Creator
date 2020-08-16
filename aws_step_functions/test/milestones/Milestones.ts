@@ -27,7 +27,6 @@ describe('Milestones', function () {
       expect(stateMachine.getStates()[0].getType()).to.equal("Pass");
       expect(stateMachine.getStartStateName()).to.equal("myState");
       expect(stateMachine.isValid()).to.equal(true);
-      console.log(stateMachine.toString());
       expect(JSON.parse(stateMachine.toString())["myState"]["Result"]).to.equal("result");
       expect(JSON.parse(stateMachine.toString())["myState"]["Comment"]).to.equal("comment");
       expect(JSON.parse(stateMachine.toString())["myState"]["Next"]).to.equal("myState2");
@@ -243,7 +242,6 @@ describe('Milestones', function () {
     it('Basic MapState', function () {
       let json = mapStateInputJson;
       let resource = function (x: string){
-        console.log(x);
         return x;
       }
       let mapIterator = new MapIterator(
@@ -330,7 +328,8 @@ describe('Milestones', function () {
       let mapState = new MapState("myState", mapIterator, "myComment","", true);
       mapState.setResource(resource);
       mapState.setInputPath("$.detail.shipped");
-      expect(JsonPath.query(mapState.execute(json), '$.detail.shipped')).to.eql(
+      let stateMachine = new StateMachine([mapState], "myState");
+      expect(JsonPath.query(stateMachine.execute(json), '$.detail.shipped')).to.eql(
         [
           [
             { prod: 'R31', 'dest-code': 9511, quantity: 1344, result: 6720 },
@@ -341,8 +340,6 @@ describe('Milestones', function () {
           ]
         ]
       );
-      let stateMachine = new StateMachine([mapState], "myState");
-      console.log(stateMachine.toString());
     });
   });
 })

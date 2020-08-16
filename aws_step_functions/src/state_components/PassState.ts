@@ -4,7 +4,7 @@ import { NextOrEnd } from "./NextOrEnd";
 import { JsonPathCustom } from "../utility/JsonPathCustom";
 
 export class PassState extends State implements InputOutputPath, NextOrEnd{
-  private result?: string;
+  private result?: any;
   private nextStateName?: string;
   private endState: Boolean = false;
   private inputPath?: string;
@@ -27,11 +27,11 @@ export class PassState extends State implements InputOutputPath, NextOrEnd{
     this.result = result;
   }
 
-  public getResult(){
+  public getResult() : any{
     return this.result;
   }
 
-  public setResult(result: string){
+  public setResult(result: string) : void{
     this.result = result;
   }
 
@@ -75,7 +75,7 @@ export class PassState extends State implements InputOutputPath, NextOrEnd{
     if (outputPath) this.outputPath = outputPath;
   }
 
-  public execute(input: any = "") {
+  public execute(input: any = "") : any {
     if (typeof input === 'string') input = JSON.parse((input) ? input : "{}");
     else if (typeof input === 'object') input = input;
     else throw new Error("Input may only be string or valid json");

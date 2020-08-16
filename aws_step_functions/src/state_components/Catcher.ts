@@ -23,7 +23,7 @@ export class Catcher
     return this.errorEquals;
   }
   
-  public toString(){
+  public toString() : string{
     return '{'+
       '"ErrorEquals": ["States.ALL"],'+
       '"Next": "'+this.getNextStateName()+'"'+

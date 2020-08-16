@@ -25,7 +25,6 @@ describe('Catcher class tests', function () {
     context('toString Tests', function () {
         it('should return toString of Catcher', function () {
             var catcher = new Catcher_1.Catcher("myNextState");
-            console.log(catcher.toString());
             chai_1.expect(catcher.toString()).to.equal('{' +
                 '"ErrorEquals": ["States.ALL"],' +
                 '"Next": "' + catcher.getNextStateName() + '"' +

@@ -41,7 +41,7 @@ export class TaskState extends State implements InputOutputPath, NextOrEnd, Retr
     this.resource = resource;
   }
 
-  public getResource(){
+  public getResource() : Function{
     return this.resource;
   }
 

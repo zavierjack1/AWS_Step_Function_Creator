@@ -112,7 +112,7 @@ export class StateMachine {
     }
   }
 
-  public getStartStateName(){
+  public getStartStateName() : string{
       return this.startState;
   }
 
@@ -144,7 +144,7 @@ export class StateMachine {
       this.timeoutSeconds = timeoutSeconds;
   }
 
-  public execute(input: string | object) : any {
+  public execute(input: string | object, debugMode: Boolean = false) : any {
     if (typeof input === 'string') input = JSON.parse((input) ? input : "{}");
     if (typeof input === 'object') input = input;
     //only execute if stateMachine valid
@@ -152,20 +152,20 @@ export class StateMachine {
     let currentState = this.getStates().find(element => {
       return element.getName() == this.getStartStateName();
     })
-    console.log("initial input: "+JSON.stringify(input));
+    if (debugMode) console.log("initial input: "+JSON.stringify(input));
     while (true){
       try{
         if (currentState instanceof PassState || currentState instanceof TaskState){
-          console.log("running: "+currentState.getName());
-          console.log("input pre-state run: "+JSON.stringify(input)); 
+          if (debugMode) console.log("running: "+currentState.getName());
+          if (debugMode) console.log("input pre-state run: "+JSON.stringify(input)); 
           input = currentState.execute(input);
-          console.log("input after-state run: "+JSON.stringify(input)); 
+          if (debugMode) console.log("input after-state run: "+JSON.stringify(input)); 
         }
       }
       catch(e){
-        console.log("exception thrown"); 
+        if (debugMode) console.log("exception thrown"); 
         if (currentState instanceof TaskState && currentState.getCatchers().length > 0){
-          console.log("in catcher handler")
+          if (debugMode) console.log("in catcher handler")
           //assume we only catch 1 error for now
           currentState = this.getStates().find(element => {
             return (<TaskState>currentState).getCatchers()[0].getNextStateName() == element.getName();
