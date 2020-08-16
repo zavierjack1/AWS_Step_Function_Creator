@@ -120,7 +120,7 @@ describe('PassState class tests', function () {
       expect(state.getOutputPath()).to.equal("$.store.book[*].author");
     });
 
-    it('should output a json with store.result = list of authors', function () {
+    it('should output a json with store.result = "myResult""', function () {
       let state = new PassState("myName", "myResult", "myComment");
       let json = 
         `{

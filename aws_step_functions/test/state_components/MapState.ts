@@ -121,7 +121,7 @@ describe('MapState class tests', function () {
         "result": ""
       }`;
 
-    it('should output a json with store.result = list of authors', function () {
+    it('should output the input array in detail.shipped', function () {
       let json = mapStateInputJson;
       let resource = function (x: string){
         return x;

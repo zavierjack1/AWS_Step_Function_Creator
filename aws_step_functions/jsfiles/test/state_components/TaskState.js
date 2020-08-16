@@ -173,7 +173,7 @@ describe('TaskState class tests', function () {
             state.setOutputPath("$.store.book[*].author");
             chai_1.expect(state.getOutputPath()).to.equal("$.store.book[*].author");
         });
-        it('should output a json with store.result = list of authors', function () {
+        it('fail for outputPath not found in input json', function () {
             var resource = function (x) {
                 return x;
             };

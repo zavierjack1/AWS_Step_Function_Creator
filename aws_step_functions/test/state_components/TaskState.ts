@@ -230,7 +230,7 @@ describe('TaskState class tests', function () {
       expect(state.getOutputPath()).to.equal("$.store.book[*].author");
     });
 
-    it('should output a json with store.result = list of authors', function () {
+    it('fail for outputPath not found in input json', function () {
       let resource = function (x: string){
         return x;
       }

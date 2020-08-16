@@ -91,7 +91,7 @@ describe('MapState class tests', function () {
     });
     context("Execute Test", function () {
         var mapStateInputJson = "{\n        \"ship-date\": \"2016-03-14T01:59:00Z\",\n        \"detail\": {\n          \"delivery-partner\": \"UQS\",\n          \"shipped\": [\n            { \"prod\": \"R31\", \"dest-code\": 9511, \"quantity\": 1344, \"result\": \"\" },\n            { \"prod\": \"S39\", \"dest-code\": 9511, \"quantity\": 40, \"result\": \"\" },\n            { \"prod\": \"R31\", \"dest-code\": 9833, \"quantity\": 12, \"result\": \"\" },\n            { \"prod\": \"R40\", \"dest-code\": 9860, \"quantity\": 887, \"result\": \"\" },\n            { \"prod\": \"R40\", \"dest-code\": 9511, \"quantity\": 1220, \"result\": \"\" }\n          ]\n        },\n        \"result\": \"\"\n      }";
-        it('should output a json with store.result = list of authors', function () {
+        it('should output the input array in detail.shipped', function () {
             var json = mapStateInputJson;
             var resource = function (x) {
                 return x;
